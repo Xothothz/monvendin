@@ -247,42 +247,38 @@ const AdminAuthControls = () => {
 export const SiteFooter = () => {
   return (
     <footer className="mt-6 border-t border-ink/10 bg-ink text-white">
-      <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 text-xs sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3 text-white/70">
-            <span className="text-[11px] font-semibold uppercase tracking-widest text-white/80">
-              Acces
-            </span>
-            <Link href="/structure-du-site" className="hover:text-white">
-              Structure du site
-            </Link>
-            <Link href="/credits-mentions-legales" className="hover:text-white">
-              Credits et mentions legales
-            </Link>
-            <Link href="/credits-mentions-legales#rgpd" className="hover:text-white">
-              RGPD et accessibilite
-            </Link>
-            <Link href="/agents-communaux" className="hover:text-white">
-              Acces agents communaux
-            </Link>
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 text-xs sm:px-6 lg:px-8">
+        <div className="flex items-center gap-4 text-white/70">
+          <div className="flex items-center gap-2 rounded-xl bg-white/5 px-2 py-1">
+            <img
+              src="/images/gesteau-gregory.jpg"
+              alt="Photo de Gregory Gesteau"
+              className="h-8 w-8 rounded-full object-cover"
+              loading="lazy"
+            />
+            <div className="leading-tight">
+              <p className="text-xs font-semibold text-white">GESTEAU Gregory</p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/70">
+                Webmaster
+              </p>
+            </div>
           </div>
-          <AdminAuthControls />
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-white/80">
+              Suivez la ville en ligne
+            </span>
+            <a
+              href="https://www.facebook.com/profile.php?id=100067033293725"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full bg-white/10 p-1.5 text-white hover:bg-gold/80 hover:text-ink"
+              aria-label="Facebook"
+            >
+              <FacebookLogo className="h-4 w-4" aria-hidden="true" />
+            </a>
+          </div>
         </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="text-[11px] font-semibold uppercase tracking-widest text-white/80">
-            Suivez la ville en ligne
-          </span>
-          <a
-            href="https://www.facebook.com/profile.php?id=100067033293725"
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-full bg-white/10 p-2 text-white hover:bg-gold/80 hover:text-ink"
-            aria-label="Facebook"
-          >
-            <FacebookLogo className="h-4 w-4" aria-hidden="true" />
-          </a>
-        </div>
+        <AdminAuthControls />
       </div>
     </footer>
   );

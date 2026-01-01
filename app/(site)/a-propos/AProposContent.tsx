@@ -128,7 +128,7 @@ export const AProposContent = ({
 
       <article
         id="sources"
-        className="text-slate space-y-4"
+        className="text-slate space-y-4 text-justify"
         dangerouslySetInnerHTML={{ __html: renderedContent }}
       />
 

@@ -229,6 +229,5 @@ export const siteNav: SiteNavItem[] = [
 
 export const siteUtilities: SiteUtilityLink[] = [
   { label: "Horaires", href: "/horaires-des-services", icon: "clock" },
-  { label: "Contact", href: "/nous-contacter", icon: "mail" },
-  { label: "Recherche", href: "/recherche", icon: "search" }
+  { label: "Contact", href: "/nous-contacter", icon: "mail" }
 ];
