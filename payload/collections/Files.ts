@@ -15,9 +15,7 @@ export const Files: CollectionConfig = {
   },
   upload: {
     staticDir: "public/files",
-    staticURL: "/files",
     mimeTypes: ["application/pdf"],
-    maxSize: 20 * 1024 * 1024
   },
   fields: []
 };

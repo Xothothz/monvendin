@@ -133,7 +133,7 @@ export default async function HomePage() {
     }>;
     if (bannerDocs.length > 0) {
       bannerItems = bannerDocs.map((doc) => ({
-        label: doc.label ?? undefined,
+        label: doc.label ?? "Info",
         message: doc.message
       }));
     }

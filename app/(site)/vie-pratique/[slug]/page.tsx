@@ -1642,10 +1642,12 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
             </p>
           </div>
           <DechetsSchedule
-            cards={scheduleCards.map((item) => ({
-              ...item,
-              image: item.href
-            }))}
+
+	cards={scheduleCards.map((item) => ({
+  		...item,
+  		image: item.href,
+  		icon: item.icon as "trash" | "recycle" | "leaf" | "wine",
+	}))}
           />
         </section>
 

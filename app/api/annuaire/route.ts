@@ -94,7 +94,7 @@ export const GET = async (request: Request) => {
     page,
     limit,
     sort,
-    where,
+    where: where as any,
     req
   });
 

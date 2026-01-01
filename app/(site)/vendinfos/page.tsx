@@ -40,7 +40,7 @@ export default async function VendinfosPage() {
     heroId = null;
   }
 
-  let docs = [];
+  let docs: unknown[] = [];
   try {
     const payload = await getPayload({ config: configPromise });
     const response = await payload.find({
@@ -77,13 +77,13 @@ export default async function VendinfosPage() {
         </p>
       </header>
 
+
       <DocumentsAccordion
-        initialDocuments={docs}
-        viewerBasePath="/vendinfos/documents"
-        documentTypeFilter="vendinfos"
-        forcedDocumentType="vendinfos"
-        showPublicYearFilter
-      />
+          initialDocuments={docs as any}
+          viewerBasePath="/vendinfos/documents"
+          documentTypeFilter="vendinfos"
+          forcedDocumentType="vendinfos"
+       />
     </div>
   );
 }

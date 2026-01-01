@@ -82,7 +82,7 @@ export default async function DeleguesQuartierPage() {
         description="Retrouvez les delegues par secteur et les rues rattachees."
       />
 
-      <DelegatesClient initialDelegates={delegates} initialSectors={sectorDocs} />
+	<DelegatesClient initialDelegates={delegates as any} initialSectors={sectorDocs as any} />
     </div>
   );
 }

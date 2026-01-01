@@ -13,14 +13,17 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 type ParametresPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     access?: string;
-  };
+  }>;
 };
 
 export default async function ParametresPage({ searchParams }: ParametresPageProps) {
   const payload = await getPayload({ config: configPromise });
-  const requestHeaders = new Headers(headers());
+  const h = await headers();
+  const requestHeaders = new Headers(h as any);
+
+
   let role: string | undefined;
 
   try {
@@ -33,7 +36,10 @@ export default async function ParametresPage({ searchParams }: ParametresPagePro
   }
 
   const isAdmin = role === "admin";
-  const accessDenied = searchParams?.access === "denied";
+
+  // Next 15: searchParams peut être async selon le typing du projet
+  const sp = searchParams ? await searchParams : undefined;
+  const accessDenied = sp?.access === "denied";
 
   if (isAdmin && accessDenied) {
     redirect("/parametres");

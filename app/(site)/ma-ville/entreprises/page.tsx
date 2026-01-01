@@ -29,8 +29,8 @@ export default async function EntreprisesPage() {
           docs: result.docs,
           totalDocs: result.totalDocs,
           totalPages: result.totalPages,
-          page: result.page,
-          limit: result.limit
+	  page: result.page ?? 1,
+	  limit: result.limit ?? 20
         }}
       />
     </div>

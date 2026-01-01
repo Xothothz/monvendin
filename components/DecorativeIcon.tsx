@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import React from "react";
 import {
   Bank,
   CalendarBlank,
@@ -15,6 +16,10 @@ import {
   UsersThree
 } from "@phosphor-icons/react/dist/ssr";
 
+/**
+ * Liste stricte des noms d’icônes décoratives utilisables
+ * (évite toute incohérence dans le code appelant)
+ */
 export type DecorativeIconName =
   | "conseil-municipal"
   | "commissions"
@@ -30,17 +35,28 @@ export type DecorativeIconName =
   | "associations"
   | "agenda";
 
+/**
+ * Props du composant DecorativeIcon
+ */
 type DecorativeIconProps = {
   name: DecorativeIconName;
   className?: string;
 };
 
-type IconComponent = React.ComponentType<{
-  className?: string;
-  weight?: "thin" | "light" | "regular" | "bold" | "fill" | "duotone";
-  "aria-hidden"?: boolean;
-}>;
+/**
+ * IMPORTANT
+ * On utilise React.ElementType pour accepter :
+ * - FunctionComponent
+ * - ForwardRefExoticComponent (Phosphor)
+ * - SSR icons
+ *
+ * Sans conflit sur propTypes / aria-hidden / weight
+ */
+type IconComponent = React.ElementType;
 
+/**
+ * Mapping nom logique → icône réelle
+ */
 const icons: Record<DecorativeIconName, IconComponent> = {
   "conseil-municipal": Bank,
   commissions: UsersThree,
@@ -57,13 +73,19 @@ const icons: Record<DecorativeIconName, IconComponent> = {
   agenda: CalendarBlank
 };
 
+/**
+ * Composant d’icône décorative
+ * Usage :
+ * <DecorativeIcon name="agenda" className="h-6 w-6" />
+ */
 export const DecorativeIcon = ({ name, className }: DecorativeIconProps) => {
   const Icon = icons[name];
+
   return (
     <Icon
       aria-hidden
-      className={clsx("text-[#1E63B6]", className)}
       weight="fill"
+      className={clsx("text-[#1E63B6]", className)}
     />
   );
 };

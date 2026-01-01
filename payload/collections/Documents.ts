@@ -19,7 +19,6 @@ export const Documents: CollectionConfig = {
   },
   upload: {
     staticDir: "public/documents",
-    staticURL: "/documents",
     mimeTypes: [
       "application/pdf",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -28,7 +27,6 @@ export const Documents: CollectionConfig = {
       "image/png",
       "image/jpeg"
     ],
-    maxSize: 20 * 1024 * 1024
   },
   hooks: {
     beforeValidate: [

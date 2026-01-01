@@ -40,8 +40,8 @@ export default async function FiscalitePage() {
     heroId = null;
   }
 
-  let docs = [];
-  try {
+    let docs: unknown[] = [];
+      try {
     const payload = await getPayload({ config: configPromise });
     const response = await payload.find({
       collection: "documents",
@@ -70,7 +70,7 @@ export default async function FiscalitePage() {
         title="Fiscalite et documents"
         description="Consultez les documents fiscaux et financiers par annee."
       />
-      <DocumentsAccordion initialDocuments={docs} />
+      <DocumentsAccordion initialDocuments={docs as any} />
     </div>
   );
 }

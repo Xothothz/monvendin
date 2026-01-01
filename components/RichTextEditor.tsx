@@ -89,8 +89,9 @@ export const RichTextEditor = ({ value, onChange }: RichTextEditorProps) => {
     if (!editor) return;
     const html = editor.getHTML();
     if (value !== html) {
-      editor.commands.setContent(value || "", false);
-    }
+
+    editor.commands.setContent(value || "", { emitUpdate: false }); 
+   }
   }, [editor, value]);
 
   const currentFont = editor?.getAttributes("textStyle")?.fontFamily ?? "";

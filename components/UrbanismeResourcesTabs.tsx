@@ -197,19 +197,24 @@ export const UrbanismeResourcesTabs = () => {
           {current.items.map((item) => {
             const isDisabled = !item.href;
             const isPreview = Boolean(item.preview);
-            const Tag = item.href && !isPreview ? "a" : "button";
-            const tagProps = item.href && !isPreview
-              ? { href: item.href, target: "_blank", rel: "noreferrer" }
-              : {
-                  type: "button",
-                  disabled: isDisabled,
-                  "aria-disabled": isDisabled,
-                  onClick: () => {
-                    if (item.href && isPreview) {
-                      setActivePreview(item);
+
+            // ✅ Fix TS : force des littéraux "a" | "button"
+
+            const Tag: "a" | "button" = item.href && !isPreview ? "a" : "button";
+            // ✅ Fix TS : force type="button" en littéral, pas string
+            const tagProps =
+              item.href && !isPreview
+                ? { href: item.href, target: "_blank", rel: "noreferrer" }
+                : {
+                    type: "button" as const,
+                    disabled: isDisabled,
+                    "aria-disabled": isDisabled,
+                    onClick: () => {
+                      if (item.href && isPreview) {
+                        setActivePreview(item);
+                      }
                     }
-                  }
-                };
+                  };
 
             return (
               <div
@@ -218,9 +223,13 @@ export const UrbanismeResourcesTabs = () => {
               >
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="text-sm font-display text-ink">{item.title}</h3>
-                  <Badge variant={badgeVariant(item.badge)}>{badgeLabel(item.badge)}</Badge>
+                  <Badge variant={badgeVariant(item.badge)}>
+                    {badgeLabel(item.badge)}
+                  </Badge>
                 </div>
+
                 <p className="mt-2 text-sm text-slate">{item.description}</p>
+
                 <Tag
                   {...tagProps}
                   className={clsx(
@@ -233,6 +242,7 @@ export const UrbanismeResourcesTabs = () => {
                   {item.ctaLabel}
                   <ArrowRight className="h-3 w-3" aria-hidden="true" />
                 </Tag>
+
                 {item.secondaryLink ? (
                   <a
                     href={item.secondaryLink.href}
@@ -259,7 +269,7 @@ export const UrbanismeResourcesTabs = () => {
         ) : null}
       </div>
 
-          {activePreview?.href && isMounted
+      {activePreview?.href && isMounted
         ? createPortal(
             <div
               role="dialog"
@@ -274,7 +284,9 @@ export const UrbanismeResourcesTabs = () => {
                   onClick={(event) => event.stopPropagation()}
                 >
                   <div className="flex items-center justify-between border-b border-ink/10 px-4 py-3">
-                    <p className="text-sm font-semibold text-ink">{activePreview.title}</p>
+                    <p className="text-sm font-semibold text-ink">
+                      {activePreview.title}
+                    </p>
                     <button
                       type="button"
                       onClick={() => setActivePreview(null)}
@@ -283,6 +295,7 @@ export const UrbanismeResourcesTabs = () => {
                       Fermer
                     </button>
                   </div>
+
                   {activePreview.preview === "image" ? (
                     <div className="flex h-full w-full items-center justify-center bg-ink/5 p-4">
                       <img
@@ -298,6 +311,7 @@ export const UrbanismeResourcesTabs = () => {
                       className="h-full w-full"
                     />
                   )}
+
                   <div className="flex flex-wrap items-center justify-end gap-3 border-t border-ink/10 px-4 py-3">
                     <a
                       href={activePreview.href}
@@ -325,7 +339,7 @@ export const UrbanismeResourcesTabs = () => {
               loading="lazy"
             />
             <h2 className="text-2xl font-display text-ink">
-              Projets d'amenagement : terrains a batir (Chemin de l'Abbaye)
+              Projets d&apos;amenagement : terrains a batir (Chemin de l&apos;Abbaye)
             </h2>
           </div>
           <p className="text-sm text-slate">
@@ -369,9 +383,10 @@ export const UrbanismeResourcesTabs = () => {
                 <Badge variant="default">Terrains viabilises</Badge>
                 <Badge variant="default">Libre de constructeur</Badge>
               </div>
+
               <div className="space-y-2">
                 <h3 className="text-lg font-display text-ink">
-                  Terrains a batir - Chemin de l'Abbaye
+                  Terrains a batir - Chemin de l&apos;Abbaye
                 </h3>
                 <p className="text-sm text-slate">
                   Cette operation presente plusieurs lots disponibles (surfaces
@@ -379,14 +394,16 @@ export const UrbanismeResourcesTabs = () => {
                   consultez la page officielle Territoires 62.
                 </p>
               </div>
+
               <div className="rounded-2xl border border-ink/10 bg-fog px-4 py-3 text-sm text-ink/70">
                 <p className="font-semibold text-ink">Infos cles</p>
                 <ul className="mt-2 list-disc pl-4 text-sm text-slate">
-                  <li>Localisation : Vendin-lez-Bethune (Chemin de l'Abbaye)</li>
+                  <li>Localisation : Vendin-lez-Bethune (Chemin de l&apos;Abbaye)</li>
                   <li>Lots : consulter la page officielle (donnees evolutives)</li>
                   <li>Amenageur : Territoires 62</li>
                 </ul>
               </div>
+
               <a
                 href="https://www.territoires62.fr/operation/terrains-a-batir-vendin-lez-bethune-terrain-a-vendre-viabilise-libre-de-constructeurs-chemin-de-l-abbaye/"
                 target="_blank"
