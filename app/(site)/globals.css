@@ -1,0 +1,240 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --ink: 12 22 38;
+  --slate: 76 90 114;
+  --fog: 233 238 245;
+  --sand: 248 250 252;
+  --accent: 12 44 132;
+  --accent-soft: 220 230 255;
+  --warning: 186 126 24;
+  --warning-soft: 250 236 200;
+  --gold: 235 190 70;
+  --gold-soft: 255 246 218;
+  --site-header-h: 96px;
+}
+
+body {
+  @apply text-ink antialiased font-sans;
+  font-size: 16px;
+  line-height: 1.65;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  background-color: rgb(var(--sand));
+  background-image:
+    linear-gradient(rgba(var(--accent) / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--accent) / 0.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+body::before {
+  content: none;
+}
+
+body::after {
+  content: none;
+}
+
+h1, h2, h3, h4 {
+  @apply font-display text-ink;
+  letter-spacing: -0.005em;
+}
+
+a {
+  @apply text-accent hover:text-ink transition-colors;
+}
+
+a:focus-visible {
+  @apply outline-none ring-2 ring-accent ring-offset-2;
+}
+
+::selection {
+  background: rgb(var(--gold) / 0.35);
+}
+
+.focus-ring {
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2;
+}
+
+.section-title {
+  @apply text-2xl font-display tracking-tight;
+  position: relative;
+}
+
+.page-title-wrap {
+  @apply relative space-y-2;
+}
+
+.page-title-center {
+  @apply text-center;
+}
+
+.page-title-eyebrow {
+  @apply text-[11px] font-semibold uppercase tracking-[0.28em] text-slate;
+}
+
+.page-title-text {
+  @apply text-3xl sm:text-4xl font-display tracking-tight text-ink;
+}
+
+.page-title-link {
+  @apply text-accent underline underline-offset-4;
+}
+
+.page-title-rule {
+  @apply mt-3 block h-px w-12 bg-gold;
+}
+
+.page-title-center .page-title-rule {
+  @apply mx-auto;
+}
+
+.home-sections {
+  @apply flex flex-col;
+}
+
+.home-section {
+  @apply relative py-10;
+}
+
+.home-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: -1;
+}
+
+.home-sections > .home-section:nth-of-type(even)::before {
+  background: rgb(var(--accent) / 0.2);
+}
+
+.section-title::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 3px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgb(var(--accent)), rgb(var(--gold)));
+}
+
+.card-grid {
+  @apply grid gap-7 sm:grid-cols-2 xl:grid-cols-3;
+}
+
+.badge {
+  @apply inline-flex items-center rounded-full px-3 py-1 text-[10px] font-semibold tracking-[0.15em] uppercase;
+}
+
+.breadcrumbs a {
+  @apply text-sm text-slate hover:text-ink;
+}
+
+.table-base {
+  @apply w-full border-separate border-spacing-y-2;
+}
+
+.table-base th {
+  @apply text-left text-xs uppercase tracking-wide text-slate pb-2;
+}
+
+.table-base td {
+  @apply bg-white rounded-lg p-3 align-top border border-ink/10 shadow-[0_10px_22px_rgba(15,23,42,0.08)];
+}
+
+.timeline {
+  @apply border-l-2 border-accent/30 pl-6 space-y-6;
+}
+
+.tone-muted {
+  @apply text-slate;
+}
+
+article h1 {
+  @apply text-3xl font-display mb-4;
+}
+
+article h2 {
+  @apply text-xl font-display mt-6 mb-2;
+}
+
+article p {
+  @apply text-slate leading-relaxed;
+}
+
+article ul {
+  @apply list-disc pl-5 text-slate;
+}
+
+.rich-editor p {
+  @apply text-slate;
+}
+
+.rich-editor h2 {
+  @apply text-xl font-display text-ink;
+  margin-top: 1rem;
+}
+
+.rich-editor h3 {
+  @apply text-lg font-display text-ink;
+  margin-top: 0.75rem;
+}
+
+.rich-editor ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  color: rgb(var(--slate));
+}
+
+.rich-editor ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+  color: rgb(var(--slate));
+}
+
+.rich-editor a {
+  @apply text-accent underline underline-offset-2;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.page-enter {
+  animation: rise 0.6s ease-out both;
+}
+
+.card-grid > * {
+  animation: rise 0.55s ease-out both;
+}
+
+.card-grid > *:nth-child(2) {
+  animation-delay: 0.05s;
+}
+
+.card-grid > *:nth-child(3) {
+  animation-delay: 0.1s;
+}
+
+.card-grid > *:nth-child(4) {
+  animation-delay: 0.15s;
+}
+
+.card-grid > *:nth-child(5) {
+  animation-delay: 0.2s;
+}

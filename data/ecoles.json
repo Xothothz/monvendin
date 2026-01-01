@@ -1,0 +1,18 @@
+[
+  {
+    "id": "ecole-1",
+    "name": "Ecole maternelle Lucie Aubrac",
+    "type": "Maternelle",
+    "address": "12 rue des Ecoles, Vendin-les-Bethune",
+    "phone": "03 21 00 00 00 (standard public)",
+    "services": ["Cantine", "Garderie matin/soir", "Accueil periscolaire"]
+  },
+  {
+    "id": "ecole-2",
+    "name": "Ecole primaire Jean Moulin",
+    "type": "Primaire",
+    "address": "8 rue des Tilleuls, Vendin-les-Bethune",
+    "phone": "03 21 00 00 01 (standard public)",
+    "services": ["Cantine", "Etude surveillee", "Bibliotheque"]
+  }
+]

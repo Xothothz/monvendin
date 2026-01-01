@@ -1,0 +1,62 @@
+[
+  {
+    "id": "actu-1",
+    "title": "Point travaux: voirie et stationnement",
+    "slug": "travaux-voirie-stationnement",
+    "date": "2024-10-03",
+    "category": "Cadre de vie",
+    "summary": "Synthese citoyenne des annonces de travaux et impact sur le stationnement.",
+    "content": "## Ce qui change\n\n- Deux rues concernes par une fermeture partielle.\n- Modification temporaire des itineraires de bus.\n\n## Ce que propose ce portail\n\n- Un recapitulatif clair des dates.\n- Une carte simple des zones impactees.\n\n## Points a verifier\n\nLes dates exactes et les itineraires doivent etre confirmes a partir des sources officielles.",
+    "sources": [
+      {
+        "label": "Annonce travaux (site officiel)",
+        "url": "https://www.vendin-les-bethune.fr/actualites/travaux"
+      }
+    ]
+  },
+  {
+    "id": "actu-2",
+    "title": "Budget participatif: calendrier et depots",
+    "slug": "budget-participatif-calendrier",
+    "date": "2024-09-18",
+    "category": "Participation",
+    "summary": "Calendrier simplifie pour suivre les depots de projets citoyens.",
+    "content": "## Objectif\n\nInformer sur les dates de depots, les criteres d'eligibilite et les canaux de contact.\n\n## Suggestion\n\nUn formulaire unique et un suivi transparent des projets proposes.",
+    "sources": [
+      {
+        "label": "Actualite budget participatif",
+        "url": "https://www.vendin-les-bethune.fr/actualites/budget-participatif"
+      }
+    ]
+  },
+  {
+    "id": "actu-3",
+    "title": "Ouverture du forum des associations",
+    "slug": "forum-associations",
+    "date": "2024-09-05",
+    "category": "Vie locale",
+    "summary": "Liste des associations presentes et points d'acces.",
+    "content": "## Ce que l'on veut lire\n\n- Programme horaire clair.\n- Fiches par association avec contact public.\n\n## Proposition\n\nAjouter un annuaire permanent et une carte des lieux.",
+    "sources": [
+      {
+        "label": "Annonce forum associations",
+        "url": "https://www.vendin-les-bethune.fr/actualites/forum-associations"
+      }
+    ]
+  },
+  {
+    "id": "actu-4",
+    "title": "Collecte des dechets verts",
+    "slug": "collecte-dechets-verts",
+    "date": "2024-08-25",
+    "category": "Environnement",
+    "summary": "Rappel du calendrier de collecte et consignes de depot.",
+    "content": "## Informations utiles\n\n- Jours de collecte par secteur.\n- Contact pour les demandes exceptionnelles.\n\n## Suggestion\n\nPublier une version PDF telechargeable et un rappel SMS.",
+    "sources": [
+      {
+        "label": "Calendrier collecte",
+        "url": "https://www.vendin-les-bethune.fr/actualites/collecte"
+      }
+    ]
+  }
+]

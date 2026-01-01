@@ -1,0 +1,35 @@
+[
+  {
+    "id": "asso-1",
+    "name": "Club sportif Vendin",
+    "slug": "club-sportif-vendin",
+    "category": "Sport",
+    "description": "Association multi-sports pour tous les ages, avec sections football et gym.",
+    "contact": "contact@clubvendin.local",
+    "website": "https://www.clubvendin-exemple.fr"
+  },
+  {
+    "id": "asso-2",
+    "name": "Les jardins partages",
+    "slug": "jardins-partages",
+    "category": "Environnement",
+    "description": "Collectif de jardiniers citoyens, ateliers et compostage.",
+    "contact": "jardins@vendin-citoyen.local"
+  },
+  {
+    "id": "asso-3",
+    "name": "Atelier culture & patrimoine",
+    "slug": "atelier-culture-patrimoine",
+    "category": "Culture",
+    "description": "Mise en valeur du patrimoine local, visites et archives.",
+    "contact": "culture@vendin-citoyen.local"
+  },
+  {
+    "id": "asso-4",
+    "name": "Collectif solidarite",
+    "slug": "collectif-solidarite",
+    "category": "Solidarite",
+    "description": "Soutien aux familles, collecte alimentaire et actions de quartier.",
+    "contact": "solidarite@vendin-citoyen.local"
+  }
+]

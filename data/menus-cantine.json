@@ -1,0 +1,66 @@
+[
+  {
+    "id": "menu-1",
+    "week": "14 au 18 octobre 2024",
+    "pdf": "/docs/menu-semaine-1.pdf",
+    "days": [
+      {
+        "day": "Lundi",
+        "lunch": ["Salade de lentilles", "Poulet roti", "Riz", "Fruit de saison"],
+        "allergens": ["Moutarde"]
+      },
+      {
+        "day": "Mardi",
+        "lunch": ["Potage de legumes", "Omelette", "Haricots verts", "Yaourt"],
+        "allergens": ["Oeuf", "Lait"]
+      },
+      {
+        "day": "Mercredi",
+        "lunch": ["Carottes rapees", "Colin pane", "Puree", "Compote"],
+        "allergens": ["Poisson", "Gluten"]
+      },
+      {
+        "day": "Jeudi",
+        "lunch": ["Taboule", "Boulettes veggie", "Semoule", "Fruit"],
+        "allergens": null
+      },
+      {
+        "day": "Vendredi",
+        "lunch": ["Salade composee", "Pates bolo", "Fromage", "Gateau"],
+        "allergens": ["Gluten", "Lait"]
+      }
+    ]
+  },
+  {
+    "id": "menu-2",
+    "week": "21 au 25 octobre 2024",
+    "pdf": "/docs/menu-semaine-2.pdf",
+    "days": [
+      {
+        "day": "Lundi",
+        "lunch": ["Veloute de courge", "Hachis parmentier", "Fruit"],
+        "allergens": ["Lait"]
+      },
+      {
+        "day": "Mardi",
+        "lunch": ["Salade de tomates", "Emince de dinde", "Ble", "Yaourt"],
+        "allergens": ["Gluten", "Lait"]
+      },
+      {
+        "day": "Mercredi",
+        "lunch": ["Concombre", "Poisson au four", "Pommes vapeur", "Compote"],
+        "allergens": ["Poisson"]
+      },
+      {
+        "day": "Jeudi",
+        "lunch": ["Salade verte", "Chili vegetarien", "Riz", "Fruit"],
+        "allergens": null
+      },
+      {
+        "day": "Vendredi",
+        "lunch": ["Betteraves", "Gratin de pates", "Fromage", "Flan"],
+        "allergens": ["Gluten", "Lait"]
+      }
+    ]
+  }
+]

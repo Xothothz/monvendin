@@ -1,0 +1,152 @@
+[
+  {
+    "id": "audit-1",
+    "section": "Structure et navigation",
+    "problem": "Menu principal trop profond",
+    "impact": "Les services les plus demandes sont enfouis, ce qui augmente le taux d'abandon.",
+    "example": "Plusieurs clics necessaires pour acceder aux demarches d'etat civil.",
+    "recommendation": "Mettre les demarches courantes en acces direct dans la navigation principale.",
+    "priority": "P1",
+    "sources": [
+      {
+        "label": "Menu principal (capture 2024-08)",
+        "url": "https://www.vendin-les-bethune.fr"
+      }
+    ]
+  },
+  {
+    "id": "audit-2",
+    "section": "Structure et navigation",
+    "problem": "Absence de fil d'Ariane",
+    "impact": "Difficulte a se reperer dans les rubriques secondaires.",
+    "example": "Pages documents sans indication de section parente.",
+    "recommendation": "Ajouter un fil d'Ariane sur les pages internes.",
+    "priority": "P2",
+    "sources": [
+      {
+        "label": "Exemple page interne",
+        "url": "https://www.vendin-les-bethune.fr/documents"
+      }
+    ]
+  },
+  {
+    "id": "audit-3",
+    "section": "Accessibilite",
+    "problem": "Contraste texte insuffisant",
+    "impact": "Lectures difficiles pour les personnes malvoyantes.",
+    "example": "Texte gris clair sur fond blanc dans les actualites.",
+    "recommendation": "Revoir les couleurs pour atteindre un contraste AA minimum.",
+    "priority": "P1",
+    "sources": [
+      {
+        "label": "Page actualites",
+        "url": "https://www.vendin-les-bethune.fr/actualites"
+      }
+    ]
+  },
+  {
+    "id": "audit-4",
+    "section": "Accessibilite",
+    "problem": "Navigation clavier incomplete",
+    "impact": "Les elements interactifs ne sont pas accessibles au clavier.",
+    "example": "Focus non visible sur certains boutons.",
+    "recommendation": "Definir des styles de focus clairs et tester au clavier.",
+    "priority": "P1",
+    "sources": [
+      {
+        "label": "Tests clavier (observation)",
+        "url": "https://www.vendin-les-bethune.fr"
+      }
+    ]
+  },
+  {
+    "id": "audit-5",
+    "section": "Mobile et UX",
+    "problem": "Pages longues sans sommaire",
+    "impact": "Les usagers mobiles perdent le contexte et quittent la page.",
+    "example": "Pages documents sans ancre ni filtres visibles.",
+    "recommendation": "Ajouter un sommaire collant et des filtres accessibles.",
+    "priority": "P2",
+    "sources": [
+      {
+        "label": "Observation mobile",
+        "url": "https://www.vendin-les-bethune.fr/documents"
+      }
+    ]
+  },
+  {
+    "id": "audit-6",
+    "section": "Mobile et UX",
+    "problem": "Zones tactiles trop petites",
+    "impact": "Difficulte a cliquer sur les liens depuis un smartphone.",
+    "example": "Liens de pagination colles.",
+    "recommendation": "Agrandir les boutons et espacer les liens.",
+    "priority": "P2",
+    "sources": [
+      {
+        "label": "Observation mobile",
+        "url": "https://www.vendin-les-bethune.fr/actualites"
+      }
+    ]
+  },
+  {
+    "id": "audit-7",
+    "section": "Contenus obsoletes",
+    "problem": "Actualites sans date recente",
+    "impact": "Perte de confiance et d'actualite.",
+    "example": "Dernieres actualites vie locale datant de plusieurs mois.",
+    "recommendation": "Afficher la date et archiver clairement les anciennes actualites.",
+    "priority": "P2",
+    "sources": [
+      {
+        "label": "Page actualites",
+        "url": "https://www.vendin-les-bethune.fr/actualites"
+      }
+    ]
+  },
+  {
+    "id": "audit-8",
+    "section": "Documents et transparence",
+    "problem": "Documents publies en images",
+    "impact": "Impossibilite de recherche textuelle et mauvaise accessibilite.",
+    "example": "Menus de cantine en image uniquement.",
+    "recommendation": "Publier une version HTML ou PDF accessible en plus des images.",
+    "priority": "P1",
+    "sources": [
+      {
+        "label": "Menus cantine",
+        "url": "https://www.vendin-les-bethune.fr/menus"
+      }
+    ]
+  },
+  {
+    "id": "audit-9",
+    "section": "Documents et transparence",
+    "problem": "Absence de moteur de recherche documentaire",
+    "impact": "Difficulte a trouver un budget ou un arrete precis.",
+    "example": "Documents listes sans filtre par annee.",
+    "recommendation": "Ajouter des filtres par type, annee et un champ de recherche.",
+    "priority": "P2",
+    "sources": [
+      {
+        "label": "Bibliotheque de documents",
+        "url": "https://www.vendin-les-bethune.fr/documents"
+      }
+    ]
+  },
+  {
+    "id": "audit-10",
+    "section": "Recherche et SEO",
+    "problem": "Metadonnees incompletes",
+    "impact": "Mauvaise indexation et partage social limite.",
+    "example": "Pages sans description ni titre structure.",
+    "recommendation": "Ajouter titles coherents, meta descriptions et OpenGraph.",
+    "priority": "P3",
+    "sources": [
+      {
+        "label": "Analyse SEO",
+        "url": "https://www.vendin-les-bethune.fr"
+      }
+    ]
+  }
+]

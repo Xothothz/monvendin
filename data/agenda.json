@@ -1,0 +1,53 @@
+[
+  {
+    "id": "agenda-1",
+    "title": "Reunion publique sur les mobilites",
+    "slug": "reunion-mobilites",
+    "date": "2024-10-12",
+    "time": "18h30",
+    "location": "Salle des fetes (a confirmer)",
+    "category": "Concertation",
+    "summary": "Echanges sur les pistes cyclables et la circulation douce.",
+    "content": "## Objectifs\n\n- Recueillir les besoins des habitants.\n- Presenter les pistes de reamenagement.\n\n## Ce que nous proposons\n\n- Un compte rendu publie sous 72h.\n- Une carte interactive des propositions.",
+    "sources": [
+      {
+        "label": "Agenda communal",
+        "url": "https://www.vendin-les-bethune.fr/agenda/mobilites"
+      }
+    ]
+  },
+  {
+    "id": "agenda-2",
+    "title": "Atelier numerique seniors",
+    "slug": "atelier-numerique-seniors",
+    "date": "2024-10-18",
+    "time": "10h00",
+    "location": "Mediatheque (salle 2)",
+    "category": "Solidarite",
+    "summary": "Initiation aux services en ligne et demarches de base.",
+    "content": "## Programme\n\n- Creer une adresse email.\n- Naviguer sur les services publics.\n\n## Suggestion\n\nMettre a disposition une fiche recap telechargeable.",
+    "sources": [
+      {
+        "label": "Agenda - atelier numerique",
+        "url": "https://www.vendin-les-bethune.fr/agenda/atelier-numerique"
+      }
+    ]
+  },
+  {
+    "id": "agenda-3",
+    "title": "Conseil municipal",
+    "slug": "conseil-municipal-octobre",
+    "date": "2024-10-24",
+    "time": "19h00",
+    "location": "Hotel de ville (salle du conseil)",
+    "category": "Vie municipale",
+    "summary": "Session ordinaire avec ordre du jour public.",
+    "content": "## Avant la seance\n\nPublier l'ordre du jour et les documents preparatoires.\n\n## Apres la seance\n\nMettre en ligne le compte rendu et les votes.",
+    "sources": [
+      {
+        "label": "Agenda - conseil municipal",
+        "url": "https://www.vendin-les-bethune.fr/agenda/conseil-municipal"
+      }
+    ]
+  }
+]
