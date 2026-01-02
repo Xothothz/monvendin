@@ -3,7 +3,8 @@ import { getPayload } from "payload";
 import configPromise from "@payload-config";
 import { agenda, associations, demarches } from "@/lib/data";
 
-const baseUrl = "https://vendin-citoyen.local";
+const baseUrl =
+  (process.env.NEXT_PUBLIC_SITE_URL || "https://monvendin.fr").replace(/\/$/, "");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = [
