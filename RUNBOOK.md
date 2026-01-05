@@ -88,3 +88,19 @@ Notes de verification rapide
 - Local: git status -sb ; git rev-parse main origin/main
 - VPS: pm2 status ; pm2 env monvendin | grep METEO
 - Page home: curl -s https://monvendin.fr/ | grep -i "Meteo"
+
+Checklist rapide (dev -> main -> prod)
+1) Local (dev)
+   - git checkout dev
+   - git pull --ff-only origin dev
+   - coder, git add -A && git commit -m "..."
+   - git push origin dev
+2) Local (main)
+   - git checkout main
+   - git pull --ff-only origin main
+   - git merge dev
+   - git push origin main
+3) VPS (prod)
+   - cd /var/www/monvendin
+   - git pull origin main
+   - ./deploy.sh
