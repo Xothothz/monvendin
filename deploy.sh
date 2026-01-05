@@ -3,8 +3,12 @@ set -euo pipefail
 
 cd /var/www/monvendin
 
-echo "==> Pull latest main"
-git pull origin main
+if [ "${SKIP_GIT_PULL:-0}" != "1" ]; then
+  echo "==> Pull latest main"
+  git pull origin main
+else
+  echo "==> Skip git pull (SKIP_GIT_PULL=1)"
+fi
 
 echo "==> Install deps"
 npm install
@@ -17,9 +21,7 @@ mkdir -p .next/standalone/.next
 rm -rf .next/standalone/.next/static
 cp -a .next/static .next/standalone/.next/
 rm -rf .next/standalone/public
-cp -a public .next/standalone/
-echo "==> Sync uploads"
-/var/www/monvendin/sync-uploads.sh
+ln -s /var/www/monvendin/public .next/standalone/public
 
 echo "==> Restart PM2 via ecosystem"
 pm2 startOrRestart /var/www/monvendin/ecosystem.config.cjs --update-env
