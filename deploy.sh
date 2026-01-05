@@ -3,11 +3,11 @@ set -euo pipefail
 
 cd /var/www/monvendin
 
-if [ "${SKIP_GIT_PULL:-0}" != "1" ]; then
+if [ "${SKIP_GIT_PULL:-0}" != "1" ] && [ -d /var/www/monvendin/.git ]; then
   echo "==> Pull latest main"
   git pull origin main
 else
-  echo "==> Skip git pull (SKIP_GIT_PULL=1)"
+  echo "==> Skip git pull (no .git or SKIP_GIT_PULL=1)"
 fi
 
 echo "==> Install deps"
