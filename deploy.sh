@@ -22,6 +22,12 @@ if [ -f /var/www/monvendin/.env ]; then
 else
   echo "==> Warning: /var/www/monvendin/.env not found; skipping env load"
 fi
+if [ -s "$HOME/.nvm/nvm.sh" ]; then
+  # Ensure Node 18 for payload migrations (Node 20 triggers undici CacheStorage error)
+  # shellcheck disable=SC1090
+  . "$HOME/.nvm/nvm.sh"
+  nvm use 18 >/dev/null
+fi
 NODE_ENV=production npx tsx ./node_modules/payload/bin.js migrate
 
 echo "==> Build"
