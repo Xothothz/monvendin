@@ -27,7 +27,7 @@ const sections = [
 
 export default function MaVillePage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <header className="space-y-3">
         <PageTitle title="Ma ville" />
         <p className="text-slate max-w-2xl">

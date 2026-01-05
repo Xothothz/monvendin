@@ -142,7 +142,7 @@ export const AnnuaireFormModal = ({
                 onChange={(event) =>
                   setFormState((prev) => ({ ...prev, categorie: event.target.value }))
                 }
-                className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                className="mt-2 w-full glass-input"
               >
                 <option value="">Selectionner</option>
                 {categories.map((option) => (
@@ -160,7 +160,7 @@ export const AnnuaireFormModal = ({
                 onChange={(event) =>
                   setFormState((prev) => ({ ...prev, sousCategorie: event.target.value }))
                 }
-                className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                className="mt-2 w-full glass-input"
               />
             </label>
           </div>
@@ -174,7 +174,7 @@ export const AnnuaireFormModal = ({
                 onChange={(event) =>
                   setFormState((prev) => ({ ...prev, nom: event.target.value }))
                 }
-                className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                className="mt-2 w-full glass-input"
               />
             </label>
             <label className="block text-sm font-semibold text-ink/80">
@@ -185,7 +185,7 @@ export const AnnuaireFormModal = ({
                 onChange={(event) =>
                   setFormState((prev) => ({ ...prev, prenom: event.target.value }))
                 }
-                className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                className="mt-2 w-full glass-input"
               />
             </label>
           </div>
@@ -198,7 +198,7 @@ export const AnnuaireFormModal = ({
               onChange={(event) =>
                 setFormState((prev) => ({ ...prev, denomination: event.target.value }))
               }
-              className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+              className="mt-2 w-full glass-input"
             />
           </label>
 
@@ -211,7 +211,7 @@ export const AnnuaireFormModal = ({
                 onChange={(event) =>
                   setFormState((prev) => ({ ...prev, adresse: event.target.value }))
                 }
-                className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                className="mt-2 w-full glass-input"
               />
             </label>
             <label className="block text-sm font-semibold text-ink/80">
@@ -222,7 +222,7 @@ export const AnnuaireFormModal = ({
                 onChange={(event) =>
                   setFormState((prev) => ({ ...prev, codePostal: event.target.value }))
                 }
-                className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                className="mt-2 w-full glass-input"
               />
             </label>
           </div>
@@ -236,7 +236,7 @@ export const AnnuaireFormModal = ({
                 onChange={(event) =>
                   setFormState((prev) => ({ ...prev, ville: event.target.value }))
                 }
-                className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                className="mt-2 w-full glass-input"
               />
             </label>
             <label className="block text-sm font-semibold text-ink/80">
@@ -247,7 +247,7 @@ export const AnnuaireFormModal = ({
                 onChange={(event) =>
                   setFormState((prev) => ({ ...prev, telephone: event.target.value }))
                 }
-                className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                className="mt-2 w-full glass-input"
               />
             </label>
             <label className="block text-sm font-semibold text-ink/80">
@@ -258,7 +258,7 @@ export const AnnuaireFormModal = ({
                 onChange={(event) =>
                   setFormState((prev) => ({ ...prev, portable: event.target.value }))
                 }
-                className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                className="mt-2 w-full glass-input"
               />
             </label>
           </div>
@@ -272,7 +272,7 @@ export const AnnuaireFormModal = ({
                 onChange={(event) =>
                   setFormState((prev) => ({ ...prev, mail: event.target.value }))
                 }
-                className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                className="mt-2 w-full glass-input"
               />
             </label>
             <label className="block text-sm font-semibold text-ink/80">
@@ -283,7 +283,7 @@ export const AnnuaireFormModal = ({
                 onChange={(event) =>
                   setFormState((prev) => ({ ...prev, siteInternet: event.target.value }))
                 }
-                className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                className="mt-2 w-full glass-input"
               />
             </label>
           </div>

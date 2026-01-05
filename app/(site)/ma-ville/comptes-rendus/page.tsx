@@ -76,7 +76,7 @@ export default async function ComptesRendusPage() {
   }));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <HeroAdmin
         slug="comptes-rendus"
         eyebrow="Ma ville"

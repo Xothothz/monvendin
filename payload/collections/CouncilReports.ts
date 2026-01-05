@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isAuthenticated, publishedOnly } from "../access";
+import { hasPermissionAccess, publishedOrHasPermission } from "../access";
 
 export const CouncilReports: CollectionConfig = {
   slug: "council-reports",
@@ -12,10 +12,10 @@ export const CouncilReports: CollectionConfig = {
     defaultColumns: ["date", "agendaDoc", "minutesDoc", "status"]
   },
   access: {
-    read: publishedOnly,
-    create: isAuthenticated,
-    update: isAuthenticated,
-    delete: isAuthenticated
+    read: publishedOrHasPermission("manageCouncilReports"),
+    create: hasPermissionAccess("manageCouncilReports"),
+    update: hasPermissionAccess("manageCouncilReports"),
+    delete: hasPermissionAccess("manageCouncilReports")
   },
   fields: [
     {

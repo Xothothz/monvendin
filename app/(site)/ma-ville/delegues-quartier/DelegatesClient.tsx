@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent } from "react";
 import { Card } from "@/components/Card";
+import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
 type DelegateStreet = { name?: string } | string;
 
@@ -37,10 +38,9 @@ type Delegate = {
   photo?: DelegatePhoto;
 };
 
-type AdminUser = {
+type AdminUser = UserWithPermissions & {
   email?: string;
   name?: string;
-  role?: "admin" | "editor";
 };
 
 type DelegateFormState = {
@@ -229,7 +229,8 @@ export const DelegatesClient = ({
     originY: 0
   });
 
-  const canEdit = Boolean(user);
+  const canEdit =
+    hasPermission(user, "manageDelegates") || hasPermission(user, "manageSectors");
 
   useEffect(() => {
     let isActive = true;
@@ -812,7 +813,7 @@ export const DelegatesClient = ({
   return (
     <div className="space-y-6">
       {canEdit ? (
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-ink/10 bg-white px-4 py-3 text-xs font-semibold uppercase tracking-widest text-ink/70">
+        <div className="flex flex-wrap items-center gap-3 glass-panel px-4 py-3 text-xs font-semibold uppercase tracking-widest text-ink/70">
           <span>Mode admin actif</span>
           {isLoading ? <span className="text-ink/40">Mise a jour...</span> : null}
           {migrationState === "running" ? (
@@ -852,7 +853,7 @@ export const DelegatesClient = ({
             return (
               <section key={sectorId} className="space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h2 className="section-title">Secteur {sector.number}</h2>
+                  <h2 className="section-title motion-in">Secteur {sector.number}</h2>
                   {canEdit ? (
                     <div className="flex flex-wrap items-center gap-2">
                       <button
@@ -969,7 +970,7 @@ export const DelegatesClient = ({
 
           {canEdit && delegatesBySector.unassigned.length > 0 ? (
             <section className="space-y-4">
-              <h2 className="section-title">Delegues sans secteur</h2>
+              <h2 className="section-title motion-in">Delegues sans secteur</h2>
               <div className="grid gap-4 md:grid-cols-2">
                 {[...delegatesBySector.unassigned]
                   .sort((a, b) => a.lastName.localeCompare(b.lastName))
@@ -1058,7 +1059,7 @@ export const DelegatesClient = ({
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, firstName: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -1070,7 +1071,7 @@ export const DelegatesClient = ({
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, lastName: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -1082,7 +1083,7 @@ export const DelegatesClient = ({
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, email: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   />
                 </label>
                 <label className="text-sm font-semibold text-ink/80">
@@ -1093,7 +1094,7 @@ export const DelegatesClient = ({
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, phone: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   />
                 </label>
                 <label className="text-sm font-semibold text-ink/80">
@@ -1103,7 +1104,7 @@ export const DelegatesClient = ({
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, sectorId: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   >
                     <option value="">Choisir un secteur</option>
@@ -1127,7 +1128,7 @@ export const DelegatesClient = ({
                         status: event.target.value as "draft" | "published"
                       }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   >
                     <option value="published">Publie</option>
                     <option value="draft">Brouillon</option>
@@ -1232,7 +1233,7 @@ export const DelegatesClient = ({
                       onChange={(event) =>
                         setFormState((prev) => ({ ...prev, photoAlt: event.target.value }))
                       }
-                      className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                      className="mt-2 w-full glass-input"
                     />
                   </label>
                 </div>
@@ -1299,7 +1300,7 @@ export const DelegatesClient = ({
                     onChange={(event) =>
                       setSectorFormState((prev) => ({ ...prev, number: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -1313,7 +1314,7 @@ export const DelegatesClient = ({
                         status: event.target.value as "draft" | "published"
                       }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   >
                     <option value="published">Publie</option>
                     <option value="draft">Brouillon</option>
@@ -1327,7 +1328,7 @@ export const DelegatesClient = ({
                       setSectorFormState((prev) => ({ ...prev, streets: event.target.value }))
                     }
                     rows={6}
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   />
                 </label>
               </div>

@@ -18,7 +18,7 @@ export default async function DemarcheDetailPage({ params }: PageProps) {
 
   if (slug === "location-salle") {
     return (
-      <div className="space-y-8">
+      <div className="space-y-8 section-stack">
         <header className="space-y-3">
           <PageTitle title={item.title} />
           <p className="text-slate max-w-2xl">Site en Constuction</p>
@@ -37,7 +37,7 @@ export default async function DemarcheDetailPage({ params }: PageProps) {
 
       <section className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
-          <h2 className="section-title">Etapes principales</h2>
+          <h2 className="section-title motion-in">Etapes principales</h2>
           <ol className="list-decimal pl-5 space-y-2 text-slate">
             {item.steps.map((step) => (
               <li key={step}>{step}</li>
@@ -45,7 +45,7 @@ export default async function DemarcheDetailPage({ params }: PageProps) {
           </ol>
         </div>
         <div className="space-y-4">
-          <h2 className="section-title">Pieces a fournir</h2>
+          <h2 className="section-title motion-in">Pieces a fournir</h2>
           <ul className="list-disc pl-5 space-y-2 text-slate">
             {item.documents.map((doc) => (
               <li key={doc}>{doc}</li>

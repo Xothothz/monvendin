@@ -14,11 +14,14 @@ import { CouncilReports } from "./payload/collections/CouncilReports";
 import { PageHeroes } from "./payload/collections/PageHeroes";
 import { HistorySections } from "./payload/collections/HistorySections";
 import { HomeBanners } from "./payload/collections/HomeBanners";
+import { SchoolMenus } from "./payload/collections/SchoolMenus";
+import { SchoolMenuSettings } from "./payload/collections/SchoolMenuSettings";
 import { Actualites } from "./payload/collections/Actualites";
 import { Annuaire } from "./payload/collections/Annuaire";
 import { PageTexts } from "./payload/collections/PageTexts";
 import { PageContents } from "./payload/collections/PageContents";
 import { Files } from "./payload/collections/Files";
+import { ProPages } from "./payload/collections/ProPages";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -44,10 +47,13 @@ export default buildConfig({
     PageHeroes,
     HistorySections,
     HomeBanners,
+    SchoolMenus,
+    SchoolMenuSettings,
     Actualites,
     Annuaire,
     PageTexts,
-    PageContents
+    PageContents,
+    ProPages
   ],
   db: postgresAdapter({
     pool: {

@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function NousContacterPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <header className="space-y-3">
         <PageTitle title="Nous contacter" />
         <p className="text-slate max-w-2xl">
@@ -17,7 +17,7 @@ export default function NousContacterPage() {
       </header>
 
       <Card className="p-6 space-y-4">
-        <h2 className="section-title">Coordonnees</h2>
+        <h2 className="section-title motion-in">Coordonnees</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <p className="text-sm font-semibold text-ink">Hotel de ville</p>

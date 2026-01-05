@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function AssociationsPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <header className="space-y-3">
         <PageTitle title="Associations locales" />
         <p className="text-slate max-w-2xl">

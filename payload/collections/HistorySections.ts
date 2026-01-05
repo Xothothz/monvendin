@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isAuthenticated, publishedOnly } from "../access";
+import { hasPermissionAccess, publishedOrHasPermission } from "../access";
 
 export const HistorySections: CollectionConfig = {
   slug: "history-sections",
@@ -12,10 +12,10 @@ export const HistorySections: CollectionConfig = {
     defaultColumns: ["title", "period", "order", "status"]
   },
   access: {
-    read: publishedOnly,
-    create: isAuthenticated,
-    update: isAuthenticated,
-    delete: isAuthenticated
+    read: publishedOrHasPermission("manageHistorySections"),
+    create: hasPermissionAccess("manageHistorySections"),
+    update: hasPermissionAccess("manageHistorySections"),
+    delete: hasPermissionAccess("manageHistorySections")
   },
   fields: [
     {

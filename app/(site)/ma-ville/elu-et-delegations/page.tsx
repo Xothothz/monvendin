@@ -258,7 +258,7 @@ export default async function ListeDesElusPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <HeroAdmin
         slug="elu-et-delegations"
         eyebrow="Ma ville"

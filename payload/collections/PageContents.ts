@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isAdmin } from "../access";
+import { hasPermissionAccess } from "../access";
 
 export const PageContents: CollectionConfig = {
   slug: "page-contents",
@@ -13,9 +13,9 @@ export const PageContents: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: isAdmin,
-    update: isAdmin,
-    delete: isAdmin
+    create: hasPermissionAccess("managePageContents"),
+    update: hasPermissionAccess("managePageContents"),
+    delete: hasPermissionAccess("managePageContents")
   },
   fields: [
     {

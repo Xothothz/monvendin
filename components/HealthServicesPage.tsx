@@ -59,7 +59,7 @@ export const HealthServicesHero = () => {
   const { totalItems, vendinCount, nearbyCount } = healthStats;
 
   return (
-    <section className="relative overflow-hidden rounded-[32px] border border-accent/15 bg-gradient-to-br from-accentSoft/80 via-white to-white">
+    <section className="relative overflow-hidden rounded-[32px] border border-accent/15 bg-gradient-to-br from-accentSoft/80 via-white to-white motion-in">
       <div className="absolute -right-12 -top-10 h-52 w-52 rounded-full bg-accent/15 blur-3xl" />
       <div className="absolute -left-16 -bottom-16 h-64 w-64 rounded-full bg-ink/5 blur-3xl" />
       <div className="relative grid gap-8 p-8 lg:grid-cols-[1.2fr_0.8fr] lg:p-10">
@@ -198,10 +198,10 @@ export const HealthServicesPage = () => {
                 onClick={() => setFilter(option.value)}
                 aria-pressed={filter === option.value}
                 className={clsx(
-                  "rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-200",
+                  "glass-pill px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em]",
                   filter === option.value
-                    ? "border-accent bg-accent text-white shadow-[0_10px_20px_rgba(12,44,132,0.25)]"
-                    : "border-ink/10 bg-white text-ink/70 hover:border-accent/40 hover:text-ink"
+                    ? "border-accent bg-accent text-white shadow-[0_10px_20px_rgba(12,44,132,0.25)] ring-0"
+                    : "text-ink/70 hover:border-accent/40 hover:text-ink"
                 )}
               >
                 {option.label}
@@ -223,7 +223,7 @@ export const HealthServicesPage = () => {
             <a
               key={section.id}
               href={`#${section.id}`}
-              className="rounded-full border border-ink/10 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-ink/70 hover:border-accent/40 hover:text-ink"
+              className="glass-pill px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-ink/70 hover:border-accent/40 hover:text-ink"
             >
               {section.title}
             </a>
@@ -255,7 +255,7 @@ export const HealthServicesPage = () => {
                 </div>
               </div>
 
-              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2">
+              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2 stagger">
                 {section.items.map((item) => {
                   const mainPhone = item.phones[0];
                   const mapsUrl = buildMapsUrl(item.address);

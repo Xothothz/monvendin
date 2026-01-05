@@ -55,7 +55,7 @@ export default async function FiscalitePage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <HeroAdmin
         slug="fiscalite"
         eyebrow="Ma ville"

@@ -138,7 +138,7 @@ export default async function HistoirePage() {
   const initialSections = docs.length > 0 ? docs : fallbackSections;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <CenteredPageHeader
         label="Vendin-les-Bethune"
         title="Histoire de Vendin-les-Bethune"

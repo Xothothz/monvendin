@@ -18,6 +18,7 @@ import homeBanner from "@/data/home-banner.json";
 import { HomeBanner } from "@/components/HomeBanner";
 import homeHero from "@/data/home-hero.json";
 import { HeroAdmin } from "@/components/HeroAdmin";
+import { getWeatherSnapshot } from "@/lib/weather";
 
 export const dynamic = "force-dynamic";
 
@@ -100,6 +101,7 @@ const formatShortDate = (value: string) =>
 
 export default async function HomePage() {
   const payload = await getPayload({ config: configPromise });
+  const weather = await getWeatherSnapshot();
   let bannerItems = homeBanner.items;
   let news: Array<{
     id: string | number;
@@ -233,13 +235,13 @@ export default async function HomePage() {
         />
       ) : null}
       {homeBanner.enabled ? (
-        <HomeBanner items={bannerItems} fallbackItems={homeBanner.items} allowEdit />
+        <HomeBanner items={bannerItems} fallbackItems={homeBanner.items} allowEdit weather={weather} />
       ) : null}
 
       <div className="home-sections -mt-6">
       <section className="home-section space-y-6">
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <h2 className="section-title">Agenda</h2>
+          <h2 className="section-title motion-in">Agenda</h2>
           <Link href="/agenda" className="text-sm font-semibold">
             Tous les evenements
           </Link>
@@ -249,16 +251,16 @@ export default async function HomePage() {
             Aucun evenement publie pour le moment.
           </Card>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 stagger">
             {upcomingEvents.map((event) => {
               const image = typeof event.image === "object" ? event.image : null;
               return (
                 <Link
                   key={event.id}
                   href={`/agenda/${event.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-xl border border-ink/10 bg-white shadow-card transition hover:-translate-y-1"
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/70 backdrop-blur-md ring-1 ring-ink/5 shadow-card transition hover:-translate-y-1 hover:border-white/80 hover:shadow-[0_26px_60px_rgba(15,23,42,0.12)]"
                 >
-                  <div className="relative h-36 w-full bg-gradient-to-br from-accent/15 via-white to-gold/30">
+                  <div className="relative h-36 w-full bg-gradient-to-br from-accent/10 via-white to-gold/20">
                     {image?.url ? (
                       <img
                         src={image.url}
@@ -267,7 +269,7 @@ export default async function HomePage() {
                         loading="lazy"
                       />
                     ) : null}
-                    <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-widest text-ink">
+                    <span className="absolute left-3 top-3 rounded-full border border-white/70 bg-white/75 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-ink shadow-[0_10px_22px_rgba(15,23,42,0.08)] backdrop-blur">
                       {formatDate(event.startDate)}
                     </span>
                   </div>
@@ -287,7 +289,7 @@ export default async function HomePage() {
 
       <section className="home-section space-y-6">
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <h2 className="section-title">Actualites</h2>
+          <h2 className="section-title motion-in">Actualites</h2>
           <Link href="/actualites" className="text-sm font-semibold">
             Voir toutes les actualites
           </Link>
@@ -297,7 +299,7 @@ export default async function HomePage() {
             Aucune actualite publiee pour le moment.
           </Card>
         ) : (
-          <div className="grid gap-6 lg:grid-cols-3">
+          <div className="grid gap-6 lg:grid-cols-3 stagger">
             {news.map((item) => {
               const firstImage = (() => {
                 const imageItem = item.images?.[0];
@@ -315,9 +317,9 @@ export default async function HomePage() {
               return (
                 <article
                   key={item.id}
-                  className="rounded-xl border border-ink/10 bg-white shadow-card overflow-hidden"
+                  className="rounded-2xl border border-white/60 bg-white/70 backdrop-blur-md ring-1 ring-ink/5 shadow-card overflow-hidden"
                 >
-                  <div className="h-36 bg-gradient-to-br from-accent/15 via-white to-gold/30">
+                  <div className="h-36 bg-gradient-to-br from-accent/10 via-white to-gold/20">
                     {firstImage ? (
                       <img
                         src={firstImage.url}

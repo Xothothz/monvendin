@@ -13,7 +13,7 @@ const municipalDocs = documents.filter((doc) =>
 
 export default function VieMunicipalePage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <header className="space-y-3">
         <PageTitle title="Vie municipale" />
         <p className="text-slate max-w-2xl">

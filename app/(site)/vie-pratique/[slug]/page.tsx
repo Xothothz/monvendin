@@ -150,7 +150,7 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
     }
 
     return (
-      <div className="space-y-10">
+      <div className="space-y-10 section-stack">
         <HeroAdmin
           slug="demarches"
           eyebrow="Vie pratique"

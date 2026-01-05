@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isAdmin, isAuthenticated, publishedOnly } from "../access";
+import { hasPermissionAccess, publishedOrHasPermission } from "../access";
 
 export const Officials: CollectionConfig = {
   slug: "officials",
@@ -20,10 +20,10 @@ export const Officials: CollectionConfig = {
     ]
   },
   access: {
-    read: publishedOnly,
-    create: isAuthenticated,
-    update: isAuthenticated,
-    delete: isAuthenticated
+    read: publishedOrHasPermission("manageOfficials"),
+    create: hasPermissionAccess("manageOfficials"),
+    update: hasPermissionAccess("manageOfficials"),
+    delete: hasPermissionAccess("manageOfficials")
   },
   fields: [
     {

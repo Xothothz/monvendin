@@ -12,6 +12,7 @@ type SiteShellProps = {
 export const SiteShell = ({ children }: SiteShellProps) => {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin") || pathname?.startsWith("/gestion");
+  const isPro = pathname?.startsWith("/pro");
 
   useEffect(() => {
     const header = document.getElementById("site-header");
@@ -49,7 +50,7 @@ export const SiteShell = ({ children }: SiteShellProps) => {
     };
   }, [pathname]);
 
-  if (isAdmin) {
+  if (isAdmin || isPro) {
     return <>{children}</>;
   }
 

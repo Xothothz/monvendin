@@ -75,7 +75,7 @@ export default async function ChiffresPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <HeroAdmin
         slug="chiffres"
         eyebrow="Ma ville"

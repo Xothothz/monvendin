@@ -106,14 +106,14 @@ export const RichTextEditor = ({ value, onChange }: RichTextEditorProps) => {
 
   if (!editor) {
     return (
-      <div className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-slate">
+      <div className="glass-panel px-4 py-3 text-sm text-slate">
         Chargement de l'editeur...
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl border border-ink/10 bg-white shadow-sm">
+    <div className="glass-panel">
       <div className="flex flex-wrap items-center gap-2 border-b border-ink/10 px-3 py-2">
         <select
           value={headingValue}
@@ -127,7 +127,7 @@ export const RichTextEditor = ({ value, onChange }: RichTextEditorProps) => {
               editor.chain().focus().setParagraph().run();
             }
           }}
-          className="rounded-full border border-ink/10 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink/70"
+          className="glass-select px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink/70"
         >
           <option value="paragraph">Texte</option>
           <option value="h2">Titre H2</option>
@@ -144,7 +144,7 @@ export const RichTextEditor = ({ value, onChange }: RichTextEditorProps) => {
               editor.chain().focus().setFontFamily(value).run();
             }
           }}
-          className="rounded-full border border-ink/10 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink/70"
+          className="glass-select px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink/70"
         >
           <option value="">Police</option>
           {fontOptions.map((option) => (

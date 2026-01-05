@@ -21,7 +21,7 @@ export default function StructureDuSitePage() {
     .filter((item) => item.sections.length > 0);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <header className="space-y-3">
         <PageTitle title="Structure du site" watermark="Navigation" />
         <p className="text-slate max-w-2xl">

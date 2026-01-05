@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
-import { isAdmin, isStaff, publishedOnly } from "../access";
+import { hasPermissionAccess, publishedOrHasPermission } from "../access";
+import { hasPermission, type UserWithPermissions } from "../../lib/permissions";
 import { slugify } from "../utilities/slugify";
 
 export const Events: CollectionConfig = {
@@ -9,10 +10,10 @@ export const Events: CollectionConfig = {
     defaultColumns: ["title", "startDate", "status", "location"]
   },
   access: {
-    read: publishedOnly,
-    create: isStaff,
-    update: isStaff,
-    delete: isAdmin
+    read: publishedOrHasPermission("manageAgenda"),
+    create: hasPermissionAccess("manageAgenda"),
+    update: hasPermissionAccess("manageAgenda"),
+    delete: hasPermissionAccess("manageAgenda")
   },
   hooks: {
     beforeValidate: [
@@ -44,7 +45,8 @@ export const Events: CollectionConfig = {
           return data;
         }
 
-        if (req.user?.role === "admin") {
+        const canPublish = hasPermission(req.user as UserWithPermissions, "canPublish");
+        if (canPublish) {
           return data;
         }
 

@@ -61,7 +61,7 @@ export default async function MaVilleDetailPage({ params }: PageProps) {
 
   if (slug === "plan-quartiers") {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 section-stack">
         <header className="space-y-3">
           <PageTitle title={page.title} watermark={page.watermark} />
           <p className="text-slate">Site en construction.</p>

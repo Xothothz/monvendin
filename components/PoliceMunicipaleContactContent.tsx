@@ -2,11 +2,11 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { Card } from "@/components/Card";
+import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
-type AdminUser = {
+type AdminUser = UserWithPermissions & {
   email?: string;
   name?: string;
-  role?: "admin" | "editor";
 };
 
 type PoliceMunicipaleContactContentProps = {
@@ -32,7 +32,7 @@ export const PoliceMunicipaleContactContent = ({
   const [formIntro, setFormIntro] = useState(initialIntro);
   const [formMissions, setFormMissions] = useState(initialMissions.join("\n"));
 
-  const canEdit = user?.role === "admin";
+  const canEdit = hasPermission(user, "managePageTexts");
 
   useEffect(() => {
     let isActive = true;
@@ -185,7 +185,7 @@ export const PoliceMunicipaleContactContent = ({
                   value={formIntro}
                   onChange={(event) => setFormIntro(event.target.value)}
                   rows={3}
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                 />
               </label>
               <label className="block text-sm font-semibold text-ink/80">
@@ -194,7 +194,7 @@ export const PoliceMunicipaleContactContent = ({
                   value={formMissions}
                   onChange={(event) => setFormMissions(event.target.value)}
                   rows={8}
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                 />
               </label>
 

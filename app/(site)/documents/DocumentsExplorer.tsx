@@ -53,12 +53,12 @@ export const DocumentsExplorer = ({ items }: DocumentsExplorerProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-3 glass-panel p-4">
         <SearchInput value={query} onChange={setQuery} placeholder="Rechercher un document" />
         <label className="text-sm">
           <span className="text-slate">Type</span>
           <select
-            className="mt-1 w-full rounded-full border border-ink/10 bg-white px-4 py-2 text-sm focus-ring"
+            className="mt-1 w-full glass-select"
             value={type}
             onChange={(event) => setType(event.target.value)}
           >
@@ -72,7 +72,7 @@ export const DocumentsExplorer = ({ items }: DocumentsExplorerProps) => {
         <label className="text-sm">
           <span className="text-slate">Annee</span>
           <select
-            className="mt-1 w-full rounded-full border border-ink/10 bg-white px-4 py-2 text-sm focus-ring"
+            className="mt-1 w-full glass-select"
             value={year}
             onChange={(event) => setYear(event.target.value)}
           >

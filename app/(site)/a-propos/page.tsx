@@ -37,7 +37,7 @@ export default async function AProposPage() {
     contentId = null;
   }
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <AProposContent
         slug="a-propos"
         initialContent={content}

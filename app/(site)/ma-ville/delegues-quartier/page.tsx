@@ -75,7 +75,7 @@ export default async function DeleguesQuartierPage() {
   }));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <CenteredPageHeader
         label="Vendin-les-Bethune"
         title="Delegues de quartier"

@@ -5,6 +5,7 @@ import { CaretUpDown } from "@phosphor-icons/react";
 import { SearchInput } from "@/components/SearchInput";
 import { AnnuaireFormModal, type AnnuaireEntryInput } from "@/components/AnnuaireFormModal";
 import { ConfirmDeleteModal } from "@/components/ConfirmDeleteModal";
+import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
 type AnnuaireEntry = {
   id: string | number;
@@ -31,9 +32,7 @@ type AnnuaireResponse = {
   limit: number;
 };
 
-type AdminUser = {
-  role?: "admin" | "editor";
-};
+type AdminUser = UserWithPermissions;
 
 type AnnuaireTableProps = {
   initialData: AnnuaireResponse;
@@ -185,7 +184,7 @@ export const AnnuaireTable = ({
   const [importProgress, setImportProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const canEdit = user?.role === "admin";
+  const canEdit = hasPermission(user, "manageAssociations");
 
   const totalPages = Math.max(1, Math.ceil(totalDocs / limit));
   const rangeStart = totalDocs === 0 ? 0 : (page - 1) * limit + 1;
@@ -587,7 +586,7 @@ export const AnnuaireTable = ({
           <label className="text-xs font-semibold uppercase tracking-[0.25em] text-slate">
             Afficher
             <select
-              className="ml-2 rounded-full border border-ink/10 bg-white px-3 py-2 text-xs focus-ring"
+              className="ml-2 glass-select px-3 py-2 text-xs"
               value={limit}
               onChange={(event) => setLimit(Number(event.target.value))}
             >
@@ -650,7 +649,7 @@ export const AnnuaireTable = ({
       {errorMessage ? <p className="text-sm text-red-600">{errorMessage}</p> : null}
       {isLoading ? <p className="text-sm text-slate">Chargement...</p> : null}
 
-      <div className="rounded-2xl border border-ink/10 bg-white">
+      <div className="glass-panel">
         <table className="w-full table-fixed text-left text-xs md:text-sm">
           <thead className="bg-fog text-[10px] uppercase tracking-[0.22em] text-slate">
             <tr>

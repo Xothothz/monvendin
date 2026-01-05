@@ -12,6 +12,7 @@ import {
 } from "@phosphor-icons/react";
 import { SearchInput } from "@/components/SearchInput";
 import { RichTextEditor } from "@/components/RichTextEditor";
+import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
 type AgendaEvent = {
   id: string | number;
@@ -34,10 +35,9 @@ type AgendaListProps = {
   siteUrl: string;
 };
 
-type AdminUser = {
+type AdminUser = UserWithPermissions & {
   email?: string;
   name?: string;
-  role?: "admin" | "editor";
 };
 
 type AgendaFormState = {
@@ -185,15 +185,15 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
   const [formState, setFormState] = useState<AgendaFormState>(emptyFormState);
   const [removeImage, setRemoveImage] = useState(false);
 
-  const canEdit = Boolean(user);
-  const canDelete = user?.role === "admin";
+  const canEdit = hasPermission(user, "manageAgenda");
+  const canDelete = canEdit;
 
   const statusOptions = useMemo(() => {
-    if (user?.role === "admin") {
+    if (hasPermission(user, "canPublish")) {
       return ["draft", "review", "published"] as const;
     }
     return ["draft", "review"] as const;
-  }, [user?.role]);
+  }, [user]);
 
   useEffect(() => {
     let isActive = true;
@@ -435,7 +435,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
         </div>
       ) : null}
 
-        <div className="flex flex-col gap-4 rounded-xl border border-ink/10 bg-white p-5 shadow-card">
+        <div className="flex flex-col gap-4 rounded-2xl border border-white/60 bg-white/70 p-5 backdrop-blur-md ring-1 ring-ink/5 shadow-card">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
@@ -443,7 +443,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
               onClick={() => moveRange(-1)}
               disabled={viewMode === "all"}
               className={clsx(
-                "rounded-full border border-ink/10 bg-white px-3 py-2 text-ink/70 hover:bg-goldSoft/70",
+                "rounded-full border border-white/60 bg-white/70 px-3 py-2 text-ink/70 ring-1 ring-ink/5 hover:bg-goldSoft/70",
                 viewMode === "all" && "cursor-not-allowed opacity-50"
               )}
               aria-label="Periode precedente"
@@ -461,7 +461,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
               onClick={() => moveRange(1)}
               disabled={viewMode === "all"}
               className={clsx(
-                "rounded-full border border-ink/10 bg-white px-3 py-2 text-ink/70 hover:bg-goldSoft/70",
+                "rounded-full border border-white/60 bg-white/70 px-3 py-2 text-ink/70 ring-1 ring-ink/5 hover:bg-goldSoft/70",
                 viewMode === "all" && "cursor-not-allowed opacity-50"
               )}
               aria-label="Periode suivante"
@@ -469,7 +469,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
               <CaretRight className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
-          <div className="flex items-center gap-2 rounded-full border border-ink/10 bg-white p-1">
+          <div className="flex items-center gap-2 rounded-full border border-white/60 bg-white/70 p-1 backdrop-blur-sm ring-1 ring-ink/5">
             <button
               type="button"
               onClick={() => setViewMode("all")}
@@ -510,7 +510,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
             <select
               value={locationFilter}
               onChange={(event) => setLocationFilter(event.target.value)}
-              className="mt-2 rounded-xl border border-ink/10 bg-white px-3 py-3 text-sm text-ink focus-ring"
+              className="mt-2 rounded-xl border border-white/60 bg-white/70 px-3 py-3 text-sm text-ink ring-1 ring-ink/5 focus-ring"
             >
               <option value="all">Tous les lieux</option>
               {locations.map((location) => (
@@ -525,7 +525,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
             <select
               value={sortOrder}
               onChange={(event) => setSortOrder(event.target.value as "asc" | "desc")}
-              className="mt-2 rounded-xl border border-ink/10 bg-white px-3 py-3 text-sm text-ink focus-ring"
+              className="mt-2 rounded-xl border border-white/60 bg-white/70 px-3 py-3 text-sm text-ink ring-1 ring-ink/5 focus-ring"
             >
               <option value="asc">Plus proche &gt; plus ancien</option>
               <option value="desc">Plus ancien &gt; plus proche</option>
@@ -537,11 +537,11 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
       {isLoading ? <p className="text-sm text-slate">Chargement...</p> : null}
 
       {sorted.length === 0 ? (
-        <div className="rounded-xl border border-ink/10 bg-white p-6 text-center text-slate shadow-card">
+        <div className="rounded-2xl border border-white/60 bg-white/70 p-6 text-center text-slate backdrop-blur-md ring-1 ring-ink/5 shadow-card">
           Aucun evenement trouve pour cette periode.
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4 stagger">
           {sorted.map((event) => {
             const eventUrl = event.slug ? `${siteUrl}/agenda/${event.slug}` : siteUrl;
             const imageMeta = getImageMeta(event);
@@ -551,10 +551,10 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
             return (
               <article
                 key={String(event.id)}
-                className="rounded-2xl border border-ink/10 bg-white p-4 shadow-card"
+                className="rounded-2xl border border-white/60 bg-white/70 p-4 backdrop-blur-md ring-1 ring-ink/5 shadow-card"
               >
                 <div className="grid gap-4 md:grid-cols-[140px_1fr_auto] md:items-center">
-                  <div className="relative h-28 w-full overflow-hidden rounded-xl bg-gradient-to-br from-accent/15 via-white to-gold/25">
+                  <div className="relative h-28 w-full overflow-hidden rounded-xl bg-gradient-to-br from-accent/10 via-white to-gold/20">
                     {imageMeta.url ? (
                       <img
                         src={imageMeta.url}
@@ -563,7 +563,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
                         loading="lazy"
                       />
                     ) : null}
-                    <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-ink">
+                    <span className="absolute left-3 top-3 rounded-full border border-white/70 bg-white/75 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-ink shadow-[0_10px_22px_rgba(15,23,42,0.08)] backdrop-blur">
                       {formatDate(event.startDate)}
                     </span>
                   </div>
@@ -689,7 +689,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, title: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -701,7 +701,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, location: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -716,7 +716,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, startDate: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -728,7 +728,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, endDate: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   />
                 </label>
               </div>
@@ -741,7 +741,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
                   onChange={(event) =>
                     setFormState((prev) => ({ ...prev, address: event.target.value }))
                   }
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                 />
               </label>
 
@@ -753,7 +753,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
                     setFormState((prev) => ({ ...prev, summary: event.target.value }))
                   }
                   rows={3}
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                   required
                 />
               </label>
@@ -778,7 +778,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
                   onChange={(event) =>
                     setFormState((prev) => ({ ...prev, externalLink: event.target.value }))
                   }
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                 />
               </label>
 
@@ -792,7 +792,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
                     setFormState((prev) => ({ ...prev, imageFile: file }));
                     setRemoveImage(false);
                   }}
-                  className="mt-2 block w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 block w-full glass-input"
                 />
               </label>
 
@@ -823,7 +823,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
                       status: event.target.value as "draft" | "review" | "published"
                     }))
                   }
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                 >
                   {statusOptions.map((status) => (
                     <option key={status} value={status}>

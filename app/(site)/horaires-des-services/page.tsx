@@ -26,7 +26,7 @@ const services = [
 
 export default function HorairesPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <header className="space-y-3">
         <PageTitle title="Horaires des services" />
         <p className="text-slate max-w-2xl">

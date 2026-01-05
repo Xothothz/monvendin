@@ -1,7 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
+import { WeatherWidget } from "@/components/WeatherWidget";
+import type { WeatherSnapshot } from "@/lib/weather";
+import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
 type BannerItem = {
   id?: string | number;
@@ -15,12 +19,12 @@ type HomeBannerProps = {
   items: BannerItem[];
   fallbackItems?: BannerItem[];
   allowEdit?: boolean;
+  weather?: WeatherSnapshot | null;
 };
 
-type AdminUser = {
+type AdminUser = UserWithPermissions & {
   email?: string;
   name?: string;
-  role?: "admin" | "editor";
 };
 
 type BannerFormState = {
@@ -48,7 +52,7 @@ const fetchBannerItems = async () => {
   return (data?.docs ?? []) as BannerItem[];
 };
 
-export const HomeBanner = ({ items, fallbackItems, allowEdit }: HomeBannerProps) => {
+export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBannerProps) => {
   const [index, setIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [user, setUser] = useState<AdminUser | null>(null);
@@ -63,13 +67,14 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit }: HomeBannerProps)
   const [formState, setFormState] = useState<BannerFormState>(emptyFormState);
 
   const safeItems = useMemo(
-    () => bannerItems.filter((item) => item.message.trim().length > 0),
+    () =>
+      bannerItems.filter(
+        (item) =>
+          item.message.trim().length > 0 &&
+          (item.status ?? "published") === "published"
+      ),
     [bannerItems]
   );
-
-  if (safeItems.length === 0) {
-    return null;
-  }
 
   useEffect(() => {
     if (safeItems.length <= 1 || isPaused) return;
@@ -142,11 +147,22 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit }: HomeBannerProps)
     }
   }, [safeItems.length, index]);
 
-  const canEdit = Boolean(user);
+  const canEdit = hasPermission(user, "manageHomeBanners");
+  const hasItems = safeItems.length > 0;
 
-  const current = safeItems[index % safeItems.length];
-  const goPrev = () => setIndex((prev) => (prev - 1 + safeItems.length) % safeItems.length);
-  const goNext = () => setIndex((prev) => (prev + 1) % safeItems.length);
+  if (!hasItems && !canEdit) {
+    return null;
+  }
+
+  const current = hasItems ? safeItems[index % safeItems.length] : null;
+  const goPrev = () => {
+    if (!hasItems) return;
+    setIndex((prev) => (prev - 1 + safeItems.length) % safeItems.length);
+  };
+  const goNext = () => {
+    if (!hasItems) return;
+    setIndex((prev) => (prev + 1) % safeItems.length);
+  };
 
   const openCreate = () => {
     const nextOrder =
@@ -302,42 +318,65 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit }: HomeBannerProps)
         </p>
       ) : null}
 
-      <section
-        className="rounded-xl border border-ink/10 bg-accent px-6 py-4 text-white shadow-card"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-      >
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div key={index} className="space-y-2 motion-safe:animate-fade-up">
-            {current.label ? (
-              <span className="inline-flex items-center rounded-full bg-gold px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-ink">
-                {current.label}
-              </span>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch">
+        <section
+          className="flex-1 rounded-xl border border-ink/10 bg-accent px-6 py-4 text-white shadow-card"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            {current ? (
+              <div key={index} className="space-y-2 motion-safe:animate-fade-up">
+                {current.label ? (
+                  <span className="inline-flex items-center rounded-full bg-gold px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-ink">
+                    {current.label}
+                  </span>
+                ) : null}
+                <p className="text-sm sm:text-base font-semibold">{current.message}</p>
+              </div>
+            ) : (
+              <p className="text-sm font-semibold text-white/80">
+                Aucune info publiee pour le moment.
+              </p>
+            )}
+            {hasItems ? (
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={goPrev}
+                  className="flex items-center gap-2 rounded-full border border-white/40 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white hover:bg-white/10"
+                  aria-label="Information precedente"
+                >
+                  <CaretLeft className="h-4 w-4" aria-hidden="true" />
+                  <span className="hidden sm:inline">Avant</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={goNext}
+                  className="flex items-center gap-2 rounded-full border border-white/40 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white hover:bg-white/10"
+                  aria-label="Information suivante"
+                >
+                  <span className="hidden sm:inline">Apres</span>
+                  <CaretRight className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
             ) : null}
-            <p className="text-sm sm:text-base font-semibold">{current.message}</p>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={goPrev}
-              className="flex items-center gap-2 rounded-full border border-white/40 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white hover:bg-white/10"
-              aria-label="Information precedente"
-            >
-              <CaretLeft className="h-4 w-4" aria-hidden="true" />
-              <span className="hidden sm:inline">Avant</span>
-            </button>
-            <button
-              type="button"
-              onClick={goNext}
-              className="flex items-center gap-2 rounded-full border border-white/40 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white hover:bg-white/10"
-              aria-label="Information suivante"
-            >
-              <span className="hidden sm:inline">Apres</span>
-              <CaretRight className="h-4 w-4" aria-hidden="true" />
-            </button>
+        </section>
+        {weather ? (
+          <div className="self-start lg:self-stretch">
+            <WeatherWidget data={weather} />
           </div>
-        </div>
-      </section>
+        ) : null}
+      </div>
+      <div className="mt-3 flex justify-end">
+        <Link
+          href="/infos"
+          className="rounded-full border border-ink/10 bg-white/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink/70 transition hover:bg-white"
+        >
+          Historique des infos
+        </Link>
+      </div>
 
       {canEdit ? (
         <div className="mt-4 space-y-3">
@@ -345,7 +384,7 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit }: HomeBannerProps)
           {bannerItems.map((item) => (
             <div
               key={String(item.id ?? item.message)}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-ink/10 bg-white px-4 py-3 text-xs"
+              className="flex flex-wrap items-center justify-between gap-3 glass-panel px-4 py-3 text-xs"
             >
               <div className="space-y-1">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-slate">
@@ -369,11 +408,15 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit }: HomeBannerProps)
                 >
                   {deletingId === item.id ? "Suppression..." : "Supprimer"}
                 </button>
-                {item.status === "draft" ? (
+                {(item.status ?? "published") === "draft" ? (
                   <span className="rounded-full border border-ink/10 px-3 py-2 text-[9px] text-slate">
-                    Brouillon
+                    Masquee
                   </span>
-                ) : null}
+                ) : (
+                  <span className="rounded-full border border-ink/10 px-3 py-2 text-[9px] text-emerald-700">
+                    Visible
+                  </span>
+                )}
               </div>
             </div>
           ))}
@@ -421,7 +464,7 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit }: HomeBannerProps)
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, label: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   />
                 </label>
                 <label className="block text-sm font-semibold text-ink/80">
@@ -432,7 +475,7 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit }: HomeBannerProps)
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, order: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   />
                 </label>
               </div>
@@ -444,25 +487,23 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit }: HomeBannerProps)
                     setFormState((prev) => ({ ...prev, message: event.target.value }))
                   }
                   rows={4}
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                   required
                 />
               </label>
-              <label className="block text-sm font-semibold text-ink/80">
-                Statut
-                <select
-                  value={formState.status}
+              <label className="flex items-center gap-3 text-sm font-semibold text-ink/80">
+                <input
+                  type="checkbox"
+                  checked={formState.status === "published"}
                   onChange={(event) =>
                     setFormState((prev) => ({
                       ...prev,
-                      status: event.target.value as "draft" | "published"
+                      status: event.target.checked ? "published" : "draft"
                     }))
                   }
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
-                >
-                  <option value="published">Publie</option>
-                  <option value="draft">Brouillon</option>
-                </select>
+                  className="h-4 w-4 accent-ink"
+                />
+                Afficher dans le bandeau
               </label>
 
               {formError ? <p className="text-sm text-red-600">{formError}</p> : null}

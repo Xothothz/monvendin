@@ -3,8 +3,9 @@
 import { useState } from "react";
 import clsx from "clsx";
 import { ParametresUsersPanel } from "./ParametresUsersPanel";
+import { ParametresProPagesPanel } from "./ParametresProPagesPanel";
 
-type SectionId = "users" | "permissions";
+type SectionId = "users" | "pro-pages";
 
 const sections: Array<{
   id: SectionId;
@@ -14,14 +15,13 @@ const sections: Array<{
 }> = [
   {
     id: "users",
-    label: "Utilisateurs",
-    description: "Gestion des comptes et des droits."
+    label: "Utilisateurs & droits",
+    description: "Creation, roles et permissions."
   },
   {
-    id: "permissions",
-    label: "Permissions",
-    description: "Parametrage avance (bientot).",
-    disabled: true
+    id: "pro-pages",
+    label: "Pages pro",
+    description: "Creation, publication et attribution."
   }
 ];
 
@@ -61,6 +61,7 @@ export const ParametresShell = () => {
 
       <div>
         {activeSection === "users" ? <ParametresUsersPanel /> : null}
+        {activeSection === "pro-pages" ? <ParametresProPagesPanel /> : null}
       </div>
     </div>
   );

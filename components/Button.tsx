@@ -18,7 +18,7 @@ type ButtonProps = {
 
 export const Button = ({ children, variant = "primary", href, className }: ButtonProps) => {
   const base = clsx(
-    "inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold transition-all duration-200 focus-ring hover:-translate-y-0.5 active:translate-y-0",
+    "inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold motion-quick focus-ring hover:-translate-y-0.5 active:translate-y-0",
     styles[variant],
     className
   );

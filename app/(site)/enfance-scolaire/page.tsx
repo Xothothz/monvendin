@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function EnfanceScolairePage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <header className="space-y-3">
         <PageTitle title="Enfance & scolaire" />
         <p className="text-slate max-w-2xl">
@@ -17,7 +17,7 @@ export default function EnfanceScolairePage() {
         </p>
       </header>
       <section className="space-y-4">
-        <h2 className="section-title">Ecoles</h2>
+        <h2 className="section-title motion-in">Ecoles</h2>
         <div className="card-grid">
           {ecoles.map((ecole) => (
             <Card key={ecole.id} className="p-6 space-y-2">
@@ -35,7 +35,7 @@ export default function EnfanceScolairePage() {
         </div>
       </section>
       <section className="space-y-4">
-        <h2 className="section-title">Menus de cantine</h2>
+        <h2 className="section-title motion-in">Menus de cantine</h2>
         <p className="text-slate">
           Consultez les menus hebdomadaires en version accessible HTML.
         </p>

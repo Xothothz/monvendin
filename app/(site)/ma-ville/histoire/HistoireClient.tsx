@@ -10,6 +10,7 @@ import {
 } from "react";
 import clsx from "clsx";
 import { Card } from "@/components/Card";
+import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
 type HistoryImage =
   | {
@@ -33,10 +34,9 @@ type HistorySection = {
   isFallback?: boolean;
 };
 
-type AdminUser = {
+type AdminUser = UserWithPermissions & {
   email?: string;
   name?: string;
-  role?: "admin" | "editor";
 };
 
 type SectionFormState = {
@@ -158,7 +158,7 @@ export const HistoireClient = ({ initialSections }: { initialSections: HistorySe
     originY: 0
   });
 
-  const canEdit = Boolean(user);
+  const canEdit = hasPermission(user, "manageHistorySections");
 
   useEffect(() => {
     let isActive = true;
@@ -707,7 +707,7 @@ export const HistoireClient = ({ initialSections }: { initialSections: HistorySe
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, title: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -719,7 +719,7 @@ export const HistoireClient = ({ initialSections }: { initialSections: HistorySe
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, period: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   />
                 </label>
               </div>
@@ -732,7 +732,7 @@ export const HistoireClient = ({ initialSections }: { initialSections: HistorySe
                     setFormState((prev) => ({ ...prev, content: event.target.value }))
                   }
                   rows={6}
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                   required
                 />
                 <span className="mt-2 block text-[11px] text-slate">
@@ -749,7 +749,7 @@ export const HistoireClient = ({ initialSections }: { initialSections: HistorySe
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, order: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   />
                 </label>
                 <label className="block text-sm font-semibold text-ink/80">
@@ -762,7 +762,7 @@ export const HistoireClient = ({ initialSections }: { initialSections: HistorySe
                         status: event.target.value as "draft" | "published"
                       }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   >
                     <option value="published">Publie</option>
                     <option value="draft">Brouillon</option>
@@ -776,7 +776,7 @@ export const HistoireClient = ({ initialSections }: { initialSections: HistorySe
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, imageAlt: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   />
                 </label>
               </div>
@@ -795,7 +795,7 @@ export const HistoireClient = ({ initialSections }: { initialSections: HistorySe
                       }));
                       setRemoveImage(false);
                     }}
-                    className="mt-2 block w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 block w-full glass-input"
                   />
                 </label>
 

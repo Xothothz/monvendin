@@ -71,7 +71,7 @@ export default async function LoisirsDetailPage({ params }: PageProps) {
     ];
 
     return (
-      <div className="space-y-8">
+      <div className="space-y-8 section-stack">
         <CenteredPageHeader
           label="Loisirs"
           title="Les associations de A a Z"

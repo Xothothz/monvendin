@@ -23,7 +23,7 @@ export type SiteNavItem = {
 export type SiteUtilityLink = {
   label: string;
   href: string;
-  icon: "clock" | "mail" | "search";
+  icon: "clock" | "mail" | "search" | "briefcase";
 };
 
 export const siteNav: SiteNavItem[] = [
@@ -229,5 +229,6 @@ export const siteNav: SiteNavItem[] = [
 
 export const siteUtilities: SiteUtilityLink[] = [
   { label: "Horaires", href: "/horaires-des-services", icon: "clock" },
-  { label: "Contact", href: "/nous-contacter", icon: "mail" }
+  { label: "Contact", href: "/nous-contacter", icon: "mail" },
+  { label: "Espace pro", href: "/espace-pro", icon: "briefcase" }
 ];

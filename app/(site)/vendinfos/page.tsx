@@ -60,7 +60,7 @@ export default async function VendinfosPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <HeroAdmin
         slug="vendinfos"
         eyebrow="Vendinfos"

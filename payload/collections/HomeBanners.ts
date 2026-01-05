@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isAuthenticated, publishedOnly } from "../access";
+import { hasPermissionAccess, publishedOrHasPermission } from "../access";
 
 export const HomeBanners: CollectionConfig = {
   slug: "home-banners",
@@ -12,10 +12,10 @@ export const HomeBanners: CollectionConfig = {
     defaultColumns: ["label", "message", "order", "status"]
   },
   access: {
-    read: publishedOnly,
-    create: isAuthenticated,
-    update: isAuthenticated,
-    delete: isAuthenticated
+    read: publishedOrHasPermission("manageHomeBanners"),
+    create: hasPermissionAccess("manageHomeBanners"),
+    update: hasPermissionAccess("manageHomeBanners"),
+    delete: hasPermissionAccess("manageHomeBanners")
   },
   fields: [
     {

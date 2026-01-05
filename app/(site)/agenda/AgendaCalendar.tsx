@@ -116,7 +116,7 @@ export const AgendaCalendar = ({ events }: AgendaCalendarProps) => {
         </div>
       </div>
 
-      <div className="rounded-xl border border-ink/10 bg-white p-4 shadow-card">
+      <div className="rounded-2xl border border-white/60 bg-white/70 p-4 backdrop-blur-md ring-1 ring-ink/5 shadow-card">
         <div className="grid grid-cols-7 gap-2 text-[11px] uppercase tracking-widest text-slate">
           {weekDays.map((day) => (
             <div key={day} className="text-center">
@@ -139,7 +139,7 @@ export const AgendaCalendar = ({ events }: AgendaCalendarProps) => {
               <div
                 key={dayKey}
                 className={clsx(
-                  "rounded-xl border border-ink/10 bg-white p-3 min-h-24 flex flex-col gap-2",
+                  "rounded-xl border border-white/60 bg-white/70 p-3 min-h-24 flex flex-col gap-2 backdrop-blur-sm ring-1 ring-ink/5",
                   dayKey === todayKey && "border-accent/60 shadow-card"
                 )}
               >
@@ -179,12 +179,12 @@ export const AgendaCalendar = ({ events }: AgendaCalendarProps) => {
         {monthEvents.length === 0 ? (
           <p className="text-sm text-slate">Aucun evenement programme pour cette periode.</p>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 stagger">
             {monthEvents.map((event) => (
               <Link
                 key={event.id}
                 href={`/agenda/${event.slug}`}
-                className="rounded-xl border border-ink/10 bg-white p-4 shadow-card transition hover:-translate-y-1"
+                className="rounded-2xl border border-white/60 bg-white/70 p-4 backdrop-blur-md ring-1 ring-ink/5 shadow-card transition hover:-translate-y-1 hover:border-white/80 hover:shadow-[0_26px_60px_rgba(15,23,42,0.12)]"
               >
                 <p className="text-xs uppercase tracking-widest text-slate">
                   {formatDateTime(event.startDate)}

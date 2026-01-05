@@ -31,7 +31,7 @@ export default async function TourismeDetailPage({ params }: PageProps) {
 
   if (slug === "balades" || slug === "patrimoine") {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 section-stack">
         <CenteredPageHeader label="Tourisme" title={page.title} />
         <p className="text-slate">Site en construction.</p>
       </div>

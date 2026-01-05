@@ -42,7 +42,7 @@ export default async function AgendaDetailPage({ params }: PageProps) {
   const endLabel = event.endDate ? formatDateTime(event.endDate) : null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)] lg:items-start">
         <div className="space-y-6">
           <CenteredPageHeader

@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { isAdmin } from "../access";
+import { permissionOptions } from "../../lib/permissions";
 
 export const Users: CollectionConfig = {
   slug: "users",
@@ -24,10 +25,10 @@ export const Users: CollectionConfig = {
       name: "role",
       type: "select",
       required: true,
-      defaultValue: "editor",
+      defaultValue: "user",
       options: [
         { label: "Administrateur", value: "admin" },
-        { label: "Editeur", value: "editor" }
+        { label: "Utilisateur", value: "user" }
       ]
     },
     {
@@ -35,36 +36,11 @@ export const Users: CollectionConfig = {
       type: "group",
       label: "Permissions",
       fields: [
-        {
-          name: "manageActualites",
+        ...permissionOptions.map((permission) => ({
+          name: permission.key,
           type: "checkbox",
-          label: "Actualites"
-        },
-        {
-          name: "manageAgenda",
-          type: "checkbox",
-          label: "Agenda"
-        },
-        {
-          name: "manageDocuments",
-          type: "checkbox",
-          label: "Documents"
-        },
-        {
-          name: "manageVendinfos",
-          type: "checkbox",
-          label: "Vendinfos"
-        },
-        {
-          name: "manageAssociations",
-          type: "checkbox",
-          label: "Associations"
-        },
-        {
-          name: "canPublish",
-          type: "checkbox",
-          label: "Publication directe"
-        }
+          label: permission.label
+        }))
       ]
     }
   ]

@@ -20,7 +20,7 @@ module.exports = {
         display: ["var(--font-display)", "sans-serif"]
       },
       boxShadow: {
-        card: "0 14px 34px rgba(15, 23, 42, 0.1)"
+        card: "0 18px 40px rgba(15, 23, 42, 0.08)"
       },
       keyframes: {
         "fade-up": {

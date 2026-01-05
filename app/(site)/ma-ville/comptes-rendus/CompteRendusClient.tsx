@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Card } from "@/components/Card";
+import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
 type ReportDoc =
   | {
@@ -21,10 +22,9 @@ type CouncilReport = {
   status?: "draft" | "published";
 };
 
-type AdminUser = {
+type AdminUser = UserWithPermissions & {
   email?: string;
   name?: string;
-  role?: "admin" | "editor";
 };
 
 type ReportFormState = {
@@ -141,7 +141,7 @@ export const CompteRendusClient = ({ initialReports }: { initialReports: Council
   const [query, setQuery] = useState("");
   const [sortDescending, setSortDescending] = useState(true);
 
-  const canEdit = Boolean(user);
+  const canEdit = hasPermission(user, "manageCouncilReports");
 
   useEffect(() => {
     let isActive = true;
@@ -392,7 +392,7 @@ export const CompteRendusClient = ({ initialReports }: { initialReports: Council
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Annee, date, fichier..."
-                className="mt-2 w-56 rounded-full border border-ink/10 bg-white px-4 py-2 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                className="mt-2 w-56 glass-select"
               />
             </label>
             <button
@@ -416,7 +416,7 @@ export const CompteRendusClient = ({ initialReports }: { initialReports: Council
       </Card>
 
       {canEdit ? (
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-ink/10 bg-white px-4 py-3 text-xs font-semibold uppercase tracking-widest text-ink/70">
+        <div className="flex flex-wrap items-center gap-3 glass-panel px-4 py-3 text-xs font-semibold uppercase tracking-widest text-ink/70">
           <span>Mode admin actif</span>
           {isLoading ? <span className="text-ink/40">Mise a jour...</span> : null}
         </div>
@@ -548,7 +548,7 @@ export const CompteRendusClient = ({ initialReports }: { initialReports: Council
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, date: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -562,7 +562,7 @@ export const CompteRendusClient = ({ initialReports }: { initialReports: Council
                         status: event.target.value as "draft" | "published"
                       }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   >
                     <option value="published">Publie</option>
                     <option value="draft">Brouillon</option>

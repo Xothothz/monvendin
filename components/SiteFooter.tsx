@@ -3,11 +3,11 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { FacebookLogo } from "@phosphor-icons/react";
+import { type UserWithPermissions } from "@/lib/permissions";
 
-type AdminUser = {
+type AdminUser = UserWithPermissions & {
   email?: string;
   name?: string;
-  role?: "admin" | "editor";
 };
 
 const AdminAuthControls = () => {
@@ -156,7 +156,7 @@ const AdminAuthControls = () => {
           onClick={() => setIsOpen(true)}
           className="rounded-full border border-gold/50 bg-gold/10 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gold transition hover:bg-gold hover:text-ink"
         >
-          Connexion admin
+          Connexion
         </button>
       )}
       <Link
@@ -183,7 +183,7 @@ const AdminAuthControls = () => {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">
-                  Acces admin
+                  Acces
                 </p>
                 <h2 id={dialogId} className="mt-2 text-2xl font-display">
                   Connexion securisee
@@ -209,7 +209,7 @@ const AdminAuthControls = () => {
                   onChange={(event) =>
                     setFormState((prev) => ({ ...prev, email: event.target.value }))
                   }
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                   required
                 />
               </label>
@@ -222,7 +222,7 @@ const AdminAuthControls = () => {
                   onChange={(event) =>
                     setFormState((prev) => ({ ...prev, password: event.target.value }))
                   }
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                   required
                 />
               </label>

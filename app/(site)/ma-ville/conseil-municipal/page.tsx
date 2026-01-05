@@ -94,7 +94,7 @@ export default async function ConseilMunicipalPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <HeroAdmin
         slug="conseil-municipal"
         eyebrow="Ma ville"

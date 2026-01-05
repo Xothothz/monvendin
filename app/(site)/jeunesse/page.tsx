@@ -26,7 +26,7 @@ const items = [
 
 export default function JeunessePage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <header className="space-y-3">
         <PageTitle title="Jeunesse" />
         <p className="text-slate max-w-2xl">

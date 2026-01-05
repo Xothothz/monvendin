@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
+import { getPayload } from "payload";
+import configPromise from "@payload-config";
 import { CenteredPageHeader } from "@/components/CenteredPageHeader";
 import { Card } from "@/components/Card";
 import { HeroAdmin } from "@/components/HeroAdmin";
+import { SchoolMenusCard } from "@/components/SchoolMenusCard";
 import {
   Apple,
   Bell,
@@ -19,6 +22,34 @@ import {
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
+
+type SchoolMenuItem = {
+  id?: string | number;
+  title: string;
+  linkLabel?: string | null;
+  linkUrl?: string | null;
+  status?: "draft" | "published";
+  order?: number | null;
+};
+
+const restaurantMenuFallback: SchoolMenuItem[] = [
+  {
+    title: "Du 6 octobre au 4 janvier 2026 - Restauration scolaire",
+    linkLabel: "Telecharger le menu Octobre - Janvier",
+    linkUrl:
+      "https://www.sivom-bethunois.fr/wp-content/uploads/2025/09/Menus-RAD-du-6-octobre-au-4-janvier-2026.pdf",
+    status: "published",
+    order: 1
+  },
+  {
+    title: "Du 5 janvier au 27 mars 2026 - Scolaire",
+    linkLabel: "Telecharger le menu Janvier - Mars",
+    linkUrl:
+      "https://www.sivom-bethunois.fr/wp-content/uploads/2025/12/Menus-SCOLAIRE-du-5-janvier-au-27-mars-2026.pdf",
+    status: "published",
+    order: 2
+  }
+];
 
 const pages: Record<string, { title: string; description: string; bullets: string[] }> = {
   "micro-creche": {
@@ -60,7 +91,7 @@ export default async function JeunesseDetailPage({ params }: PageProps) {
 
   if (slug === "micro-creche") {
     return (
-      <div className="space-y-10">
+      <div className="space-y-10 section-stack">
         <HeroAdmin
           slug="micro-creche"
           eyebrow="Jeunesse"
@@ -261,6 +292,49 @@ export default async function JeunesseDetailPage({ params }: PageProps) {
   }
 
   if (slug === "restaurant-scolaire") {
+    const settingsSlug = "restaurant-scolaire";
+    let menuYearLabel = "2025 - 2026";
+    let settingsId: string | number | null = null;
+    let menuItems = restaurantMenuFallback;
+    try {
+      const payload = await getPayload({ config: configPromise });
+      const settingsResponse = await payload.find({
+        collection: "school-menu-settings",
+        depth: 0,
+        limit: 1,
+        where: {
+          slug: {
+            equals: settingsSlug
+          }
+        }
+      });
+      const settingsDoc = settingsResponse.docs?.[0] as
+        | { id?: string | number; yearLabel?: string | null }
+        | undefined;
+      if (settingsDoc?.yearLabel) {
+        menuYearLabel = settingsDoc.yearLabel;
+      }
+      if (settingsDoc?.id) {
+        settingsId = String(settingsDoc.id);
+      }
+      const response = await payload.find({
+        collection: "school-menus",
+        depth: 0,
+        sort: "order",
+        limit: 50,
+        where: {
+          status: {
+            equals: "published"
+          }
+        }
+      });
+      if (response.docs?.length) {
+        menuItems = response.docs as SchoolMenuItem[];
+      }
+    } catch {
+      menuItems = restaurantMenuFallback;
+    }
+
     return (
       <div className="space-y-10">
         <HeroAdmin
@@ -321,50 +395,13 @@ export default async function JeunesseDetailPage({ params }: PageProps) {
             </div>
           </Card>
 
-          <Card className="p-6 space-y-4 bg-fog">
-            <div className="flex items-center justify-between gap-4">
-              <h3 className="text-lg font-display text-ink">Menus disponibles</h3>
-              <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate">
-                2025 - 2026
-              </span>
-            </div>
-            <div className="space-y-4">
-              <div className="rounded-2xl border border-ink/10 bg-white p-4">
-                <p className="text-sm font-semibold text-ink">
-                  Du 6 octobre au 4 janvier 2026 - Restauration scolaire
-                </p>
-                <a
-                  href="https://www.sivom-bethunois.fr/wp-content/uploads/2025/09/Menus-RAD-du-6-octobre-au-4-janvier-2026.pdf"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-3 inline-flex items-center justify-center rounded-full border border-ink/10 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition hover:border-gold/60 hover:text-accent"
-                >
-                  Telecharger le menu Octobre - Janvier
-                </a>
-              </div>
-              <div className="rounded-2xl border border-ink/10 bg-white p-4">
-                <p className="text-sm font-semibold text-ink">
-                  Du 5 janvier au 27 mars 2026 - Scolaire
-                </p>
-                <a
-                  href="https://www.sivom-bethunois.fr/wp-content/uploads/2025/12/Menus-SCOLAIRE-du-5-janvier-au-27-mars-2026.pdf"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-3 inline-flex items-center justify-center rounded-full border border-ink/10 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition hover:border-gold/60 hover:text-accent"
-                >
-                  Telecharger le menu Janvier - Mars
-                </a>
-              </div>
-            </div>
-            <a
-              href="https://www.sivom-bethunois.fr/index.php/restauration/menus/"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent hover:text-ink"
-            >
-              Consulter tous les menus scolaires
-            </a>
-          </Card>
+          <SchoolMenusCard
+            items={menuItems}
+            fallbackItems={restaurantMenuFallback}
+            yearLabel={menuYearLabel}
+            settingsId={settingsId}
+            settingsSlug={settingsSlug}
+          />
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">

@@ -6,7 +6,7 @@ export const metadata = {
 
 export default function TourismePage() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 section-stack">
       <CenteredPageHeader
         label="Tourisme"
         title="Tourisme"

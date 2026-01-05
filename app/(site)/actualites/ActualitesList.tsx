@@ -9,6 +9,7 @@ import { Button } from "@/components/Button";
 import { SearchInput } from "@/components/SearchInput";
 import { formatDate } from "@/lib/data";
 import { RichTextEditor } from "@/components/RichTextEditor";
+import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
 type ActualiteItem = {
   id: string | number;
@@ -29,10 +30,9 @@ type ActualitesListProps = {
   allowEdit?: boolean;
 };
 
-type AdminUser = {
+type AdminUser = UserWithPermissions & {
   email?: string;
   name?: string;
-  role?: "admin" | "editor";
 };
 
 type ActualiteFormState = {
@@ -208,15 +208,15 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
     return next;
   }, [results]);
 
-  const canEdit = Boolean(user);
-  const canDelete = user?.role === "admin";
+  const canEdit = Boolean(allowEdit && hasPermission(user, "manageActualites"));
+  const canDelete = canEdit;
 
   const statusOptions = useMemo(() => {
-    if (user?.role === "admin") {
+    if (hasPermission(user, "canPublish")) {
       return ["draft", "review", "published"] as const;
     }
     return ["draft", "review"] as const;
-  }, [user?.role]);
+  }, [user]);
 
   useEffect(() => {
     if (!allowEdit) return;
@@ -475,7 +475,7 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
 
             return (
               <Card key={String(item.id)} className="p-6 flex flex-col gap-3">
-                <div className="h-36 overflow-hidden rounded-xl border border-ink/10 bg-gradient-to-br from-accent/15 via-white to-gold/30">
+                <div className="h-36 overflow-hidden rounded-xl border border-white/60 bg-gradient-to-br from-accent/10 via-white to-gold/20">
                   {imageUrl ? (
                     <img
                       src={imageUrl}
@@ -564,7 +564,7 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, title: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -576,7 +576,7 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, category: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -591,7 +591,7 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, date: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -603,7 +603,7 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, slug: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   />
                 </label>
               </div>
@@ -616,7 +616,7 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
                     setFormState((prev) => ({ ...prev, summary: event.target.value }))
                   }
                   rows={3}
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                   required
                 />
               </label>
@@ -696,7 +696,7 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
                                 )
                               }));
                             }}
-                            className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                            className="mt-2 w-full glass-input"
                           />
                         </label>
                         <label className="block text-sm font-semibold text-ink/80">
@@ -713,7 +713,7 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
                                 )
                               }));
                             }}
-                            className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                            className="mt-2 w-full glass-input"
                           />
                         </label>
                       </div>
@@ -809,7 +809,7 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
                                 )
                               }));
                             }}
-                            className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                            className="mt-2 w-full glass-input"
                           />
                         </label>
                         <label className="block text-sm font-semibold text-ink/80">
@@ -826,7 +826,7 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
                                 )
                               }));
                             }}
-                            className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                            className="mt-2 w-full glass-input"
                           />
                         </label>
                       </div>
@@ -883,7 +883,7 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
                             )
                           }));
                         }}
-                        className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                        className="w-full glass-input"
                       />
                       <div className="flex gap-2">
                         <input
@@ -899,7 +899,7 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
                               )
                             }));
                           }}
-                          className="flex-1 rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                          className="flex-1 glass-input"
                         />
                         <button
                           type="button"
@@ -929,7 +929,7 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
                       status: event.target.value as "draft" | "review" | "published"
                     }))
                   }
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                 >
                   {statusOptions.map((status) => (
                     <option key={status} value={status}>

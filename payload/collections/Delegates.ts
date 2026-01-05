@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isAuthenticated, publishedOnly } from "../access";
+import { hasPermissionAccess, publishedOrHasPermission } from "../access";
 
 export const Delegates: CollectionConfig = {
   slug: "delegates",
@@ -12,10 +12,10 @@ export const Delegates: CollectionConfig = {
     defaultColumns: ["lastName", "firstName", "sectorRef", "email", "phone", "status"]
   },
   access: {
-    read: publishedOnly,
-    create: isAuthenticated,
-    update: isAuthenticated,
-    delete: isAuthenticated
+    read: publishedOrHasPermission("manageDelegates"),
+    create: hasPermissionAccess("manageDelegates"),
+    update: hasPermissionAccess("manageDelegates"),
+    delete: hasPermissionAccess("manageDelegates")
   },
   fields: [
     {

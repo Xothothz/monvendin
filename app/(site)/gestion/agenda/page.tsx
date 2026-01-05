@@ -5,12 +5,12 @@ import clsx from "clsx";
 import { Card } from "@/components/Card";
 import { PageTitle } from "@/components/PageTitle";
 import { RichTextEditor } from "@/components/RichTextEditor";
+import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
-type User = {
+type User = UserWithPermissions & {
   id: string;
   email: string;
   name?: string | null;
-  role?: "admin" | "editor";
 };
 
 type AgendaEvent = {
@@ -118,7 +118,8 @@ export default function AgendaAdminPage() {
     null
   );
 
-  const isAdmin = user?.role === "admin";
+  const canEdit = hasPermission(user, "manageAgenda");
+  const canPublish = hasPermission(user, "canPublish");
 
   const selectedEvent = useMemo(
     () => events.find((event) => String(event.id) === String(selectedId)) ?? null,
@@ -126,11 +127,11 @@ export default function AgendaAdminPage() {
   );
 
   const statusOptions = useMemo(() => {
-    if (isAdmin) {
+    if (canPublish) {
       return ["draft", "review", "published"] as const;
     }
     return ["draft", "review"] as const;
-  }, [isAdmin]);
+  }, [canPublish]);
 
   const filteredEvents = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -241,7 +242,7 @@ export default function AgendaAdminPage() {
 
   const handleSelectEvent = (event: AgendaEvent) => {
     const nextStatus =
-      !isAdmin && event.status === "published" ? "review" : event.status ?? "draft";
+      !canPublish && event.status === "published" ? "review" : event.status ?? "draft";
     setSelectedId(String(event.id));
     setForm({
       title: event.title ?? "",
@@ -400,7 +401,7 @@ export default function AgendaAdminPage() {
                 name="email"
                 type="email"
                 autoComplete="email"
-                className="w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm focus-ring"
+                className="w-full glass-input"
                 required
               />
             </div>
@@ -410,7 +411,7 @@ export default function AgendaAdminPage() {
                 name="password"
                 type="password"
                 autoComplete="current-password"
-                className="w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm focus-ring"
+                className="w-full glass-input"
                 required
               />
             </div>
@@ -435,8 +436,8 @@ export default function AgendaAdminPage() {
           <p className="text-xs uppercase tracking-widest text-slate">Gestion agenda</p>
           <PageTitle title="Espace agenda" />
           <p className="text-slate max-w-2xl">
-            Ajoutez et suivez les evenements locaux. Les editeurs soumettent, un
-            administrateur valide la publication.
+            Ajoutez et suivez les evenements locaux. Sans la permission de publication
+            directe, les modifications passent en attente de validation.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -447,7 +448,7 @@ export default function AgendaAdminPage() {
             Retour au site
           </a>
           <div className="rounded-full border border-ink/10 bg-white px-4 py-2 text-xs uppercase tracking-widest text-slate">
-            {user.name || user.email} - {user.role === "admin" ? "Admin" : "Editeur"}
+            {user.name || user.email} - {user.role === "admin" ? "Admin" : "Utilisateur"}
           </div>
           <button
             type="button"
@@ -480,13 +481,19 @@ export default function AgendaAdminPage() {
               <h2 className="text-xl font-display">Evenements</h2>
               <p className="text-sm text-slate">Liste des evenements planifies.</p>
             </div>
-            <button
-              type="button"
-              onClick={resetForm}
-              className="rounded-full border border-ink/10 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-ink transition hover:bg-goldSoft"
-            >
-              Nouveau
-            </button>
+            {canEdit ? (
+              <button
+                type="button"
+                onClick={resetForm}
+                className="rounded-full border border-ink/10 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-ink transition hover:bg-goldSoft"
+              >
+                Nouveau
+              </button>
+            ) : (
+              <span className="text-xs uppercase tracking-widest text-slate">
+                Lecture seule
+              </span>
+            )}
           </div>
 
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -495,7 +502,7 @@ export default function AgendaAdminPage() {
               placeholder="Rechercher un titre ou un lieu"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              className="w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm focus-ring md:max-w-sm"
+              className="w-full glass-input md:max-w-sm"
             />
             <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-widest">
               {(["all", "draft", "review", "published"] as const).map((value) => (
@@ -548,168 +555,203 @@ export default function AgendaAdminPage() {
                       className="mt-3 h-24 w-full rounded-xl object-cover"
                     />
                   )}
-                  <button
-                    type="button"
-                    onClick={() => handleSelectEvent(event)}
-                    className="mt-3 text-xs font-semibold uppercase tracking-widest text-accent hover:text-ink"
-                  >
-                    Modifier
-                  </button>
+                  {canEdit ? (
+                    <button
+                      type="button"
+                      onClick={() => handleSelectEvent(event)}
+                      className="mt-3 text-xs font-semibold uppercase tracking-widest text-accent hover:text-ink"
+                    >
+                      Modifier
+                    </button>
+                  ) : (
+                    <p className="mt-3 text-xs uppercase tracking-widest text-slate">
+                      Lecture seule
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
           )}
         </Card>
 
-        <Card className="p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-display">
-                {selectedId ? "Modifier" : "Creer"} un evenement
-              </h2>
-              <p className="text-sm text-slate">
-                Champs obligatoires: titre, dates, lieu, resume.
-              </p>
+        {canEdit ? (
+          <Card className="p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-display">
+                  {selectedId ? "Modifier" : "Creer"} un evenement
+                </h2>
+                <p className="text-sm text-slate">
+                  Champs obligatoires: titre, dates, lieu, resume.
+                </p>
+              </div>
             </div>
-          </div>
 
-          <form className="space-y-3" onSubmit={handleSubmit}>
-            <div className="space-y-1">
-              <label className="text-xs uppercase tracking-widest text-slate">Titre</label>
-              <input
-                value={form.title}
-                onChange={(event) => setForm({ ...form, title: event.target.value })}
-                className="w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm focus-ring"
-                required
-              />
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
+            <form className="space-y-3" onSubmit={handleSubmit}>
               <div className="space-y-1">
-                <label className="text-xs uppercase tracking-widest text-slate">
-                  Debut
-                </label>
+                <label className="text-xs uppercase tracking-widest text-slate">Titre</label>
                 <input
-                  type="datetime-local"
-                  value={form.startDate}
-                  onChange={(event) => setForm({ ...form, startDate: event.target.value })}
-                  className="w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm focus-ring"
+                  value={form.title}
+                  onChange={(event) => setForm({ ...form, title: event.target.value })}
+                  className="w-full glass-input"
+                  required
+                />
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-1">
+                  <label className="text-xs uppercase tracking-widest text-slate">
+                    Debut
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={form.startDate}
+                    onChange={(event) =>
+                      setForm({ ...form, startDate: event.target.value })
+                    }
+                    className="w-full glass-input"
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs uppercase tracking-widest text-slate">
+                    Fin
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={form.endDate}
+                    onChange={(event) => setForm({ ...form, endDate: event.target.value })}
+                    className="w-full glass-input"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs uppercase tracking-widest text-slate">Lieu</label>
+                <input
+                  value={form.location}
+                  onChange={(event) => setForm({ ...form, location: event.target.value })}
+                  className="w-full glass-input"
                   required
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs uppercase tracking-widest text-slate">Fin</label>
+                <label className="text-xs uppercase tracking-widest text-slate">
+                  Adresse
+                </label>
                 <input
-                  type="datetime-local"
-                  value={form.endDate}
-                  onChange={(event) => setForm({ ...form, endDate: event.target.value })}
-                  className="w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm focus-ring"
+                  value={form.address}
+                  onChange={(event) => setForm({ ...form, address: event.target.value })}
+                  className="w-full glass-input"
                 />
               </div>
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs uppercase tracking-widest text-slate">Lieu</label>
-              <input
-                value={form.location}
-                onChange={(event) => setForm({ ...form, location: event.target.value })}
-                className="w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm focus-ring"
-                required
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs uppercase tracking-widest text-slate">Adresse</label>
-              <input
-                value={form.address}
-                onChange={(event) => setForm({ ...form, address: event.target.value })}
-                className="w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm focus-ring"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs uppercase tracking-widest text-slate">Resume</label>
-              <textarea
-                value={form.summary}
-                onChange={(event) => setForm({ ...form, summary: event.target.value })}
-                className="h-24 w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm focus-ring"
-                required
-              />
-            </div>
-            <div className="space-y-1">
-              <p className="text-xs uppercase tracking-widest text-slate">Description</p>
-              <RichTextEditor
-                value={form.description ?? ""}
-                onChange={(value) => setForm({ ...form, description: value })}
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs uppercase tracking-widest text-slate">
-                Lien externe
-              </label>
-              <input
-                value={form.externalLink}
-                onChange={(event) => setForm({ ...form, externalLink: event.target.value })}
-                placeholder="https://"
-                className="w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm focus-ring"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs uppercase tracking-widest text-slate">Image</label>
-              {selectedEvent && getImageUrl(selectedEvent) && !imageFile && (
-                <img
-                  src={getImageUrl(selectedEvent) ?? undefined}
-                  alt={selectedEvent.title}
-                  className="h-32 w-full rounded-xl object-cover"
+              <div className="space-y-1">
+                <label className="text-xs uppercase tracking-widest text-slate">
+                  Resume
+                </label>
+                <textarea
+                  value={form.summary}
+                  onChange={(event) => setForm({ ...form, summary: event.target.value })}
+                  className="h-24 w-full glass-input"
+                  required
                 />
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(event) => setImageFile(event.target.files?.[0] ?? null)}
-                className="w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm focus-ring"
-              />
-              <p className="text-xs text-slate">Optionnel. L'image actuelle reste si vide.</p>
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs uppercase tracking-widest text-slate">Statut</label>
-              <select
-                value={form.status}
-                onChange={(event) =>
-                  setForm({ ...form, status: event.target.value as AgendaEvent["status"] })
-                }
-                className="w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm focus-ring"
-              >
-                {statusOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {statusLabels[option]}
-                  </option>
-                ))}
-              </select>
-              {!isAdmin && (
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs uppercase tracking-widest text-slate">Description</p>
+                <RichTextEditor
+                  value={form.description ?? ""}
+                  onChange={(value) => setForm({ ...form, description: value })}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs uppercase tracking-widest text-slate">
+                  Lien externe
+                </label>
+                <input
+                  value={form.externalLink}
+                  onChange={(event) =>
+                    setForm({ ...form, externalLink: event.target.value })
+                  }
+                  placeholder="https://"
+                  className="w-full glass-input"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs uppercase tracking-widest text-slate">
+                  Image
+                </label>
+                {selectedEvent && getImageUrl(selectedEvent) && !imageFile && (
+                  <img
+                    src={getImageUrl(selectedEvent) ?? undefined}
+                    alt={selectedEvent.title}
+                    className="h-32 w-full rounded-xl object-cover"
+                  />
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => setImageFile(event.target.files?.[0] ?? null)}
+                  className="w-full glass-input"
+                />
                 <p className="text-xs text-slate">
-                  Un editeur ne peut pas publier directement.
+                  Optionnel. L'image actuelle reste si vide.
                 </p>
-              )}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <button
-                type="submit"
-                disabled={isBusy}
-                className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-white shadow-[0_16px_30px_rgba(28,50,156,0.35)] transition hover:bg-ink disabled:opacity-60"
-              >
-                {isBusy ? "Enregistrement..." : "Enregistrer"}
-              </button>
-              {selectedId && isAdmin && (
-                <button
-                  type="button"
-                  onClick={handleDelete}
-                  disabled={isBusy}
-                  className="rounded-full border border-rose-200 bg-rose-50 px-5 py-2 text-sm font-semibold text-rose-700 transition hover:border-rose-300 disabled:opacity-60"
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs uppercase tracking-widest text-slate">Statut</label>
+                <select
+                  value={form.status}
+                  onChange={(event) =>
+                    setForm({ ...form, status: event.target.value as AgendaEvent["status"] })
+                  }
+                  className="w-full glass-input"
                 >
-                  Supprimer
+                  {statusOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {statusLabels[option]}
+                    </option>
+                  ))}
+                </select>
+                {!canPublish && (
+                  <p className="text-xs text-slate">
+                    Sans la permission de publication directe, la publication passe en
+                    attente.
+                  </p>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <button
+                  type="submit"
+                  disabled={isBusy}
+                  className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-white shadow-[0_16px_30px_rgba(28,50,156,0.35)] transition hover:bg-ink disabled:opacity-60"
+                >
+                  {isBusy ? "Enregistrement..." : "Enregistrer"}
                 </button>
-              )}
+                {selectedId && canEdit && (
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={isBusy}
+                    className="rounded-full border border-rose-200 bg-rose-50 px-5 py-2 text-sm font-semibold text-rose-700 transition hover:border-rose-300 disabled:opacity-60"
+                  >
+                    Supprimer
+                  </button>
+                )}
+              </div>
+            </form>
+          </Card>
+        ) : (
+          <Card className="p-6 space-y-3">
+            <div>
+              <h2 className="text-xl font-display">Acces restreint</h2>
+              <p className="text-sm text-slate">
+                Vous n'avez pas les droits pour modifier l'agenda.
+              </p>
             </div>
-          </form>
-        </Card>
+            <p className="text-sm text-slate">
+              Demandez a un administrateur d'activer la permission "Agenda".
+            </p>
+          </Card>
+        )}
       </div>
     </div>
   );

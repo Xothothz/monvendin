@@ -1,13 +1,13 @@
 import type { CollectionConfig } from "payload";
-import { isAdmin, isAuthenticated } from "../access";
+import { hasPermissionAccess } from "../access";
 
 export const Media: CollectionConfig = {
   slug: "media",
   access: {
     read: () => true,
-    create: isAuthenticated,
-    update: isAuthenticated,
-    delete: isAdmin
+    create: hasPermissionAccess("manageMedia"),
+    update: hasPermissionAccess("manageMedia"),
+    delete: hasPermissionAccess("manageMedia")
   },
   upload: {
     staticDir: "public/media",

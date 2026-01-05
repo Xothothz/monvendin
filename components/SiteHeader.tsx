@@ -3,10 +3,17 @@
 import Link from "next/link";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
-import { CaretDown, Clock, EnvelopeSimple, MagnifyingGlass } from "@phosphor-icons/react";
+import {
+  Briefcase,
+  CaretDown,
+  Clock,
+  EnvelopeSimple,
+  MagnifyingGlass
+} from "@phosphor-icons/react";
 import { siteNav, siteUtilities, type SiteNavLink } from "@/lib/site-nav";
 
 const utilityIcons = {
+  briefcase: Briefcase,
   clock: Clock,
   mail: EnvelopeSimple,
   search: MagnifyingGlass
@@ -114,7 +121,7 @@ export const SiteHeader = () => {
       <header
         id="site-header"
         ref={headerRef}
-        className="sticky top-0 z-40 bg-white backdrop-blur border-b border-ink/10 shadow-[0_12px_30px_rgba(15,23,42,0.08)]"
+        className="sticky top-0 z-40 border-b border-white/60 bg-white/70 backdrop-blur-xl shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
       >
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-3 sm:px-6 lg:hidden">
         {logo}
@@ -123,13 +130,13 @@ export const SiteHeader = () => {
           aria-expanded={menuOpen}
           aria-controls="site-nav"
           onClick={() => setMenuOpen((prev) => !prev)}
-          className="rounded-full border border-ink/10 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-ink/70 hover:bg-goldSoft focus-ring"
+          className="rounded-full border border-white/60 bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-ink/70 ring-1 ring-ink/5 hover:bg-goldSoft/70 focus-ring"
         >
           {menuOpen ? "Fermer" : "Menu"}
         </button>
       </div>
 
-      <nav id="site-nav" className="border-t border-ink/10 bg-white">
+      <nav id="site-nav" className="border-t border-white/60 bg-white/70 backdrop-blur-lg">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="hidden lg:flex items-center justify-between gap-6 py-3">
             {logo}
@@ -144,7 +151,7 @@ export const SiteHeader = () => {
                         type="button"
                         onClick={() => openDesktopMenu(index)}
                         onFocus={() => openDesktopMenu(index)}
-                        className="flex items-center gap-2 rounded-full px-2.5 py-1.5 whitespace-nowrap hover:bg-goldSoft hover:text-ink"
+                        className="flex items-center gap-2 rounded-full px-2.5 py-1.5 whitespace-nowrap hover:bg-goldSoft/70 hover:text-ink"
                         aria-expanded={isOpen}
                         aria-controls={`desktop-menu-${index}`}
                       >
@@ -168,7 +175,7 @@ export const SiteHeader = () => {
                             : "pointer-events-none opacity-0 translate-y-2"
                         )}
                       >
-                        <div className="inline-flex max-w-[calc(100vw-32px)] overflow-visible rounded-md bg-white px-4 py-4 shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
+                        <div className="inline-flex max-w-[calc(100vw-32px)] overflow-visible rounded-xl border border-white/60 bg-white/80 px-4 py-4 backdrop-blur-xl shadow-[0_20px_45px_rgba(15,23,42,0.12)]">
                           <ul className="space-y-3 min-w-[190px]">
                             {item.sections.map((section, sectionIndex) => {
                               const isActive = openSectionIndex === sectionIndex;
@@ -184,8 +191,8 @@ export const SiteHeader = () => {
                                       }))
                                     }
                                     className={clsx(
-                                      "flex w-full items-center justify-between rounded-full px-2.5 py-1.5 text-left text-sm font-semibold uppercase tracking-[0.18em] text-ink/70 hover:bg-goldSoft hover:text-ink",
-                                      isActive && "bg-goldSoft text-ink"
+                                      "flex w-full items-center justify-between rounded-full px-2.5 py-1.5 text-left text-sm font-semibold uppercase tracking-[0.18em] text-ink/70 hover:bg-goldSoft/70 hover:text-ink",
+                                      isActive && "bg-goldSoft/70 text-ink"
                                     )}
                                   >
                                     <span>{section.title}</span>
@@ -193,12 +200,12 @@ export const SiteHeader = () => {
                                   </button>
                                   {hasChildren && isActive ? (
                                     <div className="absolute left-full top-0 ml-2">
-                                      <ul className="space-y-3 w-max shrink-0 rounded-md bg-white px-4 py-3 shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
+                                      <ul className="space-y-3 w-max shrink-0 rounded-xl border border-white/60 bg-white/85 px-4 py-3 backdrop-blur-xl shadow-[0_20px_45px_rgba(15,23,42,0.12)]">
                                         {section.links.map((link) => (
                                           <li key={link.href}>
                                             {renderNavLink(
                                               link,
-                                              "whitespace-nowrap rounded-full px-2.5 py-1.5 text-sm font-semibold uppercase tracking-[0.18em] text-ink/70 hover:bg-goldSoft hover:text-ink"
+                                              "whitespace-nowrap rounded-full px-2.5 py-1.5 text-sm font-semibold uppercase tracking-[0.18em] text-ink/70 hover:bg-goldSoft/70 hover:text-ink"
                                             )}
                                           </li>
                                         ))}
@@ -220,10 +227,10 @@ export const SiteHeader = () => {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex items-center gap-2 rounded-full bg-accent px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-white shadow-[0_14px_28px_rgba(12,44,132,0.28)] hover:bg-ink"
+                    className="flex items-center gap-2 rounded-full bg-accent px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-white shadow-[0_14px_28px_rgba(12,44,132,0.28)] hover:bg-ink whitespace-nowrap"
                   >
                     <item.icon className="h-3.5 w-3.5" aria-hidden="true" />
-                    <span className="hidden xl:inline">{item.label}</span>
+                    <span className="hidden xl:inline whitespace-nowrap">{item.label}</span>
                   </Link>
                 ))}
               </div>
@@ -243,7 +250,7 @@ export const SiteHeader = () => {
                 return (
                   <div
                     key={item.href}
-                    className="rounded-xl border border-ink/10 bg-white shadow-[0_14px_28px_rgba(15,23,42,0.08)]"
+                    className="rounded-2xl border border-white/60 bg-white/70 backdrop-blur-lg ring-1 ring-ink/5 shadow-[0_16px_36px_rgba(15,23,42,0.1)]"
                   >
                     <div className="flex items-center justify-between px-4 py-3">
                       <Link
@@ -256,7 +263,7 @@ export const SiteHeader = () => {
                       <button
                         type="button"
                         onClick={() => setMobileOpenIndex(isOpen ? null : index)}
-                        className="rounded-full border border-ink/10 bg-white px-2 py-1 text-ink/70"
+                        className="rounded-full border border-white/60 bg-white/70 px-2 py-1 text-ink/70 ring-1 ring-ink/5"
                         aria-expanded={isOpen}
                         aria-controls={`menu-section-${index}`}
                       >
@@ -278,7 +285,7 @@ export const SiteHeader = () => {
                         return (
                           <div
                             key={section.title}
-                            className="rounded-xl border border-ink/10 bg-white"
+                            className="rounded-xl border border-white/60 bg-white/70 backdrop-blur-sm"
                           >
                             {isCollapsible ? (
                               <>
@@ -290,7 +297,7 @@ export const SiteHeader = () => {
                                       [index]: prev[index] === sectionIndex ? null : sectionIndex
                                     }))
                                   }
-                              className="flex w-full items-center justify-between px-3 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-ink/70"
+                                  className="flex w-full items-center justify-between px-3 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-ink/70"
                                   aria-expanded={isSectionOpen}
                                   aria-controls={`mobile-section-${index}-${sectionIndex}`}
                                 >
@@ -309,13 +316,13 @@ export const SiteHeader = () => {
                                     isSectionOpen ? "max-h-[320px] pb-3" : "max-h-0"
                                   )}
                                 >
-                              <ul className="space-y-2 px-3 text-sm font-semibold uppercase tracking-[0.18em] text-ink/70">
+                                  <ul className="space-y-2 px-3 text-sm font-semibold uppercase tracking-[0.18em] text-ink/70">
                                     {section.links.map((link) => (
                                       <li key={link.href}>
-                                    {renderNavLink(link, "block rounded-lg px-2 py-1")}
-                                  </li>
-                                ))}
-                              </ul>
+                                        {renderNavLink(link, "block rounded-lg px-2 py-1")}
+                                      </li>
+                                    ))}
+                                  </ul>
                                 </div>
                               </>
                             ) : (
@@ -347,12 +354,12 @@ export const SiteHeader = () => {
                   </div>
                 );
               })}
-              <div className="flex flex-wrap gap-2 rounded-xl border border-ink/10 bg-white p-4">
+              <div className="flex flex-wrap gap-2 rounded-2xl border border-white/60 bg-white/70 p-4 backdrop-blur-sm ring-1 ring-ink/5">
                 {utilities.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex items-center gap-2 rounded-full border border-ink/10 bg-white px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-ink/70"
+                    className="flex items-center gap-2 rounded-full border border-white/60 bg-white/70 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-ink/70 ring-1 ring-ink/5 whitespace-nowrap"
                   >
                     <item.icon className="h-3.5 w-3.5" aria-hidden="true" />
                     {item.label}
@@ -366,7 +373,7 @@ export const SiteHeader = () => {
     </header>
     <div
       className={clsx(
-        "fixed inset-0 z-30 bg-ink/30 backdrop-blur-[1px] transition-opacity duration-200",
+        "fixed inset-0 z-30 bg-ink/20 backdrop-blur-[1px] transition-opacity duration-200",
         isAnyMenuOpen ? "opacity-100" : "pointer-events-none opacity-0"
       )}
       aria-hidden="true"

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent } from "react";
 import { Card } from "@/components/Card";
+import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
 type OfficialPhoto =
   | {
@@ -25,10 +26,9 @@ type Official = {
   photo?: OfficialPhoto;
 };
 
-type AdminUser = {
+type AdminUser = UserWithPermissions & {
   email?: string;
   name?: string;
-  role?: "admin" | "editor";
 };
 
 type OfficialFormState = {
@@ -150,7 +150,7 @@ export const OfficialsClient = ({ initialOfficials }: { initialOfficials: Offici
     originY: 0
   });
 
-  const canEdit = Boolean(user);
+  const canEdit = hasPermission(user, "manageOfficials");
 
   useEffect(() => {
     let isActive = true;
@@ -543,7 +543,7 @@ export const OfficialsClient = ({ initialOfficials }: { initialOfficials: Offici
   ) => (
     <section className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="section-title">{title}</h2>
+        <h2 className="section-title motion-in">{title}</h2>
         {canEdit ? (
           <button
             type="button"
@@ -570,7 +570,7 @@ export const OfficialsClient = ({ initialOfficials }: { initialOfficials: Offici
   return (
     <div className="space-y-6">
       {canEdit ? (
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-ink/10 bg-white px-4 py-3 text-xs font-semibold uppercase tracking-widest text-ink/70">
+        <div className="flex flex-wrap items-center gap-3 glass-panel px-4 py-3 text-xs font-semibold uppercase tracking-widest text-ink/70">
           <span>Mode admin actif</span>
           {isLoading ? <span className="text-ink/40">Mise a jour...</span> : null}
         </div>
@@ -631,7 +631,7 @@ export const OfficialsClient = ({ initialOfficials }: { initialOfficials: Offici
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, firstName: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -643,7 +643,7 @@ export const OfficialsClient = ({ initialOfficials }: { initialOfficials: Offici
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, lastName: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -655,7 +655,7 @@ export const OfficialsClient = ({ initialOfficials }: { initialOfficials: Offici
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, role: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -667,7 +667,7 @@ export const OfficialsClient = ({ initialOfficials }: { initialOfficials: Offici
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, politicalGroup: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   />
                 </label>
                 <label className="text-sm font-semibold text-ink/80">
@@ -680,7 +680,7 @@ export const OfficialsClient = ({ initialOfficials }: { initialOfficials: Offici
                         group: event.target.value as "executive" | "council"
                       }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   >
                     <option value="executive">Le maire et ses adjoints</option>
                     <option value="council">Conseillers municipaux</option>
@@ -696,7 +696,7 @@ export const OfficialsClient = ({ initialOfficials }: { initialOfficials: Offici
                         status: event.target.value as "draft" | "published"
                       }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   >
                     <option value="published">Publie</option>
                     <option value="draft">Brouillon</option>
@@ -710,7 +710,7 @@ export const OfficialsClient = ({ initialOfficials }: { initialOfficials: Offici
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, order: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     min={0}
                   />
                 </label>
@@ -813,7 +813,7 @@ export const OfficialsClient = ({ initialOfficials }: { initialOfficials: Offici
                       onChange={(event) =>
                         setFormState((prev) => ({ ...prev, photoAlt: event.target.value }))
                       }
-                      className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                      className="mt-2 w-full glass-input"
                     />
                   </label>
                 </div>

@@ -16,7 +16,7 @@ export default async function AssociationDetailPage({ params }: PageProps) {
   if (!item) return notFound();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <header className="space-y-3">
         <p className="text-xs uppercase text-slate">{item.category}</p>
         <PageTitle title={item.name} watermark="Loisirs" />

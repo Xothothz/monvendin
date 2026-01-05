@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isAdmin } from "../access";
+import { hasAnyPermissionAccess } from "../access";
 
 export const Documents: CollectionConfig = {
   slug: "documents",
@@ -13,9 +13,9 @@ export const Documents: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: isAdmin,
-    update: isAdmin,
-    delete: isAdmin
+    create: hasAnyPermissionAccess(["manageDocuments", "manageVendinfos"]),
+    update: hasAnyPermissionAccess(["manageDocuments", "manageVendinfos"]),
+    delete: hasAnyPermissionAccess(["manageDocuments", "manageVendinfos"])
   },
   upload: {
     staticDir: "public/documents",

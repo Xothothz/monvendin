@@ -3,11 +3,11 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { renderMarkdown } from "@/lib/markdown";
 import { RichTextEditor } from "@/components/RichTextEditor";
+import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
-type AdminUser = {
+type AdminUser = UserWithPermissions & {
   email?: string;
   name?: string;
-  role?: "admin" | "editor";
 };
 
 type AProposContentProps = {
@@ -29,7 +29,7 @@ export const AProposContent = ({
   const [formError, setFormError] = useState<string | null>(null);
   const [formContent, setFormContent] = useState(initialContent);
 
-  const canEdit = user?.role === "admin";
+  const canEdit = hasPermission(user, "managePageContents");
 
   const renderedContent = useMemo(() => renderMarkdown(content), [content]);
 

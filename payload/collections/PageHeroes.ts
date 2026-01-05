@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isAuthenticated } from "../access";
+import { hasPermissionAccess } from "../access";
 
 export const PageHeroes: CollectionConfig = {
   slug: "page-heroes",
@@ -12,9 +12,9 @@ export const PageHeroes: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: isAuthenticated,
-    update: isAuthenticated,
-    delete: isAuthenticated
+    create: hasPermissionAccess("managePageHeroes"),
+    update: hasPermissionAccess("managePageHeroes"),
+    delete: hasPermissionAccess("managePageHeroes")
   },
   fields: [
     {

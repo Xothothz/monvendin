@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SiteShell } from "@/components/SiteShell";
-import { Fraunces, Source_Sans_3 } from "next/font/google";
+import {
+  Bebas_Neue,
+  Cormorant_Garamond,
+  DM_Sans,
+  Fraunces,
+  Source_Sans_3,
+  Work_Sans
+} from "next/font/google";
 
 const bodyFont = Source_Sans_3({
   subsets: ["latin"],
@@ -11,6 +18,30 @@ const bodyFont = Source_Sans_3({
 const displayFont = Fraunces({
   subsets: ["latin"],
   variable: "--font-display",
+  display: "swap"
+});
+const cormorantFont = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-cormorant",
+  display: "swap"
+});
+const workSansFont = Work_Sans({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-work",
+  display: "swap"
+});
+const bebasFont = Bebas_Neue({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-bebas",
+  display: "swap"
+});
+const dmSansFont = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-dm",
   display: "swap"
 });
 
@@ -35,7 +66,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" className={`${bodyFont.variable} ${displayFont.variable}`}>
+    <html
+      lang="fr"
+      className={`${bodyFont.variable} ${displayFont.variable} ${cormorantFont.variable} ${workSansFont.variable} ${bebasFont.variable} ${dmSansFont.variable}`}
+    >
       <body>
         <SiteShell>{children}</SiteShell>
       </body>

@@ -7,6 +7,7 @@ import { Badge } from "@/components/Badge";
 import { formatDate } from "@/lib/data";
 import { renderMarkdown } from "@/lib/markdown";
 import { RichTextEditor } from "@/components/RichTextEditor";
+import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 import { LightboxImage } from "@/components/LightboxImage";
 import { PdfLightboxButton } from "@/components/PdfLightboxButton";
 import { Card } from "@/components/Card";
@@ -25,10 +26,9 @@ type ActualiteItem = {
   status?: "draft" | "review" | "published";
 };
 
-type AdminUser = {
+type AdminUser = UserWithPermissions & {
   email?: string;
   name?: string;
-  role?: "admin" | "editor";
 };
 
 type ActualiteFormState = {
@@ -193,15 +193,15 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
   const [formState, setFormState] = useState<ActualiteFormState>(emptyFormState);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  const canEdit = Boolean(user);
-  const canDelete = user?.role === "admin";
+  const canEdit = hasPermission(user, "manageActualites");
+  const canDelete = canEdit;
 
   const statusOptions = useMemo(() => {
-    if (user?.role === "admin") {
+    if (hasPermission(user, "canPublish")) {
       return ["draft", "review", "published"] as const;
     }
     return ["draft", "review"] as const;
-  }, [user?.role]);
+  }, [user]);
 
   const contentHtml = useMemo(() => renderMarkdown(item.content ?? ""), [item.content]);
   const galleryItems = useMemo(() => {
@@ -579,7 +579,7 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
             {attachmentItems.map((attachment, index) => (
               <div
                 key={`attachment-${attachment.id ?? index}`}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-ink/10 bg-white px-4 py-3"
+              className="flex flex-wrap items-center justify-between gap-3 glass-panel px-4 py-3"
               >
                 <div>
                   <p className="text-sm font-semibold text-ink">{attachment.label}</p>
@@ -662,7 +662,7 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, title: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -674,7 +674,7 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, category: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -689,7 +689,7 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, date: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -701,7 +701,7 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, slug: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   />
                 </label>
               </div>
@@ -714,7 +714,7 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
                     setFormState((prev) => ({ ...prev, summary: event.target.value }))
                   }
                   rows={3}
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                   required
                 />
               </label>
@@ -794,7 +794,7 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
                                 )
                               }));
                             }}
-                            className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                            className="mt-2 w-full glass-input"
                           />
                         </label>
                         <label className="block text-sm font-semibold text-ink/80">
@@ -811,7 +811,7 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
                                 )
                               }));
                             }}
-                            className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                            className="mt-2 w-full glass-input"
                           />
                         </label>
                       </div>
@@ -907,7 +907,7 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
                                 )
                               }));
                             }}
-                            className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                            className="mt-2 w-full glass-input"
                           />
                         </label>
                         <label className="block text-sm font-semibold text-ink/80">
@@ -924,7 +924,7 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
                                 )
                               }));
                             }}
-                            className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                            className="mt-2 w-full glass-input"
                           />
                         </label>
                       </div>
@@ -981,7 +981,7 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
                             )
                           }));
                         }}
-                        className="rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                        className="w-full glass-input"
                       />
                       <div className="flex gap-2">
                         <input
@@ -997,7 +997,7 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
                               )
                             }));
                           }}
-                          className="flex-1 rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                          className="flex-1 glass-input"
                         />
                         <button
                           type="button"
@@ -1027,7 +1027,7 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
                       status: event.target.value as "draft" | "review" | "published"
                     }))
                   }
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                 >
                   {statusOptions.map((status) => (
                     <option key={status} value={status}>

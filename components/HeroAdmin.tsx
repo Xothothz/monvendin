@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent } from "react";
 import { HomeHero } from "@/components/HomeHero";
+import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
-type AdminUser = {
+type AdminUser = UserWithPermissions & {
   email?: string;
   name?: string;
-  role?: "admin" | "editor";
 };
 
 type HeroAdminProps = {
@@ -114,7 +114,7 @@ export const HeroAdmin = ({
     originY: 0
   });
 
-  const canEdit = Boolean(user);
+  const canEdit = hasPermission(user, "managePageHeroes");
 
   useEffect(() => {
     let isActive = true;
@@ -536,10 +536,10 @@ export const HeroAdmin = ({
                       const file = event.target.files?.[0] ?? null;
                       setPhotoFile(file);
                     }}
-                    className="mt-2 block w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 block w-full glass-input"
                   />
                 </label>
-                <div className="rounded-2xl border border-ink/10 bg-white p-3 text-xs text-slate">
+                <div className="glass-panel p-3 text-xs text-slate">
                   <p className="font-semibold uppercase tracking-[0.28em] text-slate">
                     Apercu
                   </p>

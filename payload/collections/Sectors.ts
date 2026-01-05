@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isAuthenticated, publishedOnly } from "../access";
+import { hasPermissionAccess, publishedOrHasPermission } from "../access";
 
 export const Sectors: CollectionConfig = {
   slug: "sectors",
@@ -12,10 +12,10 @@ export const Sectors: CollectionConfig = {
     defaultColumns: ["number", "status"]
   },
   access: {
-    read: publishedOnly,
-    create: isAuthenticated,
-    update: isAuthenticated,
-    delete: isAuthenticated
+    read: publishedOrHasPermission("manageSectors"),
+    create: hasPermissionAccess("manageSectors"),
+    update: hasPermissionAccess("manageSectors"),
+    delete: hasPermissionAccess("manageSectors")
   },
   fields: [
     {

@@ -18,7 +18,7 @@ export default async function EntreprisesPage() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <CenteredPageHeader
         label="Economie"
         title="Annuaire des entreprises"

@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { isAdmin } from "../access";
+import { hasPermissionAccess } from "../access";
 
 export const Annuaire: CollectionConfig = {
   slug: "annuaire",
@@ -13,9 +13,9 @@ export const Annuaire: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: isAdmin,
-    update: isAdmin,
-    delete: isAdmin
+    create: hasPermissionAccess("manageAssociations"),
+    update: hasPermissionAccess("manageAssociations"),
+    delete: hasPermissionAccess("manageAssociations")
   },
   fields: [
     {

@@ -75,7 +75,7 @@ export default async function FiscaliteDocumentPage({ params }: PageProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 section-stack">
       <header className="space-y-2">
         <PageTitle title={doc.title} watermark="Document" />
         <div className="flex flex-wrap gap-4 text-sm text-slate">

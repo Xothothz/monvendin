@@ -87,7 +87,7 @@ export default async function AgendaPage() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vendin-citoyen.fr";
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <HeroAdmin
         slug="agenda"
         eyebrow="Agenda"

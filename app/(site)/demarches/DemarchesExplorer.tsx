@@ -42,10 +42,10 @@ export const DemarchesExplorer = ({ items }: DemarchesExplorerProps) => {
             key={item}
             type="button"
             onClick={() => setCategory(item)}
-            className={`rounded-full px-4 py-2 text-sm font-semibold border focus-ring transition ${
+            className={`glass-pill px-4 py-2 text-sm font-semibold focus-ring ${
               category === item
-                ? "bg-ink text-white border-ink"
-                : "bg-white text-ink border-ink/10 hover:border-ink/30"
+                ? "bg-ink text-white border-ink ring-0"
+                : "text-ink/70 hover:border-white/80 hover:text-ink"
             }`}
           >
             {item}

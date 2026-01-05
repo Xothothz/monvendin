@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { SearchInput } from "@/components/SearchInput";
+import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
 type DocumentItem = {
   id: string | number;
@@ -16,10 +17,9 @@ type DocumentItem = {
   filesize?: number | null;
 };
 
-type AdminUser = {
+type AdminUser = UserWithPermissions & {
   email?: string;
   name?: string;
-  role?: "admin" | "editor";
 };
 
 type DocumentFormState = {
@@ -216,7 +216,9 @@ export const DocumentsAccordion = ({
   const [publicYearFilter, setPublicYearFilter] = useState("Toutes");
   const didInitOpenYears = useRef(false);
 
-  const canEdit = user?.role === "admin";
+  const requiredPermission =
+    documentTypeFilter === "vendinfos" ? "manageVendinfos" : "manageDocuments";
+  const canEdit = hasPermission(user, requiredPermission);
 
   useEffect(() => {
     let isActive = true;
@@ -505,7 +507,7 @@ const sortedDocuments = useMemo(() => {
             <label className="text-sm text-slate">
               Annee
               <select
-                className="mt-1 w-full rounded-full border border-ink/10 bg-white px-4 py-2 text-sm focus-ring"
+                className="mt-1 w-full glass-select"
                 value={adminYearFilter}
                 onChange={(event) => setAdminYearFilter(event.target.value)}
               >
@@ -518,7 +520,7 @@ const sortedDocuments = useMemo(() => {
             </label>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-ink/10 bg-white">
+          <div className="overflow-hidden glass-panel">
             <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-3 border-b border-ink/10 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-slate">
               <span>Titre</span>
               <span>Type</span>
@@ -571,7 +573,7 @@ const sortedDocuments = useMemo(() => {
           <label className="text-sm text-slate">
             Annee
             <select
-              className="mt-1 w-full rounded-full border border-ink/10 bg-white px-4 py-2 text-sm focus-ring"
+              className="mt-1 w-full glass-select"
               value={publicYearFilter}
               onChange={(event) => setPublicYearFilter(event.target.value)}
             >
@@ -593,7 +595,7 @@ const sortedDocuments = useMemo(() => {
             const docs = groupedDocuments.get(year) ?? [];
             const isOpen = openYears.has(year);
             return (
-              <div key={year} className="overflow-hidden rounded-2xl border border-ink/10 bg-white">
+              <div key={year} className="overflow-hidden glass-panel">
                 <button
                   type="button"
                   onClick={() => toggleYear(year)}
@@ -695,7 +697,7 @@ const sortedDocuments = useMemo(() => {
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, title: event.target.value }))
                     }
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -706,7 +708,7 @@ const sortedDocuments = useMemo(() => {
                       type="text"
                       value={typeLabel(forcedDocumentType)}
                       readOnly
-                      className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm"
+                      className="mt-2 w-full glass-input"
                     />
                   ) : (
                     <select
@@ -714,7 +716,7 @@ const sortedDocuments = useMemo(() => {
                       onChange={(event) =>
                         setFormState((prev) => ({ ...prev, documentType: event.target.value }))
                       }
-                      className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                      className="mt-2 w-full glass-input"
                       required
                     >
                       {documentTypes.map((option) => (
@@ -734,7 +736,7 @@ const sortedDocuments = useMemo(() => {
                     type="date"
                     value={formState.documentDate}
                     onChange={(event) => handleDocumentDateChange(event.target.value)}
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                     required
                   />
                 </label>
@@ -747,7 +749,7 @@ const sortedDocuments = useMemo(() => {
                       setYearTouched(true);
                       setFormState((prev) => ({ ...prev, year: event.target.value }));
                     }}
-                    className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                    className="mt-2 w-full glass-input"
                   />
                 </label>
               </div>
@@ -760,7 +762,7 @@ const sortedDocuments = useMemo(() => {
                   onChange={(event) =>
                     setFormState((prev) => ({ ...prev, file: event.target.files?.[0] ?? null }))
                   }
-                  className="mt-2 w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink shadow-sm focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                  className="mt-2 w-full glass-input"
                   required={!editingId}
                 />
                 {formState.existingFileName ? (

@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function MenusCantinePage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 section-stack">
       <header className="space-y-3">
         <PageTitle title="Menus de cantine" />
         <p className="text-slate max-w-2xl">
@@ -21,7 +21,7 @@ export default function MenusCantinePage() {
         {menus.map((week) => (
           <Card key={week.id} className="p-6 space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="section-title">Semaine du {week.week}</h2>
+              <h2 className="section-title motion-in">Semaine du {week.week}</h2>
               {week.pdf && (
                 <Button href={week.pdf} variant="secondary">
                   Version PDF

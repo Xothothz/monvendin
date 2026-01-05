@@ -6,7 +6,7 @@ type CenteredPageHeaderProps = {
 
 export const CenteredPageHeader = ({ label, title, description }: CenteredPageHeaderProps) => {
   return (
-    <header className="text-center">
+    <header className="text-center motion-in">
       <div className="space-y-3 py-4 sm:py-6">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate">{label}</p>
         <div className="flex items-center justify-center gap-3">
