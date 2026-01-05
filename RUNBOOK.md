@@ -104,3 +104,6 @@ Checklist rapide (dev -> main -> prod)
    - cd /var/www/monvendin
    - git pull origin main
    - ./deploy.sh
+
+Option rapide (VPS)
+- ./deploy-prod.sh (fait git pull origin main puis ./deploy.sh)
