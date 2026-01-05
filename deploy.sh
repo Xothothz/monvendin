@@ -13,6 +13,9 @@ fi
 echo "==> Install deps"
 npm install
 
+echo "==> Run payload migrations"
+NODE_ENV=production npx payload migrate
+
 echo "==> Build"
 npm run build
 
