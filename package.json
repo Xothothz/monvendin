@@ -22,6 +22,7 @@
     "@tiptap/react": "^3.14.0",
     "@tiptap/starter-kit": "^3.14.0",
     "clsx": "^2.1.1",
+    "drizzle-orm": "^0.45.1",
     "fuse.js": "^7.0.0",
     "lucide-react": "^0.438.0",
     "marked": "^12.0.2",
