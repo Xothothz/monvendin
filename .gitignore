@@ -8,3 +8,5 @@ payload-types.ts
 
 # uploads serveur (Payload / users)
 public/documents/
+public/files/
+public/media/
