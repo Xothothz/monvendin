@@ -14,7 +14,15 @@ echo "==> Install deps"
 npm install
 
 echo "==> Run payload migrations"
-NODE_ENV=production npx payload migrate
+if [ -f /var/www/monvendin/.env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . /var/www/monvendin/.env
+  set +a
+else
+  echo "==> Warning: /var/www/monvendin/.env not found; skipping env load"
+fi
+NODE_ENV=production npx tsx ./node_modules/payload/bin.js migrate
 
 echo "==> Build"
 npm run build
@@ -25,6 +33,7 @@ rm -rf .next/standalone/.next/static
 cp -a .next/static .next/standalone/.next/
 rm -rf .next/standalone/public
 ln -s /var/www/monvendin/public .next/standalone/public
+ln -sf /var/www/monvendin/.env .next/standalone/.env
 
 echo "==> Restart PM2 via ecosystem"
 pm2 startOrRestart /var/www/monvendin/ecosystem.config.cjs --update-env
