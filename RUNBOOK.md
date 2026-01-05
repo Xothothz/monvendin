@@ -56,7 +56,7 @@ Ce que fait deploy.sh
 1) (Optionnel) git pull origin main si /var/www/monvendin/.git existe
 2) npm install
 3) Charger .env et lancer migrations Payload (Node 18 si nvm dispo)
-4) npm run build
+4) npm run build (NODE_OPTIONS=--max-old-space-size=1536 pour eviter OOM)
 5) Copier .next/static vers .next/standalone/.next/static
 6) Lier public/ et .env dans .next/standalone/
 7) pm2 startOrRestart ecosystem.config.cjs --update-env
