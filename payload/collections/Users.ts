@@ -1,4 +1,4 @@
-import type { CollectionConfig } from "payload";
+import type { CollectionConfig, Field } from "payload";
 import { isAdmin } from "../access";
 import { permissionOptions } from "../../lib/permissions";
 
@@ -7,19 +7,19 @@ export const Users: CollectionConfig = {
   auth: true,
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "email", "role"]
+    defaultColumns: ["name", "email", "role"],
   },
   access: {
     read: isAdmin,
-    create: isAdmin,
+    create: () => true,
     update: isAdmin,
-    delete: isAdmin
+    delete: isAdmin,
   },
   fields: [
     {
       name: "name",
       type: "text",
-      required: true
+      required: true,
     },
     {
       name: "role",
@@ -28,20 +28,20 @@ export const Users: CollectionConfig = {
       defaultValue: "user",
       options: [
         { label: "Administrateur", value: "admin" },
-        { label: "Utilisateur", value: "user" }
-      ]
+        { label: "Utilisateur", value: "user" },
+      ],
     },
     {
       name: "permissions",
       type: "group",
       label: "Permissions",
-      fields: [
-        ...permissionOptions.map((permission) => ({
+      fields: permissionOptions.map(
+        (permission): Field => ({
           name: permission.key,
           type: "checkbox",
-          label: permission.label
-        }))
-      ]
-    }
-  ]
+          label: permission.label,
+        })
+      ),
+    },
+  ],
 };

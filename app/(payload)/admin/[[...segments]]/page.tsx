@@ -1,15 +1,19 @@
 import { RootPage, generatePageMetadata } from "@payloadcms/next/views";
 import configPromise from "@payload-config";
-import { importMap } from "../importMap";
+import { importMap } from "../payloadImportMap";
 
 type PageProps = {
   params: Promise<{ segments?: string[] }>;
   searchParams: Promise<Record<string, string | string[]>>;
 };
 
-export const generateMetadata = ({ params }: { params: PageProps["params"] }) =>
-  generatePageMetadata({ config: configPromise, params });
+export const generateMetadata = ({ params, searchParams }: { params: PageProps["params"]; searchParams: PageProps["searchParams"] }) =>
+  generatePageMetadata({ config: configPromise, params, searchParams });
 
 export default async function AdminPage({ params, searchParams }: PageProps) {
-  return RootPage({ config: configPromise, importMap, params, searchParams });
+  const safeParams = (async () => {
+    const p = await params;
+    return { segments: p.segments ?? [] };
+  })();
+  return RootPage({ config: configPromise, importMap, params: safeParams, searchParams });
 }

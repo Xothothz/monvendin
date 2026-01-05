@@ -62,7 +62,7 @@ type ServicesSection = {
 type GalleryImage = {
   image?: MediaRef | string | null;
   alt?: string | null;
-  caption?: string | null;
+  caption: string | null;
 };
 
 type GallerySection = {
@@ -585,7 +585,7 @@ const GalleryBlock = ({ section }: { section: GallerySection }) => {
         caption: item.caption ?? null
       };
     })
-    .filter((item): item is { src: string; alt: string; caption?: string | null } => Boolean(item));
+    .filter((item): item is { src: string; alt: string; caption: string | null } => Boolean(item));
 
   if (galleryItems.length === 0) return null;
 
@@ -856,7 +856,7 @@ export const ProPageRenderer = ({ site, pageKey }: ProPageRendererProps) => {
           className={`pro-page-header ${headerAlign === "center" ? "is-center" : "is-left"} ${headerVariant === "accent" ? "is-accent" : "is-simple"}`}
         >
           <div className="pro-container">
-            <h1 className="pro-title text-3xl sm:text-4xl">{page.title}</h1>
+            <h1 className="pro-title text-3xl sm:text-4xl">{page?.title ?? ""}</h1>
           </div>
         </section>
       ) : null}

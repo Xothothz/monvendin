@@ -18,6 +18,8 @@ rm -rf .next/standalone/.next/static
 cp -a .next/static .next/standalone/.next/
 rm -rf .next/standalone/public
 cp -a public .next/standalone/
+echo "==> Sync uploads"
+/var/www/monvendin/sync-uploads.sh
 
 echo "==> Restart PM2 via ecosystem"
 pm2 startOrRestart /var/www/monvendin/ecosystem.config.cjs --update-env

@@ -1,6 +1,6 @@
 import { RootLayout, handleServerFunctions } from "@payloadcms/next/layouts";
 import configPromise from "@payload-config";
-import { importMap } from "./admin/importMap";
+import { importMap } from "./admin/payloadImportMap";
 
 type LayoutProps = {
   children: React.ReactNode;

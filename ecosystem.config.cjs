@@ -6,11 +6,13 @@ module.exports = {
       script: "server.js",
       exec_mode: "fork",
       instances: 1,
+      autorestart: true,
+      watch: false,
+      max_restarts: 20,
+      restart_delay: 2000,
       env: {
         NODE_ENV: "production",
-        PORT: "3000",
-        HOSTNAME: "127.0.0.1"
-      }
-    }
-  ]
+      },
+    },
+  ],
 };

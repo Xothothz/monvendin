@@ -26,5 +26,5 @@ export default async function ProPage({ params }: PageProps) {
     return notFound();
   }
 
-  return <ProPageRenderer site={page} pageKey="home" />;
+  return <ProPageRenderer site={page as any} pageKey="home" />;
 }

@@ -1,7 +1,7 @@
-import type { CollectionConfig } from "payload";
+import type { CollectionConfig, Field, Block } from "payload";
 import { isAdmin, isAdminOrOwner, publishedOrOwner } from "../access";
 
-const pageHeaderFields = [
+const pageHeaderFields: Field[] = [
   {
     name: "header",
     type: "group",
@@ -37,7 +37,7 @@ const pageHeaderFields = [
   }
 ];
 
-const buildNavFields = (options: { defaultEnabled: boolean; defaultOrder: number }) => [
+const buildNavFields = (options: { defaultEnabled: boolean; defaultOrder: number }): Field[] => [
   {
     name: "navEnabled",
     type: "checkbox",
@@ -58,7 +58,7 @@ const buildNavFields = (options: { defaultEnabled: boolean; defaultOrder: number
   }
 ];
 
-const servicesBlock = {
+const servicesBlock: Block = {
   slug: "services",
   labels: {
     singular: "Services / Menu",
@@ -189,7 +189,7 @@ const servicesBlock = {
   ]
 };
 
-const fullPageBlocks = [
+const fullPageBlocks: Block[] = [
 
   {
     slug: "hero",

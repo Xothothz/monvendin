@@ -38,5 +38,5 @@ export default async function ProSubPage({ params }: PageProps) {
     return notFound();
   }
 
-  return <ProPageRenderer site={site} pageKey={pageKey} />;
+  return <ProPageRenderer site={site as any} pageKey={pageKey} />;
 }
