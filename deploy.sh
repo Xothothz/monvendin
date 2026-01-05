@@ -31,7 +31,7 @@ fi
 NODE_ENV=production npx tsx ./node_modules/payload/bin.js migrate
 
 echo "==> Build"
-NODE_OPTIONS="--max-old-space-size=3072" npm run build
+NODE_OPTIONS="--max-old-space-size=1536" npm run build
 
 echo "==> Ensure standalone assets"
 mkdir -p .next/standalone/.next
