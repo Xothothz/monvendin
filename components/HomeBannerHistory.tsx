@@ -9,6 +9,8 @@ type BannerItem = {
   message: string;
   status?: "draft" | "published";
   order?: number | null;
+  postedAt?: string | null;
+  link?: string | null;
   createdAt?: string | null;
 };
 
@@ -26,17 +28,21 @@ type BannerFormState = {
   message: string;
   status: "draft" | "published";
   order: string;
+  postedAt: string;
+  link: string;
 };
 
 const emptyFormState: BannerFormState = {
   label: "",
   message: "",
   status: "published",
-  order: "1"
+  order: "1",
+  postedAt: "",
+  link: ""
 };
 
 const fetchBannerItems = async () => {
-  const response = await fetch("/api/home-banners?depth=0&limit=200&sort=-createdAt", {
+  const response = await fetch("/api/home-banners?depth=0&limit=200&sort=-postedAt", {
     credentials: "include"
   });
   if (!response.ok) {
@@ -46,11 +52,36 @@ const fetchBannerItems = async () => {
   return (data?.docs ?? []) as BannerItem[];
 };
 
+const toLocalInputValue = (date: Date) => {
+  const tzOffset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
+};
+
+const toInputDateTime = (value?: string | null) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return toLocalInputValue(date);
+};
+
+const toPayloadDate = (value: string) => {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toISOString();
+};
+
 const formatDate = (value?: string | null) => {
   if (!value) return null;
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short" }).format(date);
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(date);
 };
 
 export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
@@ -66,8 +97,14 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
 
   const displayItems = useMemo(() => {
     const trimmed = bannerItems.filter((item) => item.message.trim().length > 0);
-    if (user) return trimmed;
-    return trimmed.filter((item) => (item.status ?? "published") === "published");
+    const filtered = user
+      ? trimmed
+      : trimmed.filter((item) => (item.status ?? "published") === "published");
+    return filtered.sort((a, b) => {
+      const dateA = new Date(a.postedAt ?? a.createdAt ?? 0).getTime();
+      const dateB = new Date(b.postedAt ?? b.createdAt ?? 0).getTime();
+      return dateB - dateA;
+    });
   }, [bannerItems, user]);
 
   useEffect(() => {
@@ -123,7 +160,11 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
   const openCreate = () => {
     const nextOrder =
       bannerItems.length > 0 ? Math.max(...bannerItems.map((item) => item.order ?? 0)) + 1 : 1;
-    setFormState({ ...emptyFormState, order: String(nextOrder) });
+    setFormState({
+      ...emptyFormState,
+      order: String(nextOrder),
+      postedAt: toLocalInputValue(new Date())
+    });
     setEditingId(null);
     setFormError(null);
     setIsModalOpen(true);
@@ -134,7 +175,9 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
       label: item.label ?? "",
       message: item.message ?? "",
       status: item.status ?? "published",
-      order: String(item.order ?? 0)
+      order: String(item.order ?? 0),
+      postedAt: toInputDateTime(item.postedAt ?? item.createdAt),
+      link: item.link ?? ""
     });
     setEditingId(item.id ?? null);
     setFormError(null);
@@ -158,7 +201,9 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
         label: formState.label.trim() || null,
         message: formState.message.trim(),
         status: formState.status,
-        order: Number(formState.order) || 0
+        order: Number(formState.order) || 0,
+        postedAt: toPayloadDate(formState.postedAt),
+        link: formState.link.trim() || null
       };
 
       const response = await fetch(
@@ -247,8 +292,8 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
         <div className="space-y-3">
           {displayItems.map((item) => {
             const isPublished = (item.status ?? "published") === "published";
-            const created = formatDate(item.createdAt);
-            return (
+            const created = formatDate(item.postedAt ?? item.createdAt);
+            const content = (
               <div
                 key={String(item.id ?? item.message)}
                 className="flex flex-wrap items-center justify-between gap-3 glass-panel px-4 py-3 text-xs"
@@ -259,6 +304,11 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
                     {created ? <span className="text-ink/50">{created}</span> : null}
                   </div>
                   <p className="text-sm font-semibold text-ink">{item.message}</p>
+                  {item.link ? (
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-accent">
+                      Lien externe ↗
+                    </span>
+                  ) : null}
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/60">
                   <span
@@ -303,6 +353,21 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
                 </div>
               </div>
             );
+
+            if (item.link) {
+              return (
+                <a
+                  key={String(item.id ?? item.message)}
+                  href={item.link}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {content}
+                </a>
+              );
+            }
+
+            return content;
           })}
         </div>
       ) : (
@@ -354,6 +419,17 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
                   />
                 </label>
                 <label className="block text-sm font-semibold text-ink/80">
+                  Date &amp; heure
+                  <input
+                    type="datetime-local"
+                    value={formState.postedAt}
+                    onChange={(event) =>
+                      setFormState((prev) => ({ ...prev, postedAt: event.target.value }))
+                    }
+                    className="mt-2 w-full glass-input"
+                  />
+                </label>
+                <label className="block text-sm font-semibold text-ink/80">
                   Ordre
                   <input
                     type="number"
@@ -375,6 +451,18 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
                   rows={4}
                   className="mt-2 w-full glass-input"
                   required
+                />
+              </label>
+              <label className="block text-sm font-semibold text-ink/80">
+                Lien externe (optionnel)
+                <input
+                  type="url"
+                  value={formState.link}
+                  onChange={(event) =>
+                    setFormState((prev) => ({ ...prev, link: event.target.value }))
+                  }
+                  placeholder="https://"
+                  className="mt-2 w-full glass-input"
                 />
               </label>
               <label className="flex items-center gap-3 text-sm font-semibold text-ink/80">

@@ -13,6 +13,9 @@ type BannerItem = {
   message: string;
   status?: "draft" | "published";
   order?: number | null;
+  postedAt?: string | null;
+  link?: string | null;
+  createdAt?: string | null;
 };
 
 type HomeBannerProps = {
@@ -32,13 +35,49 @@ type BannerFormState = {
   message: string;
   status: "draft" | "published";
   order: string;
+  postedAt: string;
+  link: string;
 };
 
 const emptyFormState: BannerFormState = {
   label: "",
   message: "",
   status: "published",
-  order: "1"
+  order: "1",
+  postedAt: "",
+  link: ""
+};
+
+const toLocalInputValue = (date: Date) => {
+  const tzOffset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
+};
+
+const toInputDateTime = (value?: string | null) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return toLocalInputValue(date);
+};
+
+const toPayloadDate = (value: string) => {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toISOString();
+};
+
+const formatDateTime = (value?: string | null) => {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(date);
 };
 
 const fetchBannerItems = async () => {
@@ -167,7 +206,11 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
   const openCreate = () => {
     const nextOrder =
       bannerItems.length > 0 ? Math.max(...bannerItems.map((item) => item.order ?? 0)) + 1 : 1;
-    setFormState({ ...emptyFormState, order: String(nextOrder) });
+    setFormState({
+      ...emptyFormState,
+      order: String(nextOrder),
+      postedAt: toLocalInputValue(new Date())
+    });
     setEditingId(null);
     setFormError(null);
     setIsModalOpen(true);
@@ -178,7 +221,9 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
       label: item.label ?? "",
       message: item.message ?? "",
       status: item.status ?? "published",
-      order: String(item.order ?? 0)
+      order: String(item.order ?? 0),
+      postedAt: toInputDateTime(item.postedAt ?? item.createdAt),
+      link: item.link ?? ""
     });
     setEditingId(item.id ?? null);
     setFormError(null);
@@ -202,7 +247,9 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
         label: formState.label.trim() || null,
         message: formState.message.trim(),
         status: formState.status,
-        order: Number(formState.order) || 0
+        order: Number(formState.order) || 0,
+        postedAt: toPayloadDate(formState.postedAt),
+        link: formState.link.trim() || null
       };
 
       const response = await fetch(
@@ -270,7 +317,8 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
             label: item.label ?? null,
             message: item.message,
             status: "published",
-            order: item.order ?? idx + 1
+            order: item.order ?? idx + 1,
+            postedAt: new Date().toISOString()
           })
         });
       }
@@ -387,10 +435,25 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
               className="flex flex-wrap items-center justify-between gap-3 glass-panel px-4 py-3 text-xs"
             >
               <div className="space-y-1">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-slate">
-                  {item.label ?? "Info"}
-                </p>
+                <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate">
+                  <span>{item.label ?? "Info"}</span>
+                  {formatDateTime(item.postedAt ?? item.createdAt) ? (
+                    <span className="text-ink/50">
+                      {formatDateTime(item.postedAt ?? item.createdAt)}
+                    </span>
+                  ) : null}
+                </div>
                 <p className="text-sm font-semibold text-ink">{item.message}</p>
+                {item.link ? (
+                  <a
+                    href={item.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[10px] font-semibold uppercase tracking-[0.2em] text-accent"
+                  >
+                    Lien externe ↗
+                  </a>
+                ) : null}
               </div>
               <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/60">
                 <button
@@ -468,6 +531,17 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
                   />
                 </label>
                 <label className="block text-sm font-semibold text-ink/80">
+                  Date &amp; heure
+                  <input
+                    type="datetime-local"
+                    value={formState.postedAt}
+                    onChange={(event) =>
+                      setFormState((prev) => ({ ...prev, postedAt: event.target.value }))
+                    }
+                    className="mt-2 w-full glass-input"
+                  />
+                </label>
+                <label className="block text-sm font-semibold text-ink/80">
                   Ordre
                   <input
                     type="number"
@@ -489,6 +563,18 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
                   rows={4}
                   className="mt-2 w-full glass-input"
                   required
+                />
+              </label>
+              <label className="block text-sm font-semibold text-ink/80">
+                Lien externe (optionnel)
+                <input
+                  type="url"
+                  value={formState.link}
+                  onChange={(event) =>
+                    setFormState((prev) => ({ ...prev, link: event.target.value }))
+                  }
+                  placeholder="https://"
+                  className="mt-2 w-full glass-input"
                 />
               </label>
               <label className="flex items-center gap-3 text-sm font-semibold text-ink/80">

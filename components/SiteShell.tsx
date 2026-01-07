@@ -55,7 +55,14 @@ export const SiteShell = ({ children }: SiteShellProps) => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="site-pop flex min-h-screen flex-col">
+      <div className="home-bg-shapes" aria-hidden="true">
+        <span className="home-shape home-shape-circle home-shape-global-1" />
+        <span className="home-shape home-shape-oval home-shape-global-2" />
+        <span className="home-shape home-shape-triangle home-shape-global-3" />
+        <span className="home-shape home-shape-diamond home-shape-global-4" />
+        <span className="home-shape home-shape-square home-shape-global-5" />
+      </div>
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6 lg:px-8 page-enter">
         {children}

@@ -15,6 +15,8 @@ type BannerItem = {
   message: string;
   status?: "draft" | "published";
   order?: number | null;
+  postedAt?: string | null;
+  link?: string | null;
   createdAt?: string | null;
 };
 
@@ -25,7 +27,7 @@ export default async function InfosPage() {
     const response = await payload.find({
       collection: "home-banners",
       depth: 0,
-      sort: "-createdAt",
+      sort: "-postedAt",
       limit: 200,
       where: {
         status: {
@@ -34,6 +36,11 @@ export default async function InfosPage() {
       }
     });
     items = (response.docs ?? []) as BannerItem[];
+    items = items.sort((a, b) => {
+      const dateA = new Date(a.postedAt ?? a.createdAt ?? 0).getTime();
+      const dateB = new Date(b.postedAt ?? b.createdAt ?? 0).getTime();
+      return dateB - dateA;
+    });
   } catch {
     items = [];
   }

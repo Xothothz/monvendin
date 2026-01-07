@@ -9,7 +9,7 @@ export const HomeBanners: CollectionConfig = {
   },
   admin: {
     useAsTitle: "message",
-    defaultColumns: ["label", "message", "order", "status"]
+    defaultColumns: ["label", "message", "postedAt", "order", "status"]
   },
   access: {
     read: publishedOrHasPermission("manageHomeBanners"),
@@ -51,6 +51,23 @@ export const HomeBanners: CollectionConfig = {
         { label: "Brouillon", value: "draft" },
         { label: "Publie", value: "published" }
       ]
+    },
+    {
+      name: "postedAt",
+      type: "date",
+      label: "Date de publication",
+      defaultValue: () => new Date().toISOString(),
+      admin: {
+        description: "Date/heure affichee dans les listes d'infos."
+      }
+    },
+    {
+      name: "link",
+      type: "text",
+      label: "Lien externe",
+      admin: {
+        description: "URL optionnelle. Si remplie, le clic ouvre ce lien."
+      }
     }
   ]
 };

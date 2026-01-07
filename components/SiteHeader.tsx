@@ -121,7 +121,7 @@ export const SiteHeader = () => {
       <header
         id="site-header"
         ref={headerRef}
-        className="sticky top-0 z-40 border-b border-white/60 bg-white/70 backdrop-blur-xl shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
+        className="site-header sticky top-0 z-40 border-b border-white/60 bg-white/70 backdrop-blur-xl shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
       >
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-3 sm:px-6 lg:hidden">
         {logo}
