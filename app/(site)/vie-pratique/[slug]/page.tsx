@@ -20,6 +20,7 @@ import {
 import { PoliceMunicipaleContactContent } from "@/components/PoliceMunicipaleContactContent";
 import { HealthServicesHero, HealthServicesPage } from "@/components/HealthServicesPage";
 import { CenteredPageHeader } from "@/components/CenteredPageHeader";
+import { DechetsDocuments, type DechetsDocumentItem } from "@/components/DechetsDocuments";
 import { DechetsSchedule } from "@/components/DechetsSchedule";
 import { HeroAdmin } from "@/components/HeroAdmin";
 import { UrbanismeResourcesTabs } from "@/components/UrbanismeResourcesTabs";
@@ -1532,6 +1533,7 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
   if (slug === "dechets") {
     let heroImageUrl: string | null = "/images/banniere-dechets.png";
     let heroId: string | null = null;
+    let dechetsDocuments: DechetsDocumentItem[] = [];
 
     try {
       const payload = await getPayload({ config: configPromise });
@@ -1554,9 +1556,23 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
       if (heroDoc?.id) {
         heroId = String(heroDoc.id);
       }
+
+      const documentsResponse = await payload.find({
+        collection: "documents",
+        depth: 0,
+        sort: "-documentDate",
+        limit: 50,
+        where: {
+          documentType: {
+            equals: "dechets"
+          }
+        }
+      });
+      dechetsDocuments = (documentsResponse.docs ?? []) as DechetsDocumentItem[];
     } catch {
       heroImageUrl = "/images/banniere-dechets.png";
       heroId = null;
+      dechetsDocuments = [];
     }
 
     const scheduleCards = [
@@ -2019,6 +2035,7 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
                 <p className="text-sm text-slate">Telechargez les supports pratiques.</p>
               </div>
             </div>
+            <DechetsDocuments initialDocuments={dechetsDocuments} />
             <div className="grid gap-3">
               <a
                 href="/docs/memo-tri.pdf"

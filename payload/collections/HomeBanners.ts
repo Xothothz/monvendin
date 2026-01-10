@@ -9,7 +9,7 @@ export const HomeBanners: CollectionConfig = {
   },
   admin: {
     useAsTitle: "message",
-    defaultColumns: ["label", "message", "postedAt", "order", "status"]
+    defaultColumns: ["label", "message", "postedAt", "showInCarousel", "order", "status"]
   },
   access: {
     read: publishedOrHasPermission("manageHomeBanners"),
@@ -53,12 +53,26 @@ export const HomeBanners: CollectionConfig = {
       ]
     },
     {
+      name: "showInCarousel",
+      type: "checkbox",
+      label: "Afficher dans le carrousel",
+      defaultValue: true
+    },
+    {
       name: "postedAt",
       type: "date",
       label: "Date de publication",
       defaultValue: () => new Date().toISOString(),
       admin: {
         description: "Date/heure affichee dans les listes d'infos."
+      }
+    },
+    {
+      name: "imageUrl",
+      type: "text",
+      label: "Image (URL)",
+      admin: {
+        description: "Image associee a l'info (chargee via l'upload ci-dessous)."
       }
     },
     {

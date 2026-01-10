@@ -72,13 +72,17 @@ const quickTiles = [
   }
 ] as const;
 
-type InfoItem = {
+type BannerItem = {
   id?: string | number;
   label?: string | null;
   message: string;
+  status?: "draft" | "published";
+  order?: number | null;
   postedAt?: string | null;
   createdAt?: string | null;
   link?: string | null;
+  showInCarousel?: boolean | null;
+  imageUrl?: string | null;
 };
 
 const formatDate = (value: string) =>
@@ -91,27 +95,10 @@ const formatShortDate = (value: string) =>
     new Date(value)
   );
 
-const formatInfoDate = (value?: string | null) => {
-  if (!value) return null;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat("fr-FR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  }).format(date);
-};
-
-const getInfoDate = (item: InfoItem) =>
-  new Date(item.postedAt ?? item.createdAt ?? 0).getTime();
-
 export default async function HomePage() {
   const payload = await getPayload({ config: configPromise });
   const weather = await getWeatherSnapshot();
-  let bannerItems = homeBanner.items;
-  let latestInfos: InfoItem[] = [];
+  let bannerItems: BannerItem[] = homeBanner.items as BannerItem[];
   let news: Array<{
     id: string | number;
     title: string;
@@ -130,37 +117,23 @@ export default async function HomePage() {
     const bannerResponse = await payload.find({
       collection: "home-banners",
       depth: 0,
-      sort: "order",
-      limit: 50,
+      sort: "-postedAt",
+      limit: 200,
       where: {
         status: {
           equals: "published"
         }
       }
     });
-    const bannerDocs = (bannerResponse.docs ?? []) as InfoItem[];
+    const bannerDocs = (bannerResponse.docs ?? []) as BannerItem[];
     if (bannerDocs.length > 0) {
       bannerItems = bannerDocs.map((doc) => ({
-        label: doc.label ?? "Info",
-        message: doc.message
-      }));
-      latestInfos = bannerDocs;
-    } else {
-      latestInfos = homeBanner.items.map((item, index) => ({
-        id: `fallback-${index}`,
-        label: item.label ?? "Info",
-        message: item.message,
-        createdAt: nowIso
+        ...doc,
+        label: doc.label ?? "Info"
       }));
     }
   } catch {
-    bannerItems = homeBanner.items;
-    latestInfos = homeBanner.items.map((item, index) => ({
-      id: `fallback-${index}`,
-      label: item.label ?? "Info",
-      message: item.message,
-      createdAt: nowIso
-    }));
+    bannerItems = homeBanner.items as BannerItem[];
   }
 
   const { docs } = await payload.find({
@@ -214,10 +187,6 @@ export default async function HomePage() {
     news = [];
   }
 
-  const sortedInfos = [...latestInfos].sort((a, b) => getInfoDate(b) - getInfoDate(a)).slice(0, 10);
-  const infoLeft = sortedInfos.slice(0, 5);
-  const infoRight = sortedInfos.slice(5, 10);
-
   let heroImageUrl: string | null = homeHero.image ?? null;
   let heroId: string | null = null;
 
@@ -246,38 +215,6 @@ export default async function HomePage() {
     heroId = null;
   }
 
-  const renderInfoItem = (item: InfoItem) => {
-    const infoDate = formatInfoDate(item.postedAt ?? item.createdAt);
-    const content = (
-      <div className="home-info-card">
-        <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate">
-          <span>{item.label ?? "Info"}</span>
-          {infoDate ? <span className="text-ink/50">{infoDate}</span> : null}
-        </div>
-        <p className="home-info-message">{item.message}</p>
-        {item.link ? (
-          <span className="info-link-indicator">Lien externe ↗</span>
-        ) : null}
-      </div>
-    );
-
-    if (item.link) {
-      return (
-        <a
-          key={String(item.id ?? item.message)}
-          href={item.link}
-          target="_blank"
-          rel="noreferrer"
-          className="home-info-link"
-        >
-          {content}
-        </a>
-      );
-    }
-
-    return <div key={String(item.id ?? item.message)}>{content}</div>;
-  };
-
   return (
     <div className="home-pop space-y-10">
       {homeHero.enabled ? (
@@ -292,7 +229,7 @@ export default async function HomePage() {
         />
       ) : null}
       {homeBanner.enabled ? (
-        <HomeBanner items={bannerItems} fallbackItems={homeBanner.items} allowEdit weather={weather} />
+        <HomeBanner items={bannerItems} fallbackItems={homeBanner.items} weather={weather} />
       ) : null}
 
       <div className="home-sections -mt-6">
@@ -330,34 +267,6 @@ export default async function HomePage() {
                   );
                 })}
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="home-section space-y-6">
-          <div className="home-section-inner">
-            <div className="home-section-shapes" aria-hidden="true">
-              <span className="home-shape home-shape-oval home-shape-infos-1" />
-              <span className="home-shape home-shape-triangle home-shape-infos-2" />
-              <span className="home-shape home-shape-circle home-shape-infos-3" />
-            </div>
-            <div className="home-section-content space-y-6">
-              <div className="flex items-center justify-between flex-wrap gap-3">
-                <h2 className="section-title motion-in">Dernieres infos</h2>
-                <Link href="/infos" className="home-inline-link">
-                  Historique complet
-                </Link>
-              </div>
-              {sortedInfos.length === 0 ? (
-                <Card className="p-6 text-center text-slate">
-                  Aucune info publiee pour le moment.
-                </Card>
-              ) : (
-                <div className="grid gap-6 lg:grid-cols-2">
-                  <div className="space-y-3">{infoLeft.map(renderInfoItem)}</div>
-                  <div className="space-y-3">{infoRight.map(renderInfoItem)}</div>
-                </div>
-              )}
             </div>
           </div>
         </section>

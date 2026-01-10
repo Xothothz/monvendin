@@ -50,7 +50,7 @@ export default async function InfosPage() {
       <CenteredPageHeader
         label="Infos"
         title="Historique des infos"
-        description="Retrouvez l'ensemble des informations publiees sur le bandeau de la page d'accueil."
+        description="Retrouvez l'ensemble des informations publiees sur le carrousel de la page d'accueil."
       />
       <HomeBannerHistory items={items} />
     </div>

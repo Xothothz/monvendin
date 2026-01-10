@@ -10,6 +10,8 @@ type BannerItem = {
   status?: "draft" | "published";
   order?: number | null;
   postedAt?: string | null;
+  showInCarousel?: boolean | null;
+  imageUrl?: string | null;
   link?: string | null;
   createdAt?: string | null;
 };
@@ -29,6 +31,9 @@ type BannerFormState = {
   status: "draft" | "published";
   order: string;
   postedAt: string;
+  showInCarousel: boolean;
+  imageUrl: string;
+  imageFile: File | null;
   link: string;
 };
 
@@ -38,6 +43,9 @@ const emptyFormState: BannerFormState = {
   status: "published",
   order: "1",
   postedAt: "",
+  showInCarousel: true,
+  imageUrl: "",
+  imageFile: null,
   link: ""
 };
 
@@ -84,6 +92,39 @@ const formatDate = (value?: string | null) => {
   }).format(date);
 };
 
+const uploadImage = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch("/api/media", {
+    method: "POST",
+    body: formData,
+    credentials: "include"
+  });
+
+  if (!response.ok) {
+    throw new Error("Upload image impossible.");
+  }
+
+  const data = await response.json();
+  return data?.doc?.url ?? data?.url ?? null;
+};
+
+const monthOptions = [
+  { value: "1", label: "Janvier" },
+  { value: "2", label: "Fevrier" },
+  { value: "3", label: "Mars" },
+  { value: "4", label: "Avril" },
+  { value: "5", label: "Mai" },
+  { value: "6", label: "Juin" },
+  { value: "7", label: "Juillet" },
+  { value: "8", label: "Aout" },
+  { value: "9", label: "Septembre" },
+  { value: "10", label: "Octobre" },
+  { value: "11", label: "Novembre" },
+  { value: "12", label: "Decembre" }
+];
+
 export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [bannerItems, setBannerItems] = useState<BannerItem[]>(items);
@@ -94,18 +135,48 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
   const [deletingId, setDeletingId] = useState<string | number | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [formState, setFormState] = useState<BannerFormState>(emptyFormState);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [monthFilter, setMonthFilter] = useState("Tous");
+  const [yearFilter, setYearFilter] = useState("Toutes");
 
-  const displayItems = useMemo(() => {
+  const baseItems = useMemo(() => {
     const trimmed = bannerItems.filter((item) => item.message.trim().length > 0);
-    const filtered = user
+    return user
       ? trimmed
       : trimmed.filter((item) => (item.status ?? "published") === "published");
-    return filtered.sort((a, b) => {
+  }, [bannerItems, user]);
+
+  const availableYears = useMemo(() => {
+    const years = new Set<string>();
+    baseItems.forEach((item) => {
+      const date = new Date(item.postedAt ?? item.createdAt ?? "");
+      if (!Number.isNaN(date.getTime())) {
+        years.add(String(date.getFullYear()));
+      }
+    });
+    return Array.from(years).sort((a, b) => Number(b) - Number(a));
+  }, [baseItems]);
+
+  const filteredItems = useMemo(() => {
+    return baseItems.filter((item) => {
+      const date = new Date(item.postedAt ?? item.createdAt ?? "");
+      if (Number.isNaN(date.getTime())) return false;
+      const month = String(date.getMonth() + 1);
+      const year = String(date.getFullYear());
+      if (yearFilter !== "Toutes" && year !== yearFilter) return false;
+      if (monthFilter !== "Tous" && month !== monthFilter) return false;
+      return true;
+    });
+  }, [baseItems, monthFilter, yearFilter]);
+
+  const displayItems = useMemo(() => {
+    const sorted = [...filteredItems].sort((a, b) => {
       const dateA = new Date(a.postedAt ?? a.createdAt ?? 0).getTime();
       const dateB = new Date(b.postedAt ?? b.createdAt ?? 0).getTime();
       return dateB - dateA;
     });
-  }, [bannerItems, user]);
+    return sorted;
+  }, [filteredItems]);
 
   useEffect(() => {
     let isActive = true;
@@ -155,6 +226,15 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
     };
   }, [user]);
 
+  useEffect(() => {
+    if (formState.imageFile) {
+      const url = URL.createObjectURL(formState.imageFile);
+      setImagePreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setImagePreview(formState.imageUrl || null);
+  }, [formState.imageFile, formState.imageUrl]);
+
   const canEdit = hasPermission(user, "manageHomeBanners");
 
   const openCreate = () => {
@@ -163,7 +243,10 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
     setFormState({
       ...emptyFormState,
       order: String(nextOrder),
-      postedAt: toLocalInputValue(new Date())
+      postedAt: toLocalInputValue(new Date()),
+      showInCarousel: true,
+      imageUrl: "",
+      imageFile: null
     });
     setEditingId(null);
     setFormError(null);
@@ -177,6 +260,9 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
       status: item.status ?? "published",
       order: String(item.order ?? 0),
       postedAt: toInputDateTime(item.postedAt ?? item.createdAt),
+      showInCarousel: item.showInCarousel ?? true,
+      imageUrl: item.imageUrl ?? "",
+      imageFile: null,
       link: item.link ?? ""
     });
     setEditingId(item.id ?? null);
@@ -197,12 +283,19 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
     setFormError(null);
 
     try {
+      let nextImageUrl = formState.imageUrl.trim() || null;
+      if (formState.imageFile) {
+        nextImageUrl = await uploadImage(formState.imageFile);
+      }
+
       const payload = {
         label: formState.label.trim() || null,
         message: formState.message.trim(),
         status: formState.status,
         order: Number(formState.order) || 0,
         postedAt: toPayloadDate(formState.postedAt),
+        showInCarousel: formState.showInCarousel,
+        imageUrl: nextImageUrl,
         link: formState.link.trim() || null
       };
 
@@ -271,6 +364,23 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
     }
   };
 
+  const handleToggleCarousel = async (item: BannerItem) => {
+    if (!item.id) return;
+    const nextValue = !(item.showInCarousel ?? true);
+    try {
+      await fetch(`/api/home-banners/${item.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ showInCarousel: nextValue })
+      });
+      const docs = await fetchBannerItems();
+      setBannerItems(docs);
+    } catch {
+      setFormError("Mise a jour impossible.");
+    }
+  };
+
   return (
     <>
       {canEdit ? (
@@ -286,6 +396,204 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
         </div>
       ) : null}
 
+      {isModalOpen ? (
+        <div className="mb-6 rounded-3xl border border-ink/10 bg-white/80 p-6 text-ink shadow-2xl">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">
+                Infos
+              </p>
+              <h2 className="mt-2 text-2xl font-display">
+                {editingId ? "Modifier l'info" : "Nouvelle info"}
+              </h2>
+            </div>
+            <button
+              type="button"
+              onClick={closeModal}
+              className="rounded-full border border-ink/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-ink/70 hover:border-ink/30 hover:text-ink"
+            >
+              Fermer
+            </button>
+          </div>
+
+          <form className="mt-6 space-y-5" onSubmit={handleSave}>
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="block text-sm font-semibold text-ink/80">
+                Label
+                <input
+                  type="text"
+                  value={formState.label}
+                  onChange={(event) =>
+                    setFormState((prev) => ({ ...prev, label: event.target.value }))
+                  }
+                  className="mt-2 w-full glass-input"
+                />
+              </label>
+              <label className="block text-sm font-semibold text-ink/80">
+                Date &amp; heure
+                <input
+                  type="datetime-local"
+                  value={formState.postedAt}
+                  onChange={(event) =>
+                    setFormState((prev) => ({ ...prev, postedAt: event.target.value }))
+                  }
+                  className="mt-2 w-full glass-input"
+                />
+              </label>
+              <label className="block text-sm font-semibold text-ink/80">
+                Ordre
+                <input
+                  type="number"
+                  value={formState.order}
+                  onChange={(event) =>
+                    setFormState((prev) => ({ ...prev, order: event.target.value }))
+                  }
+                  className="mt-2 w-full glass-input"
+                />
+              </label>
+            </div>
+            <label className="block text-sm font-semibold text-ink/80">
+              Image (optionnelle)
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(event) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    imageFile: event.target.files?.[0] ?? null
+                  }))
+                }
+                className="mt-2 w-full text-sm"
+              />
+              {imagePreview ? (
+                <span className="mt-3 block overflow-hidden rounded-2xl border border-ink/10">
+                  <img src={imagePreview} alt="Apercu" className="h-40 w-full object-cover" />
+                </span>
+              ) : null}
+              {formState.imageUrl || formState.imageFile ? (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      imageUrl: "",
+                      imageFile: null
+                    }))
+                  }
+                  className="mt-2 inline-flex text-xs font-semibold uppercase tracking-[0.2em] text-slate"
+                >
+                  Retirer l'image
+                </button>
+              ) : null}
+            </label>
+            <label className="block text-sm font-semibold text-ink/80">
+              Message
+              <textarea
+                value={formState.message}
+                onChange={(event) =>
+                  setFormState((prev) => ({ ...prev, message: event.target.value }))
+                }
+                rows={4}
+                className="mt-2 w-full glass-input"
+                required
+              />
+            </label>
+            <label className="block text-sm font-semibold text-ink/80">
+              Lien externe (optionnel)
+              <input
+                type="url"
+                value={formState.link}
+                onChange={(event) =>
+                  setFormState((prev) => ({ ...prev, link: event.target.value }))
+                }
+                placeholder="https://"
+                className="mt-2 w-full glass-input"
+              />
+            </label>
+            <label className="flex items-center gap-3 text-sm font-semibold text-ink/80">
+              <input
+                type="checkbox"
+                checked={formState.status === "published"}
+                onChange={(event) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    status: event.target.checked ? "published" : "draft"
+                  }))
+                }
+                className="h-4 w-4 accent-ink"
+              />
+              Publier l'info
+            </label>
+            <label className="flex items-center gap-3 text-sm font-semibold text-ink/80">
+              <input
+                type="checkbox"
+                checked={formState.showInCarousel}
+                onChange={(event) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    showInCarousel: event.target.checked
+                  }))
+                }
+                className="h-4 w-4 accent-ink"
+              />
+              Afficher dans le carrousel
+            </label>
+
+            {formError ? <p className="text-sm text-red-600">{formError}</p> : null}
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={closeModal}
+                className="rounded-full border border-ink/10 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-ink/70 hover:border-ink/30 hover:text-ink"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                disabled={isSaving}
+                className="rounded-full bg-ink px-5 py-2 text-xs font-semibold uppercase tracking-widest text-white disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isSaving ? "Enregistrement..." : "Enregistrer"}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
+      <div className="grid gap-3 rounded-2xl border border-ink/10 bg-white/70 p-4 text-sm text-slate md:grid-cols-2">
+        <label className="text-sm text-slate">
+          Mois
+          <select
+            className="mt-1 w-full glass-select"
+            value={monthFilter}
+            onChange={(event) => setMonthFilter(event.target.value)}
+          >
+            <option value="Tous">Tous</option>
+            {monthOptions.map((month) => (
+              <option key={month.value} value={month.value}>
+                {month.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="text-sm text-slate">
+          Annee
+          <select
+            className="mt-1 w-full glass-select"
+            value={yearFilter}
+            onChange={(event) => setYearFilter(event.target.value)}
+          >
+            <option value="Toutes">Toutes</option>
+            {availableYears.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
       {isLoading ? <p className="mb-4 text-xs text-slate">Chargement...</p> : null}
 
       {displayItems.length > 0 ? (
@@ -293,6 +601,22 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
           {displayItems.map((item) => {
             const isPublished = (item.status ?? "published") === "published";
             const created = formatDate(item.postedAt ?? item.createdAt);
+            const linkLabel = item.link ? (
+              canEdit ? (
+                <a
+                  href={item.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[10px] font-semibold uppercase tracking-[0.2em] text-accent"
+                >
+                  Lien externe ↗
+                </a>
+              ) : (
+                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-accent">
+                  Lien externe ↗
+                </span>
+              )
+            ) : null;
             const content = (
               <div
                 key={String(item.id ?? item.message)}
@@ -302,13 +626,10 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
                   <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate">
                     <span>{item.label ?? "Info"}</span>
                     {created ? <span className="text-ink/50">{created}</span> : null}
+                    {item.imageUrl ? <span className="text-ink/50">Image</span> : null}
                   </div>
                   <p className="text-sm font-semibold text-ink">{item.message}</p>
-                  {item.link ? (
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-accent">
-                      Lien externe ↗
-                    </span>
-                  ) : null}
+                  {linkLabel}
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/60">
                   <span
@@ -329,6 +650,17 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
                         className="h-3.5 w-3.5 accent-ink"
                       />
                       Afficher
+                    </label>
+                  ) : null}
+                  {canEdit ? (
+                    <label className="flex items-center gap-2 rounded-full border border-ink/10 px-3 py-2">
+                      <input
+                        type="checkbox"
+                        checked={item.showInCarousel ?? true}
+                        onChange={() => handleToggleCarousel(item)}
+                        className="h-3.5 w-3.5 accent-ink"
+                      />
+                      Carrousel
                     </label>
                   ) : null}
                   {canEdit ? (
@@ -354,7 +686,7 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
               </div>
             );
 
-            if (item.link) {
+            if (item.link && !canEdit) {
               return (
                 <a
                   key={String(item.id ?? item.message)}
@@ -371,137 +703,8 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
           })}
         </div>
       ) : (
-        <p className="text-sm text-slate">Aucune info pour le moment.</p>
+        <p className="text-sm text-slate">Aucune info pour cette periode.</p>
       )}
-
-      {isModalOpen ? (
-        <div
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto px-4 py-10"
-          role="dialog"
-          aria-modal="true"
-        >
-          <button
-            type="button"
-            className="absolute inset-0 bg-ink/70"
-            onClick={closeModal}
-            aria-label="Fermer"
-          />
-          <div className="relative w-full max-w-2xl rounded-3xl bg-white p-6 text-ink shadow-2xl">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">
-                  Bandeau
-                </p>
-                <h2 className="mt-2 text-2xl font-display">
-                  {editingId ? "Modifier l'info" : "Nouvelle info"}
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={closeModal}
-                className="rounded-full border border-ink/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-ink/70 hover:border-ink/30 hover:text-ink"
-              >
-                Fermer
-              </button>
-            </div>
-
-            <form className="mt-6 space-y-5" onSubmit={handleSave}>
-              <div className="grid gap-4 md:grid-cols-2">
-                <label className="block text-sm font-semibold text-ink/80">
-                  Label
-                  <input
-                    type="text"
-                    value={formState.label}
-                    onChange={(event) =>
-                      setFormState((prev) => ({ ...prev, label: event.target.value }))
-                    }
-                    className="mt-2 w-full glass-input"
-                  />
-                </label>
-                <label className="block text-sm font-semibold text-ink/80">
-                  Date &amp; heure
-                  <input
-                    type="datetime-local"
-                    value={formState.postedAt}
-                    onChange={(event) =>
-                      setFormState((prev) => ({ ...prev, postedAt: event.target.value }))
-                    }
-                    className="mt-2 w-full glass-input"
-                  />
-                </label>
-                <label className="block text-sm font-semibold text-ink/80">
-                  Ordre
-                  <input
-                    type="number"
-                    value={formState.order}
-                    onChange={(event) =>
-                      setFormState((prev) => ({ ...prev, order: event.target.value }))
-                    }
-                    className="mt-2 w-full glass-input"
-                  />
-                </label>
-              </div>
-              <label className="block text-sm font-semibold text-ink/80">
-                Message
-                <textarea
-                  value={formState.message}
-                  onChange={(event) =>
-                    setFormState((prev) => ({ ...prev, message: event.target.value }))
-                  }
-                  rows={4}
-                  className="mt-2 w-full glass-input"
-                  required
-                />
-              </label>
-              <label className="block text-sm font-semibold text-ink/80">
-                Lien externe (optionnel)
-                <input
-                  type="url"
-                  value={formState.link}
-                  onChange={(event) =>
-                    setFormState((prev) => ({ ...prev, link: event.target.value }))
-                  }
-                  placeholder="https://"
-                  className="mt-2 w-full glass-input"
-                />
-              </label>
-              <label className="flex items-center gap-3 text-sm font-semibold text-ink/80">
-                <input
-                  type="checkbox"
-                  checked={formState.status === "published"}
-                  onChange={(event) =>
-                    setFormState((prev) => ({
-                      ...prev,
-                      status: event.target.checked ? "published" : "draft"
-                    }))
-                  }
-                  className="h-4 w-4 accent-ink"
-                />
-                Afficher dans le bandeau
-              </label>
-
-              {formError ? <p className="text-sm text-red-600">{formError}</p> : null}
-
-              <div className="flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="rounded-full border border-ink/10 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-ink/70 hover:border-ink/30 hover:text-ink"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSaving}
-                  className="rounded-full bg-ink px-5 py-2 text-xs font-semibold uppercase tracking-widest text-white disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {isSaving ? "Enregistrement..." : "Enregistrer"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      ) : null}
     </>
   );
 };

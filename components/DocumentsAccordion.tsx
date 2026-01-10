@@ -38,6 +38,7 @@ const documentTypes = [
   { label: "Deliberation", value: "deliberation" },
   { label: "Rapport", value: "rapport" },
   { label: "Annexe", value: "annexe" },
+  { label: "Dechets", value: "dechets" },
   { label: "Vendinfos", value: "vendinfos" },
   { label: "Autre", value: "autre" }
 ];

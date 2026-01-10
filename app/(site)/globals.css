@@ -1798,6 +1798,132 @@ article ul {
   color: rgb(var(--warning));
 }
 
+.info-carousel {
+  position: relative;
+}
+
+.info-carousel-card {
+  position: relative;
+  border-radius: 28px;
+  border: 2px solid rgba(var(--ink) / 0.08);
+  background: #ffffff;
+  box-shadow: 0 24px 60px rgba(10, 15, 25, 0.14);
+  overflow: hidden;
+}
+
+.info-carousel-content {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+}
+
+@media (min-width: 768px) {
+  .info-carousel-content {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: center;
+  }
+}
+
+.info-carousel-media {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 180px;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--accent) / 0.18),
+    rgba(var(--gold) / 0.2),
+    rgba(var(--warning) / 0.16)
+  );
+}
+
+.info-carousel-placeholder {
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(var(--accent) / 0.4), transparent 55%),
+    radial-gradient(circle at 80% 30%, rgba(var(--gold) / 0.35), transparent 50%),
+    radial-gradient(circle at 30% 80%, rgba(var(--warning) / 0.3), transparent 60%);
+}
+
+.info-carousel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-carousel-badge {
+  align-self: flex-start;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--accent) / 0.25);
+  background: rgba(var(--accent) / 0.1);
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgb(var(--accent));
+}
+
+.info-carousel-date {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(var(--slate) / 0.8);
+}
+
+.info-carousel-message {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgb(var(--ink));
+}
+
+.info-carousel-link {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(var(--accent));
+}
+
+.info-carousel-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 0 20px 20px;
+}
+
+.info-carousel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--ink) / 0.12);
+  padding: 6px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(var(--ink) / 0.8);
+  background: rgba(255, 255, 255, 0.7);
+  transition: transform var(--dur-fast) var(--ease-soft), background-color var(--dur-fast) var(--ease-soft);
+}
+
+.info-carousel-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(var(--accent) / 0.08);
+}
+
+.info-carousel-empty {
+  padding: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(var(--slate) / 0.8);
+}
+
 .home-tile {
   @apply flex items-center justify-between gap-3 rounded-2xl border px-4 py-4 text-left transition;
   color: rgb(var(--ink));

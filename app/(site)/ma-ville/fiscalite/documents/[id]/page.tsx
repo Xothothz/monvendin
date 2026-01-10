@@ -45,6 +45,8 @@ const typeLabel = (value?: string | null) => {
       return "Rapport";
     case "annexe":
       return "Annexe";
+    case "dechets":
+      return "Dechets";
     case "vendinfos":
       return "Vendinfos";
     default:

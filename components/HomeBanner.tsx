@@ -14,6 +14,8 @@ type BannerItem = {
   status?: "draft" | "published";
   order?: number | null;
   postedAt?: string | null;
+  showInCarousel?: boolean | null;
+  imageUrl?: string | null;
   link?: string | null;
   createdAt?: string | null;
 };
@@ -36,6 +38,9 @@ type BannerFormState = {
   status: "draft" | "published";
   order: string;
   postedAt: string;
+  showInCarousel: boolean;
+  imageUrl: string;
+  imageFile: File | null;
   link: string;
 };
 
@@ -45,6 +50,9 @@ const emptyFormState: BannerFormState = {
   status: "published",
   order: "1",
   postedAt: "",
+  showInCarousel: true,
+  imageUrl: "",
+  imageFile: null,
   link: ""
 };
 
@@ -80,8 +88,26 @@ const formatDateTime = (value?: string | null) => {
   }).format(date);
 };
 
+const uploadImage = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch("/api/media", {
+    method: "POST",
+    body: formData,
+    credentials: "include"
+  });
+
+  if (!response.ok) {
+    throw new Error("Upload image impossible.");
+  }
+
+  const data = await response.json();
+  return data?.doc?.url ?? data?.url ?? null;
+};
+
 const fetchBannerItems = async () => {
-  const response = await fetch("/api/home-banners?depth=0&limit=50&sort=order", {
+  const response = await fetch("/api/home-banners?depth=0&limit=200&sort=-postedAt", {
     credentials: "include"
   });
   if (!response.ok) {
@@ -104,24 +130,30 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
   const [deletingId, setDeletingId] = useState<string | number | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [formState, setFormState] = useState<BannerFormState>(emptyFormState);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const safeItems = useMemo(
-    () =>
-      bannerItems.filter(
+  const carouselItems = useMemo(() => {
+    return bannerItems
+      .filter(
         (item) =>
           item.message.trim().length > 0 &&
-          (item.status ?? "published") === "published"
-      ),
-    [bannerItems]
-  );
+          (item.status ?? "published") === "published" &&
+          (item.showInCarousel ?? true)
+      )
+      .sort((a, b) => {
+        const dateA = new Date(a.postedAt ?? a.createdAt ?? 0).getTime();
+        const dateB = new Date(b.postedAt ?? b.createdAt ?? 0).getTime();
+        return dateB - dateA;
+      });
+  }, [bannerItems]);
 
   useEffect(() => {
-    if (safeItems.length <= 1 || isPaused) return;
+    if (carouselItems.length <= 1 || isPaused) return;
     const timer = window.setInterval(() => {
-      setIndex((prev) => (prev + 1) % safeItems.length);
+      setIndex((prev) => (prev + 1) % carouselItems.length);
     }, 3000);
     return () => window.clearInterval(timer);
-  }, [safeItems.length, isPaused]);
+  }, [carouselItems.length, isPaused]);
 
   useEffect(() => {
     if (!allowEdit) return;
@@ -180,27 +212,36 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
   }, [allowEdit, user, items]);
 
   useEffect(() => {
-    if (safeItems.length === 0) return;
-    if (index > safeItems.length - 1) {
+    if (carouselItems.length === 0) return;
+    if (index > carouselItems.length - 1) {
       setIndex(0);
     }
-  }, [safeItems.length, index]);
+  }, [carouselItems.length, index]);
+
+  useEffect(() => {
+    if (formState.imageFile) {
+      const url = URL.createObjectURL(formState.imageFile);
+      setImagePreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setImagePreview(formState.imageUrl || null);
+  }, [formState.imageFile, formState.imageUrl]);
 
   const canEdit = hasPermission(user, "manageHomeBanners");
-  const hasItems = safeItems.length > 0;
+  const hasItems = carouselItems.length > 0;
 
   if (!hasItems && !canEdit) {
     return null;
   }
 
-  const current = hasItems ? safeItems[index % safeItems.length] : null;
+  const current = hasItems ? carouselItems[index % carouselItems.length] : null;
   const goPrev = () => {
     if (!hasItems) return;
-    setIndex((prev) => (prev - 1 + safeItems.length) % safeItems.length);
+    setIndex((prev) => (prev - 1 + carouselItems.length) % carouselItems.length);
   };
   const goNext = () => {
     if (!hasItems) return;
-    setIndex((prev) => (prev + 1) % safeItems.length);
+    setIndex((prev) => (prev + 1) % carouselItems.length);
   };
 
   const openCreate = () => {
@@ -209,7 +250,10 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
     setFormState({
       ...emptyFormState,
       order: String(nextOrder),
-      postedAt: toLocalInputValue(new Date())
+      postedAt: toLocalInputValue(new Date()),
+      showInCarousel: true,
+      imageUrl: "",
+      imageFile: null
     });
     setEditingId(null);
     setFormError(null);
@@ -223,6 +267,9 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
       status: item.status ?? "published",
       order: String(item.order ?? 0),
       postedAt: toInputDateTime(item.postedAt ?? item.createdAt),
+      showInCarousel: item.showInCarousel ?? true,
+      imageUrl: item.imageUrl ?? "",
+      imageFile: null,
       link: item.link ?? ""
     });
     setEditingId(item.id ?? null);
@@ -243,12 +290,19 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
     setFormError(null);
 
     try {
+      let nextImageUrl = formState.imageUrl.trim() || null;
+      if (formState.imageFile) {
+        nextImageUrl = await uploadImage(formState.imageFile);
+      }
+
       const payload = {
         label: formState.label.trim() || null,
         message: formState.message.trim(),
         status: formState.status,
         order: Number(formState.order) || 0,
         postedAt: toPayloadDate(formState.postedAt),
+        showInCarousel: formState.showInCarousel,
+        imageUrl: nextImageUrl,
         link: formState.link.trim() || null
       };
 
@@ -302,6 +356,23 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
     }
   };
 
+  const handleToggleCarousel = async (item: BannerItem) => {
+    if (!item.id) return;
+    const nextValue = !(item.showInCarousel ?? true);
+    try {
+      await fetch(`/api/home-banners/${item.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ showInCarousel: nextValue })
+      });
+      const docs = await fetchBannerItems();
+      setBannerItems(docs);
+    } catch {
+      setFormError("Mise a jour impossible.");
+    }
+  };
+
   const seedFallbackItems = async () => {
     if (!fallbackItems || fallbackItems.length === 0) return;
     setIsSaving(true);
@@ -318,7 +389,8 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
             message: item.message,
             status: "published",
             order: item.order ?? idx + 1,
-            postedAt: new Date().toISOString()
+            postedAt: new Date().toISOString(),
+            showInCarousel: true
           })
         });
       }
@@ -366,33 +438,251 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
         </p>
       ) : null}
 
+      {isModalOpen ? (
+        <div className="mb-6 rounded-3xl border border-ink/10 bg-white/80 p-6 text-ink shadow-2xl">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">
+                Infos
+              </p>
+              <h2 className="mt-2 text-2xl font-display">
+                {editingId ? "Modifier l'info" : "Nouvelle info"}
+              </h2>
+            </div>
+            <button
+              type="button"
+              onClick={closeModal}
+              className="rounded-full border border-ink/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-ink/70 hover:border-ink/30 hover:text-ink"
+            >
+              Fermer
+            </button>
+          </div>
+
+          <form className="mt-6 space-y-5" onSubmit={handleSave}>
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="block text-sm font-semibold text-ink/80">
+                Label
+                <input
+                  type="text"
+                  value={formState.label}
+                  onChange={(event) =>
+                    setFormState((prev) => ({ ...prev, label: event.target.value }))
+                  }
+                  className="mt-2 w-full glass-input"
+                />
+              </label>
+              <label className="block text-sm font-semibold text-ink/80">
+                Date &amp; heure
+                <input
+                  type="datetime-local"
+                  value={formState.postedAt}
+                  onChange={(event) =>
+                    setFormState((prev) => ({ ...prev, postedAt: event.target.value }))
+                  }
+                  className="mt-2 w-full glass-input"
+                />
+              </label>
+              <label className="block text-sm font-semibold text-ink/80">
+                Ordre
+                <input
+                  type="number"
+                  value={formState.order}
+                  onChange={(event) =>
+                    setFormState((prev) => ({ ...prev, order: event.target.value }))
+                  }
+                  className="mt-2 w-full glass-input"
+                />
+              </label>
+            </div>
+            <label className="block text-sm font-semibold text-ink/80">
+              Image (optionnelle)
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(event) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    imageFile: event.target.files?.[0] ?? null
+                  }))
+                }
+                className="mt-2 w-full text-sm"
+              />
+              {imagePreview ? (
+                <span className="mt-3 block overflow-hidden rounded-2xl border border-ink/10">
+                  <img src={imagePreview} alt="Apercu" className="h-40 w-full object-cover" />
+                </span>
+              ) : null}
+              {formState.imageUrl || formState.imageFile ? (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      imageUrl: "",
+                      imageFile: null
+                    }))
+                  }
+                  className="mt-2 inline-flex text-xs font-semibold uppercase tracking-[0.2em] text-slate"
+                >
+                  Retirer l'image
+                </button>
+              ) : null}
+            </label>
+            <label className="block text-sm font-semibold text-ink/80">
+              Message
+              <textarea
+                value={formState.message}
+                onChange={(event) =>
+                  setFormState((prev) => ({ ...prev, message: event.target.value }))
+                }
+                rows={4}
+                className="mt-2 w-full glass-input"
+                required
+              />
+            </label>
+            <label className="block text-sm font-semibold text-ink/80">
+              Lien externe (optionnel)
+              <input
+                type="url"
+                value={formState.link}
+                onChange={(event) =>
+                  setFormState((prev) => ({ ...prev, link: event.target.value }))
+                }
+                placeholder="https://"
+                className="mt-2 w-full glass-input"
+              />
+            </label>
+            <label className="flex items-center gap-3 text-sm font-semibold text-ink/80">
+              <input
+                type="checkbox"
+                checked={formState.status === "published"}
+                onChange={(event) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    status: event.target.checked ? "published" : "draft"
+                  }))
+                }
+                className="h-4 w-4 accent-ink"
+              />
+              Publier l'info
+            </label>
+            <label className="flex items-center gap-3 text-sm font-semibold text-ink/80">
+              <input
+                type="checkbox"
+                checked={formState.showInCarousel}
+                onChange={(event) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    showInCarousel: event.target.checked
+                  }))
+                }
+                className="h-4 w-4 accent-ink"
+              />
+              Afficher dans le carrousel
+            </label>
+
+            {formError ? <p className="text-sm text-red-600">{formError}</p> : null}
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={closeModal}
+                className="rounded-full border border-ink/10 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-ink/70 hover:border-ink/30 hover:text-ink"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                disabled={isSaving}
+                className="rounded-full bg-ink px-5 py-2 text-xs font-semibold uppercase tracking-widest text-white disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isSaving ? "Enregistrement..." : "Enregistrer"}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
       <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch">
         <section
-          className="flex-1 rounded-xl border border-ink/10 bg-accent px-6 py-4 text-white shadow-card"
+          className="info-carousel flex-1"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="info-carousel-card">
             {current ? (
-              <div key={index} className="space-y-2 motion-safe:animate-fade-up">
-                {current.label ? (
-                  <span className="inline-flex items-center rounded-full bg-gold px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-ink">
-                    {current.label}
-                  </span>
-                ) : null}
-                <p className="text-sm sm:text-base font-semibold">{current.message}</p>
-              </div>
+              <>
+                {current.link ? (
+                  <a
+                    href={current.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="info-carousel-content"
+                  >
+                    <div className="info-carousel-media">
+                      {current.imageUrl ? (
+                        <img
+                          src={current.imageUrl}
+                          alt={current.label ?? "Illustration info"}
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="info-carousel-placeholder" aria-hidden="true" />
+                      )}
+                    </div>
+                    <div className="info-carousel-body">
+                      {current.label ? (
+                        <span className="info-carousel-badge">{current.label}</span>
+                      ) : null}
+                      {formatDateTime(current.postedAt ?? current.createdAt) ? (
+                        <span className="info-carousel-date">
+                          {formatDateTime(current.postedAt ?? current.createdAt)}
+                        </span>
+                      ) : null}
+                      <p className="info-carousel-message">{current.message}</p>
+                      <span className="info-carousel-link">Lien externe ↗</span>
+                    </div>
+                  </a>
+                ) : (
+                  <div className="info-carousel-content">
+                    <div className="info-carousel-media">
+                      {current.imageUrl ? (
+                        <img
+                          src={current.imageUrl}
+                          alt={current.label ?? "Illustration info"}
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="info-carousel-placeholder" aria-hidden="true" />
+                      )}
+                    </div>
+                    <div className="info-carousel-body">
+                      {current.label ? (
+                        <span className="info-carousel-badge">{current.label}</span>
+                      ) : null}
+                      {formatDateTime(current.postedAt ?? current.createdAt) ? (
+                        <span className="info-carousel-date">
+                          {formatDateTime(current.postedAt ?? current.createdAt)}
+                        </span>
+                      ) : null}
+                      <p className="info-carousel-message">{current.message}</p>
+                    </div>
+                  </div>
+                )}
+              </>
             ) : (
-              <p className="text-sm font-semibold text-white/80">
+              <div className="info-carousel-empty">
                 Aucune info publiee pour le moment.
-              </p>
+              </div>
             )}
             {hasItems ? (
-              <div className="flex items-center gap-2">
+              <div className="info-carousel-controls">
                 <button
                   type="button"
                   onClick={goPrev}
-                  className="flex items-center gap-2 rounded-full border border-white/40 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white hover:bg-white/10"
+                  className="info-carousel-btn"
                   aria-label="Information precedente"
                 >
                   <CaretLeft className="h-4 w-4" aria-hidden="true" />
@@ -401,7 +691,7 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
                 <button
                   type="button"
                   onClick={goNext}
-                  className="flex items-center gap-2 rounded-full border border-white/40 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-white hover:bg-white/10"
+                  className="info-carousel-btn"
                   aria-label="Information suivante"
                 >
                   <span className="hidden sm:inline">Apres</span>
@@ -442,6 +732,7 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
                       {formatDateTime(item.postedAt ?? item.createdAt)}
                     </span>
                   ) : null}
+                  {item.imageUrl ? <span className="text-ink/50">Image</span> : null}
                 </div>
                 <p className="text-sm font-semibold text-ink">{item.message}</p>
                 {item.link ? (
@@ -456,6 +747,15 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
                 ) : null}
               </div>
               <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/60">
+                <label className="flex items-center gap-2 rounded-full border border-ink/10 px-3 py-2">
+                  <input
+                    type="checkbox"
+                    checked={item.showInCarousel ?? true}
+                    onChange={() => handleToggleCarousel(item)}
+                    className="h-3.5 w-3.5 accent-ink"
+                  />
+                  Carrousel
+                </label>
                 <button
                   type="button"
                   onClick={() => openEdit(item)}
@@ -483,135 +783,6 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
               </div>
             </div>
           ))}
-        </div>
-      ) : null}
-
-      {isModalOpen ? (
-        <div
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto px-4 py-10"
-          role="dialog"
-          aria-modal="true"
-        >
-          <button
-            type="button"
-            className="absolute inset-0 bg-ink/70"
-            onClick={closeModal}
-            aria-label="Fermer"
-          />
-          <div className="relative w-full max-w-2xl rounded-3xl bg-white p-6 text-ink shadow-2xl">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">
-                  Bandeau
-                </p>
-                <h2 className="mt-2 text-2xl font-display">
-                  {editingId ? "Modifier l'info" : "Nouvelle info"}
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={closeModal}
-                className="rounded-full border border-ink/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-ink/70 hover:border-ink/30 hover:text-ink"
-              >
-                Fermer
-              </button>
-            </div>
-
-            <form className="mt-6 space-y-5" onSubmit={handleSave}>
-              <div className="grid gap-4 md:grid-cols-2">
-                <label className="block text-sm font-semibold text-ink/80">
-                  Label
-                  <input
-                    type="text"
-                    value={formState.label}
-                    onChange={(event) =>
-                      setFormState((prev) => ({ ...prev, label: event.target.value }))
-                    }
-                    className="mt-2 w-full glass-input"
-                  />
-                </label>
-                <label className="block text-sm font-semibold text-ink/80">
-                  Date &amp; heure
-                  <input
-                    type="datetime-local"
-                    value={formState.postedAt}
-                    onChange={(event) =>
-                      setFormState((prev) => ({ ...prev, postedAt: event.target.value }))
-                    }
-                    className="mt-2 w-full glass-input"
-                  />
-                </label>
-                <label className="block text-sm font-semibold text-ink/80">
-                  Ordre
-                  <input
-                    type="number"
-                    value={formState.order}
-                    onChange={(event) =>
-                      setFormState((prev) => ({ ...prev, order: event.target.value }))
-                    }
-                    className="mt-2 w-full glass-input"
-                  />
-                </label>
-              </div>
-              <label className="block text-sm font-semibold text-ink/80">
-                Message
-                <textarea
-                  value={formState.message}
-                  onChange={(event) =>
-                    setFormState((prev) => ({ ...prev, message: event.target.value }))
-                  }
-                  rows={4}
-                  className="mt-2 w-full glass-input"
-                  required
-                />
-              </label>
-              <label className="block text-sm font-semibold text-ink/80">
-                Lien externe (optionnel)
-                <input
-                  type="url"
-                  value={formState.link}
-                  onChange={(event) =>
-                    setFormState((prev) => ({ ...prev, link: event.target.value }))
-                  }
-                  placeholder="https://"
-                  className="mt-2 w-full glass-input"
-                />
-              </label>
-              <label className="flex items-center gap-3 text-sm font-semibold text-ink/80">
-                <input
-                  type="checkbox"
-                  checked={formState.status === "published"}
-                  onChange={(event) =>
-                    setFormState((prev) => ({
-                      ...prev,
-                      status: event.target.checked ? "published" : "draft"
-                    }))
-                  }
-                  className="h-4 w-4 accent-ink"
-                />
-                Afficher dans le bandeau
-              </label>
-
-              {formError ? <p className="text-sm text-red-600">{formError}</p> : null}
-
-              <div className="flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="rounded-full border border-ink/10 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-ink/70 hover:border-ink/30 hover:text-ink"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSaving}
-                  className="rounded-full bg-ink px-5 py-2 text-xs font-semibold uppercase tracking-widest text-white disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {isSaving ? "Enregistrement..." : "Enregistrer"}
-                </button>
-              </div>
-            </form>
-          </div>
         </div>
       ) : null}
     </>
