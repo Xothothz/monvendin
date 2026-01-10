@@ -59,7 +59,10 @@ export const metadata: Metadata = {
     type: "website"
   },
   icons: {
-    icon: [{ url: "/favicon.png", sizes: "192x192", type: "image/png" }],
+    icon: [
+      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/favicon.png", sizes: "192x192", type: "image/png" }
+    ],
     apple: [{ url: "/apple-touch-icon.png", sizes: "192x192", type: "image/png" }]
   }
 };
