@@ -2039,6 +2039,8 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
             <div className="grid gap-3">
               <a
                 href="/docs/memo-tri.pdf"
+                target="_blank"
+                rel="noreferrer"
                 className="flex items-center justify-between rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-semibold text-ink/80 hover:bg-goldSoft/50"
               >
                 Memo du tri (PDF)
@@ -2046,6 +2048,8 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
               </a>
               <a
                 href="/docs/guide-tri-2022.pdf"
+                target="_blank"
+                rel="noreferrer"
                 className="flex items-center justify-between rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-semibold text-ink/80 hover:bg-goldSoft/50"
               >
                 Guide du tri 2022 (PDF)

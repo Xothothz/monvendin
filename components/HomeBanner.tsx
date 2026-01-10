@@ -665,7 +665,7 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
                     href={current.link}
                     target="_blank"
                     rel="noreferrer"
-                    className="info-carousel-body"
+                    className="info-carousel-body no-link-underline"
                   >
                     {current.label ? (
                       <span className="info-carousel-badge">{current.label}</span>
@@ -721,19 +721,15 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
             ) : null}
           </div>
         </section>
-        {weather ? (
-          <div className="self-start lg:self-stretch">
-            <WeatherWidget data={weather} />
-          </div>
-        ) : null}
-      </div>
-      <div className="mt-3 flex justify-end">
-        <Link
-          href="/infos"
-          className="rounded-full border border-ink/10 bg-white/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink/70 transition hover:bg-white"
-        >
-          Historique des infos
-        </Link>
+        <div className="flex flex-col gap-3 self-start lg:self-stretch">
+          {weather ? <WeatherWidget data={weather} /> : null}
+          <Link
+            href="/infos"
+            className="rounded-2xl border border-ink/10 bg-white/70 px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-ink/70 transition hover:bg-white"
+          >
+            Historique des infos
+          </Link>
+        </div>
       </div>
 
       {canEdit ? (

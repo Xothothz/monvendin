@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
+import clsx from "clsx";
 import Fuse from "fuse.js";
 import Link from "next/link";
+import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import { Card } from "@/components/Card";
 import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
@@ -91,6 +93,9 @@ const options = {
   threshold: 0.35
 };
 
+const formatMonthLabel = (value: Date) =>
+  new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" }).format(value);
+
 const toDateInputValue = (value?: string | null) => {
   if (!value) return "";
   const date = new Date(value);
@@ -101,6 +106,37 @@ const toDateInputValue = (value?: string | null) => {
 const toISODate = (value: string) => {
   if (!value) return null;
   return new Date(`${value}T00:00:00`).toISOString();
+};
+
+const startOfWeek = (value: Date) => {
+  const day = (value.getDay() + 6) % 7;
+  const start = new Date(value);
+  start.setDate(value.getDate() - day);
+  start.setHours(0, 0, 0, 0);
+  return start;
+};
+
+const endOfWeek = (start: Date) => {
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  end.setHours(23, 59, 59, 999);
+  return end;
+};
+
+const monthRange = (value: Date) => {
+  const start = new Date(value.getFullYear(), value.getMonth(), 1);
+  const end = new Date(value.getFullYear(), value.getMonth() + 1, 0);
+  end.setHours(23, 59, 59, 999);
+  return { start, end };
+};
+
+const formatRangeLabel = (viewMode: "month" | "week" | "all", cursor: Date) => {
+  if (viewMode === "all") return "Toutes les actualites";
+  if (viewMode === "month") return formatMonthLabel(cursor);
+  const start = startOfWeek(cursor);
+  const end = endOfWeek(start);
+  const formatter = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short" });
+  return `Semaine du ${formatter.format(start)} au ${formatter.format(end)}`;
 };
 
 const getImageMeta = (item?: ActualiteImage | null) => {
@@ -192,6 +228,9 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
   const [query, setQuery] = useState("");
   const [user, setUser] = useState<AdminUser | null>(null);
   const [newsItems, setNewsItems] = useState<ActualiteItem[]>(items);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [viewMode, setViewMode] = useState<"month" | "week" | "all">("all");
+  const [cursorDate, setCursorDate] = useState(() => new Date());
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -202,11 +241,33 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
 
   const fuse = useMemo(() => new Fuse(newsItems, options), [newsItems]);
   const results = query ? fuse.search(query).map((result) => result.item) : newsItems;
+  const range = useMemo(() => {
+    if (viewMode === "all") return null;
+    if (viewMode === "month") {
+      return monthRange(cursorDate);
+    }
+    const start = startOfWeek(cursorDate);
+    return { start, end: endOfWeek(start) };
+  }, [viewMode, cursorDate]);
+
+  const filteredResults = useMemo(() => {
+    return results.filter((item) => {
+      const date = new Date(item.date);
+      if (Number.isNaN(date.getTime())) return false;
+      if (!range) return true;
+      return date >= range.start && date <= range.end;
+    });
+  }, [results, range]);
+
   const sortedResults = useMemo(() => {
-    const next = [...results];
-    next.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const next = [...filteredResults];
+    next.sort((a, b) => {
+      const aTime = new Date(a.date).getTime();
+      const bTime = new Date(b.date).getTime();
+      return sortOrder === "asc" ? aTime - bTime : bTime - aTime;
+    });
     return next;
-  }, [results]);
+  }, [filteredResults, sortOrder]);
 
   const canEdit = Boolean(allowEdit && hasPermission(user, "manageActualites"));
   const canDelete = canEdit;
@@ -263,6 +324,27 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
       isActive = false;
     };
   }, [canEdit, items]);
+
+  useEffect(() => {
+    if (viewMode === "all") return;
+    if (viewMode === "month") {
+      setCursorDate((prev) => new Date(prev.getFullYear(), prev.getMonth(), 1));
+    } else {
+      setCursorDate((prev) => startOfWeek(prev));
+    }
+  }, [viewMode]);
+
+  const moveRange = (direction: -1 | 1) => {
+    if (viewMode === "all") return;
+    setCursorDate((prev) => {
+      if (viewMode === "month") {
+        return new Date(prev.getFullYear(), prev.getMonth() + direction, 1);
+      }
+      const next = new Date(prev);
+      next.setDate(prev.getDate() + direction * 7);
+      return next;
+    });
+  };
 
   const openCreate = () => {
     setFormState({
@@ -460,7 +542,91 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
         </div>
       ) : null}
 
-      <SearchInput value={query} onChange={setQuery} placeholder="Rechercher une actualite" />
+      <div className="flex flex-col gap-4 rounded-2xl border border-white/60 bg-white/70 p-5 backdrop-blur-md ring-1 ring-ink/5 shadow-card">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => moveRange(-1)}
+              disabled={viewMode === "all"}
+              className={clsx(
+                "rounded-full border border-white/60 bg-white/70 px-3 py-2 text-ink/70 ring-1 ring-ink/5 hover:bg-goldSoft/70",
+                viewMode === "all" && "cursor-not-allowed opacity-50"
+              )}
+              aria-label="Periode precedente"
+            >
+              <CaretLeft className="h-4 w-4" aria-hidden="true" />
+            </button>
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-slate">
+                {viewMode === "month" ? "Mois" : viewMode === "week" ? "Semaine" : "Toutes dates"}
+              </p>
+              <p className="text-lg font-display text-ink">
+                {formatRangeLabel(viewMode, cursorDate)}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => moveRange(1)}
+              disabled={viewMode === "all"}
+              className={clsx(
+                "rounded-full border border-white/60 bg-white/70 px-3 py-2 text-ink/70 ring-1 ring-ink/5 hover:bg-goldSoft/70",
+                viewMode === "all" && "cursor-not-allowed opacity-50"
+              )}
+              aria-label="Periode suivante"
+            >
+              <CaretRight className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+          <div className="flex items-center gap-2 rounded-full border border-white/60 bg-white/70 p-1 backdrop-blur-sm ring-1 ring-ink/5">
+            <button
+              type="button"
+              onClick={() => setViewMode("all")}
+              className={clsx(
+                "rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]",
+                viewMode === "all" ? "bg-ink text-white" : "text-ink/60"
+              )}
+            >
+              Tout
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("week")}
+              className={clsx(
+                "rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]",
+                viewMode === "week" ? "bg-ink text-white" : "text-ink/60"
+              )}
+            >
+              Hebdo
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("month")}
+              className={clsx(
+                "rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]",
+                viewMode === "month" ? "bg-ink text-white" : "text-ink/60"
+              )}
+            >
+              Mensuel
+            </button>
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-[1fr_220px]">
+          <SearchInput value={query} onChange={setQuery} placeholder="Rechercher une actualite" />
+          <label className="flex flex-col text-xs uppercase tracking-widest text-slate">
+            Tri
+            <select
+              value={sortOrder}
+              onChange={(event) => setSortOrder(event.target.value as "asc" | "desc")}
+              className="mt-2 rounded-xl border border-white/60 bg-white/70 px-3 py-3 text-sm text-ink ring-1 ring-ink/5 focus-ring"
+            >
+              <option value="desc">Plus recentes</option>
+              <option value="asc">Plus anciennes</option>
+            </select>
+          </label>
+        </div>
+      </div>
 
       {isLoading ? <p className="text-sm text-slate">Chargement...</p> : null}
 

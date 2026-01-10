@@ -607,12 +607,12 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
                   href={item.link}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[10px] font-semibold uppercase tracking-[0.2em] text-accent"
+                  className="info-history-link text-[10px] font-semibold uppercase tracking-[0.2em] text-accent no-link-underline"
                 >
                   Lien externe ↗
                 </a>
               ) : (
-                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-accent">
+                <span className="info-history-link text-[10px] font-semibold uppercase tracking-[0.2em] text-accent">
                   Lien externe ↗
                 </span>
               )
@@ -622,25 +622,27 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
                 key={String(item.id ?? item.message)}
                 className="flex flex-wrap items-center justify-between gap-3 glass-panel px-4 py-3 text-xs"
               >
-                <div className="space-y-1">
+                <div className="min-w-0 space-y-1">
                   <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate">
                     <span>{item.label ?? "Info"}</span>
                     {created ? <span className="text-ink/50">{created}</span> : null}
                     {item.imageUrl ? <span className="text-ink/50">Image</span> : null}
                   </div>
-                  <p className="text-sm font-semibold text-ink">{item.message}</p>
+                  <p className="text-sm font-semibold text-ink break-words">{item.message}</p>
                   {linkLabel}
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/60">
-                  <span
-                    className={
-                      isPublished
-                        ? "rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-700"
-                        : "rounded-full border border-ink/10 px-3 py-2 text-slate"
-                    }
-                  >
-                    {isPublished ? "Visible" : "Masquee"}
-                  </span>
+                  {canEdit ? (
+                    <span
+                      className={
+                        isPublished
+                          ? "rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-700"
+                          : "rounded-full border border-ink/10 px-3 py-2 text-slate"
+                      }
+                    >
+                      {isPublished ? "Visible" : "Masquee"}
+                    </span>
+                  ) : null}
                   {canEdit ? (
                     <label className="flex items-center gap-2 rounded-full border border-ink/10 px-3 py-2">
                       <input
@@ -693,6 +695,7 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
                   href={item.link}
                   target="_blank"
                   rel="noreferrer"
+                  className="group block no-link-underline"
                 >
                   {content}
                 </a>

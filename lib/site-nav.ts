@@ -38,6 +38,7 @@ export const siteNav: SiteNavItem[] = [
         links: [
           { label: "Actualites", href: "/actualites" },
           { label: "Agenda", href: "/agenda" },
+          { label: "Historique des infos", href: "/infos" },
           { label: "Vendinfos", href: "/vendinfos" },
           { label: "A propos", href: "/a-propos" }
         ]

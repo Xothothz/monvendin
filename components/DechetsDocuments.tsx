@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { createPortal } from "react-dom";
 import { FileText } from "@phosphor-icons/react";
 import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
@@ -130,6 +131,8 @@ export const DechetsDocuments = ({
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [formState, setFormState] = useState<DocumentFormState>(emptyFormState);
+  const [activeDoc, setActiveDoc] = useState<DechetsDocumentItem | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   const canEdit = hasPermission(user, "manageDocuments");
 
@@ -163,6 +166,38 @@ export const DechetsDocuments = ({
       isActive = false;
     };
   }, []);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!activeDoc) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setActiveDoc(null);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [activeDoc]);
+
+  const isImageDoc = (doc: DechetsDocumentItem) => {
+    if (doc.mimeType?.startsWith("image/")) return true;
+    const name = `${doc.filename ?? ""} ${doc.url ?? ""}`.toLowerCase();
+    return /\.(png|jpe?g|webp|gif|svg)$/.test(name);
+  };
+
+  const isPdfDoc = (doc: DechetsDocumentItem) => {
+    if (doc.mimeType === "application/pdf") return true;
+    const name = `${doc.filename ?? ""} ${doc.url ?? ""}`.toLowerCase();
+    return name.includes(".pdf");
+  };
 
   useEffect(() => {
     if (!canEdit) return;
@@ -354,16 +389,14 @@ export const DechetsDocuments = ({
                     <p className="font-semibold text-ink">{doc.title}</p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink/70">
-                    {doc.url ? (
-                      <a
-                        href={doc.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded-full border border-ink/10 px-3 py-2"
-                      >
-                        Ouvrir
-                      </a>
-                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => doc.url && setActiveDoc(doc)}
+                      className="rounded-full border border-ink/10 px-3 py-2"
+                      disabled={!doc.url}
+                    >
+                      Voir
+                    </button>
                     <button
                       type="button"
                       onClick={() => openEdit(doc)}
@@ -384,12 +417,12 @@ export const DechetsDocuments = ({
             }
 
             return (
-              <a
+              <button
                 key={String(doc.id)}
-                href={doc.url ?? "#"}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-between rounded-2xl border border-ink/10 bg-white px-4 py-3 text-sm font-semibold text-ink/80 hover:bg-goldSoft/50"
+                type="button"
+                onClick={() => doc.url && setActiveDoc(doc)}
+                className="flex w-full items-center justify-between rounded-2xl border border-ink/10 bg-white px-4 py-3 text-left text-sm font-semibold text-ink/80 hover:bg-goldSoft/50 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={!doc.url}
               >
                 <span>
                   {doc.title}
@@ -398,11 +431,81 @@ export const DechetsDocuments = ({
                   </span>
                 </span>
                 <FileText className="h-4 w-4 text-accent" aria-hidden="true" />
-              </a>
+              </button>
             );
           })}
         </div>
       ) : null}
+
+      {activeDoc?.url && isMounted
+        ? createPortal(
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label={activeDoc.title}
+              className="fixed inset-0 z-[2147483647] bg-ink/70 backdrop-blur-sm"
+              onClick={() => setActiveDoc(null)}
+            >
+              <div className="flex h-full w-full items-center justify-center p-3 sm:p-6">
+                <div
+                  className="relative flex items-center justify-center"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setActiveDoc(null)}
+                    className="absolute right-3 top-3 z-[2147483648] rounded-full bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-ink shadow-card"
+                  >
+                    Fermer
+                  </button>
+                  {isImageDoc(activeDoc) ? (
+                    <img
+                      src={activeDoc.url}
+                      alt={activeDoc.title}
+                      className="max-h-[85vh] w-auto max-w-[90vw] object-contain block"
+                    />
+                  ) : isPdfDoc(activeDoc) ? (
+                    <div className="flex h-[85vh] w-[90vw] max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-[0_30px_80px_-50px_rgba(15,23,42,0.6)]">
+                      <div className="flex items-center justify-between border-b border-ink/10 px-4 py-3">
+                        <p className="text-sm font-semibold text-ink">{activeDoc.title}</p>
+                      </div>
+                      <iframe
+                        title={activeDoc.title}
+                        src={`${activeDoc.url}#view=FitH`}
+                        className="h-full w-full"
+                      />
+                      <div className="flex items-center justify-end gap-3 border-t border-ink/10 px-4 py-3">
+                        <a
+                          href={activeDoc.url}
+                          download
+                          className="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-ink/80 hover:border-gold/40 hover:bg-goldSoft/40"
+                        >
+                          Telecharger
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl bg-white px-6 py-5 text-sm text-ink shadow-card">
+                      <p className="font-semibold">{activeDoc.title}</p>
+                      <p className="mt-2 text-slate">
+                        Apercu indisponible pour ce format.
+                      </p>
+                      <a
+                        href={activeDoc.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent"
+                      >
+                        Ouvrir le fichier
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
 
       {isModalOpen ? (
         <div
