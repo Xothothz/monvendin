@@ -9,7 +9,7 @@ import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
 type BannerItem = {
   id?: string | number;
-  label?: string;
+  label?: string | null;
   message: string;
   status?: "draft" | "published";
   order?: number | null;
