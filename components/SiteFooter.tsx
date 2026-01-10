@@ -247,38 +247,148 @@ const AdminAuthControls = () => {
 export const SiteFooter = () => {
   return (
     <footer className="mt-6 border-t border-ink/10 bg-ink text-white">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 text-xs sm:px-6 lg:px-8">
-        <div className="flex items-center gap-4 text-white/70">
-          <div className="flex items-center gap-2 rounded-xl bg-white/5 px-2 py-1">
-            <img
-              src="/images/gesteau-gregory.jpg"
-              alt="Photo de Gregory Gesteau"
-              className="h-8 w-8 rounded-full object-cover"
-              loading="lazy"
-            />
-            <div className="leading-tight">
-              <p className="text-xs font-semibold text-white">GESTEAU Gregory</p>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/70">
-                Webmaster
+      <div className="mx-auto max-w-6xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid gap-8 md:grid-cols-[1.4fr_1fr_1fr]">
+          <div className="space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50">
+              Mairie
+            </p>
+            <div className="space-y-3">
+              <p className="text-lg font-display text-white">
+                Mairie de Vendin-l&#232;s-B&#233;thune (62)
+              </p>
+              <address className="not-italic text-sm text-white/70">
+                <span className="block">209 rue Fran&#231;ois Mitterand</span>
+                <span className="block">62232 Vendin-lez-Bethune</span>
+              </address>
+              <div className="space-y-1 text-sm">
+                <a
+                  href="tel:0321572621"
+                  className="block text-white/80 no-link-underline hover:text-white"
+                >
+                  03 21 57 26 21
+                </a>
+                <a
+                  href="mailto:mairie.vendinlesbethune@wanadoo.fr"
+                  className="block text-white/80 no-link-underline hover:text-white"
+                >
+                  mairie.vendinlesbethune@wanadoo.fr
+                </a>
+                <a
+                  href="https://www.google.com/maps?q=209+Rue+Francois+Mitterand+62232+Vendin-lez-Bethune"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex text-xs font-semibold uppercase tracking-[0.2em] text-gold no-link-underline hover:text-white"
+                >
+                  Voir la mairie sur la carte
+                </a>
+              </div>
+              <p className="text-[11px] text-white/50">
+                Recherches frequentes : Vendin-l&#232;s-B&#233;thune, Vendin-lez-B&#233;thune,
+                vendin les bethune, vendin les b&#233;thune.
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-white/80">
-              Suivez la ville en ligne
-            </span>
-            <a
-              href="https://www.facebook.com/profile.php?id=100067033293725"
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-full bg-white/10 p-1.5 text-white hover:bg-gold/80 hover:text-ink"
-              aria-label="Facebook"
-            >
-              <FacebookLogo className="h-4 w-4" aria-hidden="true" />
-            </a>
+
+          <div className="space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50">
+              Acces rapides
+            </p>
+            <ul className="space-y-2 text-sm text-white/75">
+              <li>
+                <Link href="/actualites" className="no-link-underline hover:text-white">
+                  Actualites locales
+                </Link>
+              </li>
+              <li>
+                <Link href="/agenda" className="no-link-underline hover:text-white">
+                  Agenda municipal
+                </Link>
+              </li>
+              <li>
+                <Link href="/infos" className="no-link-underline hover:text-white">
+                  Historique des infos
+                </Link>
+              </li>
+              <li>
+                <Link href="/vie-pratique" className="no-link-underline hover:text-white">
+                  Vie pratique
+                </Link>
+              </li>
+              <li>
+                <Link href="/ma-ville" className="no-link-underline hover:text-white">
+                  Ma ville
+                </Link>
+              </li>
+              <li>
+                <Link href="/nous-contacter" className="no-link-underline hover:text-white">
+                  Nous contacter
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50">
+              Infos utiles
+            </p>
+            <ul className="space-y-2 text-sm text-white/75">
+              <li>
+                <Link href="/a-propos" className="no-link-underline hover:text-white">
+                  A propos / mentions
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/horaires-des-services"
+                  className="no-link-underline hover:text-white"
+                >
+                  Horaires des services
+                </Link>
+              </li>
+              <li>
+                <Link href="/structure-du-site" className="no-link-underline hover:text-white">
+                  Structure du site
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="/sitemap.xml"
+                  className="no-link-underline hover:text-white"
+                >
+                  Sitemap
+                </a>
+              </li>
+              <li>
+                <Link href="/documents" className="no-link-underline hover:text-white">
+                  Documents utiles
+                </Link>
+              </li>
+            </ul>
+            <div className="flex items-center gap-2 pt-2">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-white/70">
+                Suivez la ville en ligne
+              </span>
+              <a
+                href="https://www.facebook.com/profile.php?id=100067033293725"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full bg-white/10 p-1.5 text-white hover:bg-gold/80 hover:text-ink"
+                aria-label="Facebook"
+              >
+                <FacebookLogo className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </div>
           </div>
         </div>
-        <AdminAuthControls />
+
+        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-4 text-xs text-white/60">
+          <div className="flex flex-wrap items-center gap-3">
+            <span>monvendin.fr - portail citoyen independant</span>
+            <span className="hidden sm:inline">Webmaster: GESTEAU Gregory</span>
+          </div>
+          <AdminAuthControls />
+        </div>
       </div>
     </footer>
   );
