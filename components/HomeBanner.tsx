@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { createPortal } from "react-dom";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import { WeatherWidget } from "@/components/WeatherWidget";
 import type { WeatherSnapshot } from "@/lib/weather";
@@ -131,6 +132,8 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
   const [formError, setFormError] = useState<string | null>(null);
   const [formState, setFormState] = useState<BannerFormState>(emptyFormState);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [activeImage, setActiveImage] = useState<{ src: string; alt: string } | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   const carouselItems = useMemo(() => {
     return bannerItems
@@ -210,6 +213,26 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
       isActive = false;
     };
   }, [allowEdit, user, items]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!activeImage) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setActiveImage(null);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [activeImage]);
 
   useEffect(() => {
     if (carouselItems.length === 0) return;
@@ -611,67 +634,64 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
         >
           <div className="info-carousel-card">
             {current ? (
-              <>
+              <div className="info-carousel-content">
+                <div className="info-carousel-media">
+                  {current.imageUrl ? (
+                    <button
+                      type="button"
+                      className="info-carousel-media-btn"
+                      onClick={() =>
+                        setActiveImage({
+                          src: current.imageUrl ?? "",
+                          alt: current.label ?? "Illustration info"
+                        })
+                      }
+                      aria-label="Voir l'image en grand"
+                    >
+                      <img
+                        src={current.imageUrl}
+                        alt={current.label ?? "Illustration info"}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
+                      <span className="info-carousel-media-cta">Voir en grand</span>
+                    </button>
+                  ) : (
+                    <div className="info-carousel-placeholder" aria-hidden="true" />
+                  )}
+                </div>
                 {current.link ? (
                   <a
                     href={current.link}
                     target="_blank"
                     rel="noreferrer"
-                    className="info-carousel-content"
+                    className="info-carousel-body"
                   >
-                    <div className="info-carousel-media">
-                      {current.imageUrl ? (
-                        <img
-                          src={current.imageUrl}
-                          alt={current.label ?? "Illustration info"}
-                          className="h-full w-full object-cover"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="info-carousel-placeholder" aria-hidden="true" />
-                      )}
-                    </div>
-                    <div className="info-carousel-body">
-                      {current.label ? (
-                        <span className="info-carousel-badge">{current.label}</span>
-                      ) : null}
-                      {formatDateTime(current.postedAt ?? current.createdAt) ? (
-                        <span className="info-carousel-date">
-                          {formatDateTime(current.postedAt ?? current.createdAt)}
-                        </span>
-                      ) : null}
-                      <p className="info-carousel-message">{current.message}</p>
-                      <span className="info-carousel-link">Lien externe ↗</span>
-                    </div>
+                    {current.label ? (
+                      <span className="info-carousel-badge">{current.label}</span>
+                    ) : null}
+                    {formatDateTime(current.postedAt ?? current.createdAt) ? (
+                      <span className="info-carousel-date">
+                        {formatDateTime(current.postedAt ?? current.createdAt)}
+                      </span>
+                    ) : null}
+                    <p className="info-carousel-message">{current.message}</p>
+                    <span className="info-carousel-link">Lien externe ↗</span>
                   </a>
                 ) : (
-                  <div className="info-carousel-content">
-                    <div className="info-carousel-media">
-                      {current.imageUrl ? (
-                        <img
-                          src={current.imageUrl}
-                          alt={current.label ?? "Illustration info"}
-                          className="h-full w-full object-cover"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="info-carousel-placeholder" aria-hidden="true" />
-                      )}
-                    </div>
-                    <div className="info-carousel-body">
-                      {current.label ? (
-                        <span className="info-carousel-badge">{current.label}</span>
-                      ) : null}
-                      {formatDateTime(current.postedAt ?? current.createdAt) ? (
-                        <span className="info-carousel-date">
-                          {formatDateTime(current.postedAt ?? current.createdAt)}
-                        </span>
-                      ) : null}
-                      <p className="info-carousel-message">{current.message}</p>
-                    </div>
+                  <div className="info-carousel-body">
+                    {current.label ? (
+                      <span className="info-carousel-badge">{current.label}</span>
+                    ) : null}
+                    {formatDateTime(current.postedAt ?? current.createdAt) ? (
+                      <span className="info-carousel-date">
+                        {formatDateTime(current.postedAt ?? current.createdAt)}
+                      </span>
+                    ) : null}
+                    <p className="info-carousel-message">{current.message}</p>
                   </div>
                 )}
-              </>
+              </div>
             ) : (
               <div className="info-carousel-empty">
                 Aucune info publiee pour le moment.
@@ -785,6 +805,39 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
           ))}
         </div>
       ) : null}
+
+      {activeImage && isMounted
+        ? createPortal(
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label={activeImage.alt}
+              className="fixed inset-0 z-[2147483647] bg-ink/70 backdrop-blur-sm"
+              onClick={() => setActiveImage(null)}
+            >
+              <div className="flex h-full w-full items-center justify-center p-3 sm:p-6">
+                <div
+                  className="relative flex items-center justify-center"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setActiveImage(null)}
+                    className="absolute right-3 top-3 z-[2147483648] rounded-full bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-ink shadow-card"
+                  >
+                    Fermer
+                  </button>
+                  <img
+                    src={activeImage.src}
+                    alt={activeImage.alt}
+                    className="max-h-[85vh] w-auto max-w-[90vw] object-contain block"
+                  />
+                </div>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
     </>
   );
 };
