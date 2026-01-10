@@ -316,8 +316,8 @@ export const SiteFooter = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/ma-ville" className="no-link-underline hover:text-white">
-                  Ma ville
+                <Link href="/vendin-les-bethune" className="no-link-underline hover:text-white">
+                  Vendin-les-Bethune
                 </Link>
               </li>
               <li>

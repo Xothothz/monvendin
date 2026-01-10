@@ -5,7 +5,8 @@ import { CenteredPageHeader } from "@/components/CenteredPageHeader";
 import { HeroAdmin } from "@/components/HeroAdmin";
 
 export const metadata = {
-  title: "Actualites"
+  title: "Actualites Vendin-les-Bethune",
+  description: "Actualites locales et informations municipales a Vendin-les-Bethune."
 };
 
 export const dynamic = "force-dynamic";

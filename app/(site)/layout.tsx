@@ -57,7 +57,40 @@ export const metadata: Metadata = {
     description:
       "Portail de services citoyens, non affilie a la mairie de Vendin-les-Bethune.",
     type: "website"
+  },
+  icons: {
+    icon: [{ url: "/favicon.png", sizes: "192x192", type: "image/png" }],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "192x192", type: "image/png" }]
   }
+};
+
+const schemaOrg = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://monvendin.fr/#website",
+      name: "monvendin.fr",
+      url: "https://monvendin.fr",
+      inLanguage: "fr",
+      description:
+        "Portail citoyen independant de Vendin-les-Bethune: services utiles et ressources publiques."
+    },
+    {
+      "@type": "CityHall",
+      "@id": "https://monvendin.fr/#mairie",
+      name: "Mairie de Vendin-les-Bethune",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "209 rue Francois Mitterand",
+        postalCode: "62232",
+        addressLocality: "Vendin-lez-Bethune",
+        addressCountry: "FR"
+      },
+      telephone: "03 21 57 26 21",
+      email: "mairie.vendinlesbethune@wanadoo.fr"
+    }
+  ]
 };
 
 export default function RootLayout({
@@ -71,6 +104,10 @@ export default function RootLayout({
       className={`${bodyFont.variable} ${displayFont.variable} ${cormorantFont.variable} ${workSansFont.variable} ${bebasFont.variable} ${dmSansFont.variable}`}
     >
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
+        />
         <SiteShell>{children}</SiteShell>
       </body>
     </html>

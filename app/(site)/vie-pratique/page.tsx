@@ -3,7 +3,8 @@ import { PageTitle } from "@/components/PageTitle";
 import { Card } from "@/components/Card";
 
 export const metadata = {
-  title: "Vie pratique"
+  title: "Vie pratique Vendin-les-Bethune",
+  description: "Services pratiques du quotidien a Vendin-les-Bethune."
 };
 
 const items = [

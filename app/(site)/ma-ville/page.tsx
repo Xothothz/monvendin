@@ -3,7 +3,8 @@ import { PageTitle } from "@/components/PageTitle";
 import { Card } from "@/components/Card";
 
 export const metadata = {
-  title: "Ma ville"
+  title: "Ma ville Vendin-les-Bethune",
+  description: "Informations institutionnelles et vie municipale de Vendin-les-Bethune."
 };
 
 const sections = [
@@ -31,7 +32,14 @@ export default function MaVillePage() {
       <header className="space-y-3">
         <PageTitle title="Ma ville" />
         <p className="text-slate max-w-2xl">
-          Informations institutionnelles et vie municipale.
+          Informations institutionnelles et vie municipale de Vendin-les-Bethune (Pas-de-Calais, 62).
+        </p>
+        <p className="text-sm text-slate max-w-2xl">
+          Pour une vue d'ensemble de la commune, consultez{" "}
+          <Link href="/vendin-les-bethune" className="text-accent no-link-underline">
+            Vendin-les-Bethune
+          </Link>
+          .
         </p>
       </header>
       <div className="grid gap-6 lg:grid-cols-3">

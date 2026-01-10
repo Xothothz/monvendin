@@ -5,7 +5,8 @@ import { CenteredPageHeader } from "@/components/CenteredPageHeader";
 import { HeroAdmin } from "@/components/HeroAdmin";
 
 export const metadata = {
-  title: "Agenda"
+  title: "Agenda Vendin-les-Bethune",
+  description: "Agenda des evenements et temps forts a Vendin-les-Bethune."
 };
 
 export const dynamic = "force-dynamic";

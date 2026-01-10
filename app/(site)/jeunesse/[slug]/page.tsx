@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { getPayload } from "payload";
 import configPromise from "@payload-config";
 import { CenteredPageHeader } from "@/components/CenteredPageHeader";
@@ -787,9 +788,53 @@ export default async function JeunesseDetailPage({ params }: PageProps) {
       <div className="space-y-10">
         <CenteredPageHeader
           label="Jeunesse"
-          title="Portail Periscolaire"
-          description="Gerez cantine, garderie et activites via My Peri'School."
+          title="Accueil periscolaire a Vendin-les-Bethune"
+          description="Informations pratiques sur l'accueil periscolaire a Vendin-les-Bethune : inscriptions, services et acces au portail My Peri'School."
         />
+
+        <section>
+          <Card className="p-6 space-y-4">
+            <p className="text-sm text-slate">
+              Retrouvez ici le portail officiel pour gerer la cantine, la garderie et les
+              activites periscolaires a Vendin-les-Bethune. Toutes les demarches passent par
+              My Peri'School.
+            </p>
+            <div className="grid gap-3 text-sm text-slate md:grid-cols-3">
+              <div className="rounded-2xl border border-ink/10 bg-white p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate">
+                  Inscription
+                </p>
+                <p className="mt-2 text-sm text-ink">
+                  Creez ou activez votre compte My Peri'School.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-ink/10 bg-white p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate">
+                  Services
+                </p>
+                <p className="mt-2 text-sm text-ink">
+                  Cantine, garderie et activites du mercredi.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-ink/10 bg-white p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate">
+                  Contact
+                </p>
+                <p className="mt-2 text-sm text-ink">
+                  Besoin d'aide ? Utilisez le formulaire de contact.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-ink/70">
+              <Link href="/jeunesse" className="no-link-underline hover:text-ink">
+                Jeunesse
+              </Link>
+              <Link href="/jeunesse/restaurant-scolaire" className="no-link-underline hover:text-ink">
+                Restaurant scolaire
+              </Link>
+            </div>
+          </Card>
+        </section>
 
         <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <Card className="relative overflow-hidden p-6">

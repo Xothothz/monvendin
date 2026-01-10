@@ -12,7 +12,8 @@ import { Card } from "@/components/Card";
 import { CenteredPageHeader } from "@/components/CenteredPageHeader";
 
 export const metadata = {
-  title: "Vendin-les-Bethune"
+  title: "Vendin-les-Bethune",
+  description: "Page pratique pour Vendin-les-Bethune: services, contacts et infos locales."
 };
 
 export default function VendinLesBethunePage() {

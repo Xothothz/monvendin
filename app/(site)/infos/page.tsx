@@ -4,7 +4,8 @@ import { CenteredPageHeader } from "@/components/CenteredPageHeader";
 import { HomeBannerHistory } from "@/components/HomeBannerHistory";
 
 export const metadata = {
-  title: "Historique des infos"
+  title: "Infos Vendin-les-Bethune",
+  description: "Historique des informations locales publiees pour Vendin-les-Bethune."
 };
 
 export const dynamic = "force-dynamic";

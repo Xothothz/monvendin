@@ -3,7 +3,8 @@ import { PageTitle } from "@/components/PageTitle";
 import { Card } from "@/components/Card";
 
 export const metadata = {
-  title: "Jeunesse"
+  title: "Jeunesse Vendin-les-Bethune",
+  description: "Services jeunesse, periscolaire et ecoles a Vendin-les-Bethune."
 };
 
 const items = [
