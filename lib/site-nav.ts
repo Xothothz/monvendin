@@ -36,6 +36,7 @@ export const siteNav: SiteNavItem[] = [
         title: "Infos",
         collapsible: false,
         links: [
+          { label: "Vendin-les-Bethune", href: "/vendin-les-bethune" },
           { label: "Actualites", href: "/actualites" },
           { label: "Agenda", href: "/agenda" },
           { label: "Historique des infos", href: "/infos" },

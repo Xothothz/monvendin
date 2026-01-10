@@ -82,6 +82,18 @@ a:focus-visible {
   @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2;
 }
 
+.variantes-orthographe summary {
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.variantes-orthographe p {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.5em;
+}
+
 .glass-panel {
   @apply rounded-2xl border border-white/60 bg-white/70 backdrop-blur-md ring-1 ring-ink/5 shadow-card;
 }

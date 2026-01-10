@@ -1,8 +1,8 @@
 {
   "enabled": true,
   "eyebrow": "Ville de Vendin",
-  "title": "Bienvenue sur le portail citoyen de Vendin-les-Bethune.",
-  "subtitle": "Site non officiel d'information locale, services utiles et ressources municipales.",
+  "title": "Portail d'information locale a Vendin-les-Bethune",
+  "subtitle": "monvendin.fr centralise actualites, agenda, services municipaux et infos pratiques pour Vendin-les-Bethune.",
   "image": "/media/centre_vendin.png",
   "alt": "Centre ville de Vendin-les-Bethune"
 }

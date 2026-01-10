@@ -271,7 +271,9 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
   const filtered = useMemo(() => {
     return events.filter((event) => {
       const startDate = new Date(event.startDate);
-      const inRange = !range || (startDate >= range.start && startDate <= range.end);
+      const endDate = event.endDate ? new Date(event.endDate) : startDate;
+      const inRange =
+        !range || (startDate <= range.end && endDate >= range.start);
       const matchesLocation = locationFilter === "all" || event.location === locationFilter;
       const matchesQuery =
         !query ||
