@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useId } from "react";
 import { CaretUpDown } from "@phosphor-icons/react";
 import { SearchInput } from "@/components/SearchInput";
 import { AnnuaireFormModal, type AnnuaireEntryInput } from "@/components/AnnuaireFormModal";
@@ -194,6 +194,7 @@ export const AnnuaireTable = ({
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(resolvedDefaultCategory);
   const [subCategoryFilter, setSubCategoryFilter] = useState("");
+  const [subCategoryOptions, setSubCategoryOptions] = useState<string[]>([]);
   const [sortKey, setSortKey] = useState<ColumnKey>(defaultSortKey ?? "denomination");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [isLoading, setIsLoading] = useState(false);
@@ -207,6 +208,7 @@ export const AnnuaireTable = ({
   const [isImporting, setIsImporting] = useState(false);
   const [importProgress, setImportProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const subCategoryListId = useId();
 
   const canEdit = hasPermission(user, "manageAssociations");
 
@@ -310,6 +312,56 @@ export const AnnuaireTable = ({
     setSortDirection((prev) => (sortKey === key ? (prev === "asc" ? "desc" : "asc") : "asc"));
     setSortKey(key);
   };
+
+  const fetchSubCategoryOptions = async (categoryValue: string) => {
+    const options = new Set<string>();
+    let currentPage = 1;
+    let total = 1;
+    const batchLimit = 200;
+
+    while (currentPage <= total) {
+      const params = new URLSearchParams();
+      params.set("page", String(currentPage));
+      params.set("limit", String(batchLimit));
+      params.set("sort", "sousCategorie");
+      if (categoryValue) {
+        params.set("categorie", categoryValue);
+      }
+
+      const response = await fetch(`/api/annuaire?${params.toString()}`, {
+        credentials: "include"
+      });
+      if (!response.ok) {
+        throw new Error("Chargement impossible.");
+      }
+      const data = (await response.json()) as AnnuaireResponse;
+      (data.docs ?? []).forEach((entry) => {
+        const value = entry.sousCategorie?.trim();
+        if (value) options.add(value);
+      });
+      total = data.totalPages ?? 1;
+      currentPage += 1;
+    }
+
+    return Array.from(options).sort((a, b) => a.localeCompare(b, "fr"));
+  };
+
+  useEffect(() => {
+    let isActive = true;
+    const loadOptions = async () => {
+      try {
+        const categoryValue = categoryFilter ?? selectedCategory;
+        const options = await fetchSubCategoryOptions(categoryValue);
+        if (isActive) setSubCategoryOptions(options);
+      } catch {
+        if (isActive) setSubCategoryOptions([]);
+      }
+    };
+    loadOptions();
+    return () => {
+      isActive = false;
+    };
+  }, [categoryFilter, selectedCategory]);
 
   const openCreate = () => {
     setEditingEntry(null);
@@ -663,8 +715,14 @@ export const AnnuaireTable = ({
               value={subCategoryFilter}
               onChange={(event) => setSubCategoryFilter(event.target.value)}
               className="ml-2 glass-input px-3 py-2 text-xs"
+              list={subCategoryListId}
               placeholder="Toutes"
             />
+            <datalist id={subCategoryListId}>
+              {subCategoryOptions.map((option) => (
+                <option key={option} value={option} />
+              ))}
+            </datalist>
           </label>
         </div>
         {canEdit ? (
