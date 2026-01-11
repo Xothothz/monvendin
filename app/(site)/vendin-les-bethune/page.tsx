@@ -12,8 +12,9 @@ import { Card } from "@/components/Card";
 import { CenteredPageHeader } from "@/components/CenteredPageHeader";
 
 export const metadata = {
-  title: "Vendin-les-Bethune",
-  description: "Page pratique pour Vendin-les-Bethune: services, contacts et infos locales."
+  title: "Vendin-les-Bethune | Informations locales",
+  description:
+    "Informations locales a Vendin-les-Bethune: mairie, services, agenda et contacts utiles."
 };
 
 export default function VendinLesBethunePage() {
@@ -53,12 +54,34 @@ export default function VendinLesBethunePage() {
       }
     }))
   };
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Accueil",
+        item: "https://monvendin.fr"
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Vendin-les-Bethune",
+        item: "https://monvendin.fr/vendin-les-bethune"
+      }
+    ]
+  };
 
   return (
     <div className="space-y-12 section-stack">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <CenteredPageHeader
         label="Commune"
@@ -117,6 +140,9 @@ export default function VendinLesBethunePage() {
             <p className="text-lg font-display text-ink">Contact direct</p>
           </div>
           <div className="space-y-3 text-sm text-slate">
+            <p className="text-sm text-slate">
+              Coordonnees utiles pour contacter la mairie ou verifier les horaires des services.
+            </p>
             <p className="flex items-start gap-2">
               <MapPinLine className="mt-0.5 h-4 w-4 text-accent" aria-hidden="true" />
               <span>
@@ -143,6 +169,17 @@ export default function VendinLesBethunePage() {
             >
               Voir sur la carte
             </a>
+            <div className="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-ink/70">
+              <Link href="/horaires-des-services" className="no-link-underline hover:text-ink">
+                Horaires
+              </Link>
+              <Link href="/nous-contacter" className="no-link-underline hover:text-ink">
+                Contact
+              </Link>
+              <Link href="/vie-pratique" className="no-link-underline hover:text-ink">
+                Vie pratique
+              </Link>
+            </div>
           </div>
         </Card>
       </section>

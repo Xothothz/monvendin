@@ -80,6 +80,15 @@ const schemaOrg = {
         "Portail citoyen independant de Vendin-les-Bethune: services utiles et ressources publiques."
     },
     {
+      "@type": "Organization",
+      "@id": "https://monvendin.fr/#organization",
+      name: "monvendin.fr",
+      url: "https://monvendin.fr",
+      logo: "https://monvendin.fr/favicon.png",
+      description:
+        "Projet citoyen independant pour l'information locale a Vendin-les-Bethune."
+    },
+    {
       "@type": "CityHall",
       "@id": "https://monvendin.fr/#mairie",
       name: "Mairie de Vendin-les-Bethune",

@@ -247,6 +247,23 @@ export default async function HomePage() {
                   Voir les services
                 </Link>
               </div>
+              <div className="space-y-2">
+                <p className="text-sm text-slate max-w-2xl">
+                  Portail citoyen de Vendin-les-Bethune pour acceder rapidement aux services,
+                  actualites locales et informations pratiques.
+                </p>
+                <div className="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-ink/70">
+                  <Link href="/vendin-les-bethune" className="no-link-underline hover:text-ink">
+                    Vendin-les-Bethune
+                  </Link>
+                  <Link
+                    href="/jeunesse/accueil-periscolaire"
+                    className="no-link-underline hover:text-ink"
+                  >
+                    MyPeriSchool
+                  </Link>
+                </div>
+              </div>
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {quickTiles.map((tile) => {
                   const Icon = tile.icon;

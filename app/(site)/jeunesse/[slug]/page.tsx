@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getPayload } from "payload";
@@ -84,6 +85,28 @@ const pages: Record<string, { title: string; description: string; bullets: strin
     bullets: ["Accompagnement", "Equipe", "Orientation"]
   }
 };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const page = pages[slug];
+  if (!page) {
+    return {
+      title: "Jeunesse",
+      description: "Services jeunesse et informations pratiques a Vendin-les-Bethune."
+    };
+  }
+  if (slug === "accueil-periscolaire") {
+    return {
+      title: "MyPeriSchool Vendin-les-Bethune | Accueil periscolaire",
+      description:
+        "Informations MyPeriSchool pour l'accueil periscolaire a Vendin-les-Bethune: inscription, cantine, garderie et services."
+    };
+  }
+  return {
+    title: `${page.title} | Jeunesse`,
+    description: page.description
+  };
+}
 
 export default async function JeunesseDetailPage({ params }: PageProps) {
   const { slug } = await params;
@@ -784,8 +807,37 @@ export default async function JeunesseDetailPage({ params }: PageProps) {
   }
 
   if (slug === "accueil-periscolaire") {
+    const breadcrumbSchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Accueil",
+          item: "https://monvendin.fr"
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Jeunesse",
+          item: "https://monvendin.fr/jeunesse"
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "Accueil periscolaire",
+          item: "https://monvendin.fr/jeunesse/accueil-periscolaire"
+        }
+      ]
+    };
+
     return (
       <div className="space-y-10">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
         <CenteredPageHeader
           label="Jeunesse"
           title="Accueil periscolaire a Vendin-les-Bethune"
@@ -794,6 +846,9 @@ export default async function JeunesseDetailPage({ params }: PageProps) {
 
         <section>
           <Card className="p-6 space-y-4">
+            <p className="text-sm text-slate">
+              Informations MyPeriSchool pour l'accueil periscolaire a Vendin-les-Bethune.
+            </p>
             <p className="text-sm text-slate">
               Retrouvez ici le portail officiel pour gerer la cantine, la garderie et les
               activites periscolaires a Vendin-les-Bethune. Toutes les demarches passent par
@@ -831,6 +886,9 @@ export default async function JeunesseDetailPage({ params }: PageProps) {
               </Link>
               <Link href="/jeunesse/restaurant-scolaire" className="no-link-underline hover:text-ink">
                 Restaurant scolaire
+              </Link>
+              <Link href="/vendin-les-bethune" className="no-link-underline hover:text-ink">
+                Vendin-les-Bethune
               </Link>
             </div>
           </Card>
