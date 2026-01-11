@@ -477,13 +477,18 @@ const sortedDocuments = useMemo(() => {
         const existingNames = new Set(
           documents.map((doc) => doc.filename ?? "").filter(Boolean)
         );
-        const renamed = buildFileName(
+        let renamed = buildFileName(
           formState.title,
           documentType,
           formState.documentDate,
           fileToUpload.name,
           existingNames
         );
+        if (hasCalameo && !formState.file) {
+          const extension = renamed.split(".").pop() || "png";
+          const base = renamed.replace(/\.[^.]+$/, "");
+          renamed = `${base}-${Date.now()}.${extension}`;
+        }
         const renamedFile = new File([fileToUpload], renamed, {
           type: fileToUpload.type
         });
