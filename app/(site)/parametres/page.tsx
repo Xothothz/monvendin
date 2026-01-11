@@ -7,7 +7,11 @@ import { ParametresAccess } from "./ParametresAccess";
 import { ParametresShell } from "./ParametresShell";
 
 export const metadata = {
-  title: "Parametres"
+  title: "Parametres",
+  robots: {
+    index: false,
+    follow: false
+  }
 };
 
 export const dynamic = "force-dynamic";

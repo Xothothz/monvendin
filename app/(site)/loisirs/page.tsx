@@ -3,7 +3,8 @@ import { PageTitle } from "@/components/PageTitle";
 import { Card } from "@/components/Card";
 
 export const metadata = {
-  title: "Loisirs"
+  title: "Loisirs Vendin-les-Bethune",
+  description: "Vie associative, culture et sport a Vendin-les-Bethune."
 };
 
 const items = [
@@ -25,8 +26,38 @@ const items = [
 ];
 
 export default function LoisirsPage() {
+  const faqItems = [
+    {
+      question: "Ou trouver une association ou un club ?",
+      answer: "La rubrique Vie associative regroupe les informations utiles."
+    },
+    {
+      question: "Ou consulter les equipements culturels ?",
+      answer: "La rubrique Culture presente les lieux et activites disponibles."
+    },
+    {
+      question: "Ou trouver les clubs sportifs ?",
+      answer: "La rubrique Sport centralise les clubs et equipements."
+    }
+  ];
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer
+      }
+    }))
+  };
   return (
     <div className="space-y-8 section-stack">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <header className="space-y-3">
         <PageTitle title="Loisirs" />
         <p className="text-slate max-w-2xl">
@@ -44,6 +75,18 @@ export default function LoisirsPage() {
           </Card>
         ))}
       </div>
+      <Card className="p-5">
+        <details className="variantes-orthographe">
+          <summary>Questions frequentes</summary>
+          <div className="space-y-2 text-sm text-slate">
+            {faqItems.map((item) => (
+              <p key={item.question}>
+                <strong>{item.question}</strong> {item.answer}
+              </p>
+            ))}
+          </div>
+        </details>
+      </Card>
     </div>
   );
 }

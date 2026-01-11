@@ -637,7 +637,7 @@ export const ActualitesList = ({ items, allowEdit }: ActualitesListProps) => {
           {sortedResults.map((item) => {
             const imageMeta = getImageMeta(item.images?.[0]);
             const imageUrl = imageMeta.url ?? null;
-            const imageAlt = imageMeta.alt ?? item.title;
+            const imageAlt = imageMeta.alt ?? `Actualite: ${item.title}`;
 
             return (
               <Card key={String(item.id)} className="p-6 flex flex-col gap-3">

@@ -41,8 +41,38 @@ const items = [
 ];
 
 export default function ViePratiquePage() {
+  const faqItems = [
+    {
+      question: "Ou trouver les informations sur les dechets ?",
+      answer: "La rubrique Dechets regroupe la collecte et le tri selectif."
+    },
+    {
+      question: "Ou consulter l'urbanisme et la voirie ?",
+      answer: "Les informations d'urbanisme sont dans la rubrique Urbanisme."
+    },
+    {
+      question: "Ou acceder aux demarches du quotidien ?",
+      answer: "La page Demarches centralise les fiches utiles."
+    }
+  ];
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer
+      }
+    }))
+  };
   return (
     <div className="space-y-8 section-stack">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <header className="space-y-3">
         <PageTitle title="Vie pratique" />
         <p className="text-slate max-w-2xl">
@@ -60,6 +90,18 @@ export default function ViePratiquePage() {
           </Card>
         ))}
       </div>
+      <Card className="p-5">
+        <details className="variantes-orthographe">
+          <summary>Questions frequentes</summary>
+          <div className="space-y-2 text-sm text-slate">
+            {faqItems.map((item) => (
+              <p key={item.question}>
+                <strong>{item.question}</strong> {item.answer}
+              </p>
+            ))}
+          </div>
+        </details>
+      </Card>
     </div>
   );
 }

@@ -7,8 +7,22 @@ type PageProps = {
   searchParams: Promise<Record<string, string | string[]>>;
 };
 
-export const generateMetadata = ({ params, searchParams }: { params: PageProps["params"]; searchParams: PageProps["searchParams"] }) =>
-  generatePageMetadata({ config: configPromise, params, searchParams });
+export const generateMetadata = async ({
+  params,
+  searchParams
+}: {
+  params: PageProps["params"];
+  searchParams: PageProps["searchParams"];
+}) => {
+  const metadata = await generatePageMetadata({ config: configPromise, params, searchParams });
+  return {
+    ...metadata,
+    robots: {
+      index: false,
+      follow: false
+    }
+  };
+};
 
 export default async function AdminPage({ params, searchParams }: PageProps) {
   const safeParams = (async () => {

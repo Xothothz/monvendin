@@ -258,6 +258,11 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
   }
 
   const current = hasItems ? carouselItems[index % carouselItems.length] : null;
+  const messageAlt =
+    current?.message && current.message.length > 80
+      ? `${current.message.slice(0, 80)}...`
+      : current?.message ?? null;
+  const imageAlt = current?.label ?? messageAlt ?? "Info municipale";
   const goPrev = () => {
     if (!hasItems) return;
     setIndex((prev) => (prev - 1 + carouselItems.length) % carouselItems.length);
@@ -643,14 +648,14 @@ export const HomeBanner = ({ items, fallbackItems, allowEdit, weather }: HomeBan
                       onClick={() =>
                         setActiveImage({
                           src: current.imageUrl ?? "",
-                          alt: current.label ?? "Illustration info"
+                          alt: imageAlt
                         })
                       }
                       aria-label="Voir l'image en grand"
                     >
                       <img
                         src={current.imageUrl}
-                        alt={current.label ?? "Illustration info"}
+                        alt={imageAlt}
                         className="h-full w-full object-cover"
                         loading="lazy"
                       />

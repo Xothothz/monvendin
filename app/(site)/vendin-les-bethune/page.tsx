@@ -25,9 +25,41 @@ export default function VendinLesBethunePage() {
     { label: "Infos municipales", href: "/infos", icon: UsersThree, tone: "neutral" },
     { label: "Nous contacter", href: "/nous-contacter", icon: PhoneCall, tone: "neutral" }
   ] as const;
+  const faqItems = [
+    {
+      question: "Ou consulter les actualites locales a Vendin-les-Bethune ?",
+      answer:
+        "La page Actualites regroupe les informations publiees sur Vendin-les-Bethune."
+    },
+    {
+      question: "Ou trouver l'agenda des evenements a Vendin-les-Bethune ?",
+      answer: "L'agenda municipal rassemble les rendez-vous et evenements a venir."
+    },
+    {
+      question: "Ou acceder aux services et demarches en ligne ?",
+      answer:
+        "Les rubriques Vie pratique et Demarches centralisent les informations utiles."
+    }
+  ];
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer
+      }
+    }))
+  };
 
   return (
     <div className="space-y-12 section-stack">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <CenteredPageHeader
         label="Commune"
         title="Vendin-l&#232;s-B&#233;thune"
@@ -211,6 +243,39 @@ export default function VendinLesBethunePage() {
             <strong>Vendin-lez-B&#233;thune</strong>, <strong>vendin les bethune</strong>,{" "}
             <strong>vendin les b&#233;thune</strong>.
           </p>
+        </details>
+      </Card>
+
+      <Card className="p-5">
+        <details className="variantes-orthographe">
+          <summary>Questions frequentes</summary>
+          <div className="space-y-2 text-sm text-slate">
+            <p>
+              <strong>Ou consulter les actualites locales ?</strong> La page{" "}
+              <Link href="/actualites" className="no-link-underline font-semibold text-accent">
+                Actualites
+              </Link>{" "}
+              regroupe les informations publiees sur Vendin-les-Bethune.
+            </p>
+            <p>
+              <strong>Ou trouver l'agenda municipal ?</strong> L&apos;
+              <Link href="/agenda" className="no-link-underline font-semibold text-accent">
+                agenda municipal
+              </Link>{" "}
+              rassemble les rendez-vous et evenements a venir.
+            </p>
+            <p>
+              <strong>Ou acceder aux services et demarches ?</strong> Les rubriques{" "}
+              <Link href="/vie-pratique" className="no-link-underline font-semibold text-accent">
+                Vie pratique
+              </Link>{" "}
+              et{" "}
+              <Link href="/demarches" className="no-link-underline font-semibold text-accent">
+                Demarches
+              </Link>{" "}
+              centralisent les informations utiles.
+            </p>
+          </div>
         </details>
       </Card>
     </div>

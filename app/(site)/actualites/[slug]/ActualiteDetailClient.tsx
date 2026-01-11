@@ -210,7 +210,7 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
         const meta = getImageMeta(imageItem);
         return {
           url: meta.url,
-          alt: meta.alt ?? item.title
+          alt: meta.alt ?? `Actualite: ${item.title}`
         };
       })
       .filter((imageItem) => Boolean(imageItem.url));

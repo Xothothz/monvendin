@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date()
   }));
 
-  let actualiteRoutes: string[] = [];
+  let actualiteRoutes: MetadataRoute.Sitemap = [];
   try {
     const payload = await getPayload({ config: configPromise });
     const response = await payload.find({
@@ -40,21 +40,55 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
     });
     actualiteRoutes = (response.docs ?? [])
-      .map((item) => `/actualites/${item.slug}`)
-      .filter(Boolean);
+      .filter((item) => Boolean(item.slug))
+      .map((item) => ({
+        url: `${baseUrl}/actualites/${item.slug}`,
+        lastModified: new Date(item.updatedAt ?? item.date ?? item.createdAt ?? Date.now())
+      }));
   } catch {
     actualiteRoutes = [];
   }
 
+  let eventRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const payload = await getPayload({ config: configPromise });
+    const response = await payload.find({
+      collection: "events",
+      depth: 0,
+      limit: 200,
+      where: {
+        status: {
+          equals: "published"
+        }
+      }
+    });
+    eventRoutes = (response.docs ?? [])
+      .filter((item) => Boolean(item.slug))
+      .map((item) => ({
+        url: `${baseUrl}/agenda/${item.slug}`,
+        lastModified: new Date(
+          item.updatedAt ?? item.endDate ?? item.startDate ?? item.createdAt ?? Date.now()
+        )
+      }));
+  } catch {
+    eventRoutes = agenda.map((item) => ({
+      url: `${baseUrl}/agenda/${item.slug}`,
+      lastModified: new Date()
+    }));
+  }
+
   const dynamicRoutes = [
     ...actualiteRoutes,
-    ...agenda.map((item) => `/agenda/${item.slug}`),
-    ...demarches.map((item) => `/demarches/${item.slug}`),
-    ...associations.map((item) => `/associations/${item.slug}`)
-  ].map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date()
-  }));
+    ...eventRoutes,
+    ...demarches.map((item) => ({
+      url: `${baseUrl}/demarches/${item.slug}`,
+      lastModified: new Date()
+    })),
+    ...associations.map((item) => ({
+      url: `${baseUrl}/associations/${item.slug}`,
+      lastModified: new Date()
+    }))
+  ];
 
   return [...staticRoutes, ...dynamicRoutes];
 }

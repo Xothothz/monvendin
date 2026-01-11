@@ -467,7 +467,11 @@ export const HomeBannerHistory = ({ items }: HomeBannerHistoryProps) => {
               />
               {imagePreview ? (
                 <span className="mt-3 block overflow-hidden rounded-2xl border border-ink/10">
-                  <img src={imagePreview} alt="Apercu" className="h-40 w-full object-cover" />
+                  <img
+                    src={imagePreview}
+                    alt="Apercu info"
+                    className="h-40 w-full object-cover"
+                  />
                 </span>
               ) : null}
               {formState.imageUrl || formState.imageFile ? (

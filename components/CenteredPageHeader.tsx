@@ -1,7 +1,9 @@
+import type { ReactNode } from "react";
+
 type CenteredPageHeaderProps = {
   label: string;
   title: string;
-  description?: string;
+  description?: ReactNode;
 };
 
 export const CenteredPageHeader = ({ label, title, description }: CenteredPageHeaderProps) => {

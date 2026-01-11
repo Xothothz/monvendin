@@ -4,7 +4,8 @@ import { getMarkdown } from "@/lib/content";
 import { AProposContent } from "./AProposContent";
 
 export const metadata = {
-  title: "A propos / mentions"
+  title: "A propos / mentions",
+  description: "Presentation du projet monvendin.fr et mentions d'independance."
 };
 
 export const dynamic = "force-dynamic";

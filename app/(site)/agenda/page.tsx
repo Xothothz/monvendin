@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { getPayload } from "payload";
 import configPromise from "@payload-config";
 import { AgendaList } from "./AgendaList";
 import { CenteredPageHeader } from "@/components/CenteredPageHeader";
 import { HeroAdmin } from "@/components/HeroAdmin";
+import { Card } from "@/components/Card";
 
 export const metadata = {
   title: "Agenda Vendin-les-Bethune",
@@ -86,9 +88,39 @@ export default async function AgendaPage() {
   }));
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vendin-citoyen.fr";
+  const faqItems = [
+    {
+      question: "Ou consulter l'agenda municipal ?",
+      answer: "La page Agenda liste les evenements publies pour Vendin-les-Bethune."
+    },
+    {
+      question: "Comment filtrer les evenements ?",
+      answer: "Les filtres permettent de choisir une periode et un lieu."
+    },
+    {
+      question: "Un evenement est-il visible pendant toute sa periode ?",
+      answer: "Chaque evenement reste visible pendant toute sa duree."
+    }
+  ];
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer
+      }
+    }))
+  };
 
   return (
     <div className="space-y-8 section-stack">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <HeroAdmin
         slug="agenda"
         eyebrow="Agenda"
@@ -101,10 +133,34 @@ export default async function AgendaPage() {
       <CenteredPageHeader
         label="Agenda"
         title="Agenda"
-        description="Liste des evenements publics, reunions et rendez-vous locaux."
+        description={
+          <>
+            Liste des evenements publics, reunions et rendez-vous locaux.
+            {" "}
+            <Link
+              href="/vendin-les-bethune"
+              className="no-link-underline font-semibold text-accent"
+            >
+              Page pratique de la commune
+            </Link>
+            .
+          </>
+        }
       />
 
       <AgendaList events={events} siteUrl={siteUrl} />
+      <Card className="p-5">
+        <details className="variantes-orthographe">
+          <summary>Questions frequentes</summary>
+          <div className="space-y-2 text-sm text-slate">
+            {faqItems.map((item) => (
+              <p key={item.question}>
+                <strong>{item.question}</strong> {item.answer}
+              </p>
+            ))}
+          </div>
+        </details>
+      </Card>
     </div>
   );
 }

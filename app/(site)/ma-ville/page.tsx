@@ -27,8 +27,38 @@ const sections = [
 ];
 
 export default function MaVillePage() {
+  const faqItems = [
+    {
+      question: "Ou consulter le conseil municipal ?",
+      answer: "La page Conseil municipal regroupe les informations essentielles."
+    },
+    {
+      question: "Ou trouver les delegues de quartier ?",
+      answer: "La page Delegues de quartier recense les contacts."
+    },
+    {
+      question: "Ou acceder a l'histoire de la commune ?",
+      answer: "La page Histoire presente les repères principaux."
+    }
+  ];
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer
+      }
+    }))
+  };
   return (
     <div className="space-y-8 section-stack">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <header className="space-y-3">
         <PageTitle title="Ma ville" />
         <p className="text-slate max-w-2xl">
@@ -61,6 +91,18 @@ export default function MaVillePage() {
           </Card>
         ))}
       </div>
+      <Card className="p-5">
+        <details className="variantes-orthographe">
+          <summary>Questions frequentes</summary>
+          <div className="space-y-2 text-sm text-slate">
+            {faqItems.map((item) => (
+              <p key={item.question}>
+                <strong>{item.question}</strong> {item.answer}
+              </p>
+            ))}
+          </div>
+        </details>
+      </Card>
     </div>
   );
 }

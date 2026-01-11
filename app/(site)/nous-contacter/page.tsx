@@ -3,12 +3,43 @@ import { PageTitle } from "@/components/PageTitle";
 import { Card } from "@/components/Card";
 
 export const metadata = {
-  title: "Nous contacter"
+  title: "Contact Vendin-les-Bethune",
+  description: "Coordonnees de la mairie et contacts utiles pour Vendin-les-Bethune."
 };
 
 export default function NousContacterPage() {
+  const faqItems = [
+    {
+      question: "Comment joindre la mairie de Vendin-les-Bethune ?",
+      answer: "Les coordonnees officielles sont indiquees sur cette page."
+    },
+    {
+      question: "Ou suivre l'actualite locale ?",
+      answer: "La page Actualites regroupe les informations publiees."
+    },
+    {
+      question: "Comment contacter monvendin.fr ?",
+      answer: "Utilisez l'adresse email affichee si besoin."
+    }
+  ];
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer
+      }
+    }))
+  };
   return (
     <div className="space-y-8 section-stack">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <header className="space-y-3">
         <PageTitle title="Nous contacter" />
         <p className="text-slate max-w-2xl">
@@ -48,6 +79,18 @@ export default function NousContacterPage() {
             </a>
           </div>
         </div>
+      </Card>
+      <Card className="p-5">
+        <details className="variantes-orthographe">
+          <summary>Questions frequentes</summary>
+          <div className="space-y-2 text-sm text-slate">
+            {faqItems.map((item) => (
+              <p key={item.question}>
+                <strong>{item.question}</strong> {item.answer}
+              </p>
+            ))}
+          </div>
+        </details>
       </Card>
 
     </div>

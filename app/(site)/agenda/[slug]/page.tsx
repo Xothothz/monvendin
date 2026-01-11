@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPayload } from "payload";
@@ -16,6 +17,41 @@ const formatDateTime = (value: string) =>
   new Intl.DateTimeFormat("fr-FR", { dateStyle: "long", timeStyle: "short" }).format(
     new Date(value)
   );
+
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://monvendin.fr").replace(/\/$/, "");
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  try {
+    const payload = await getPayload({ config: configPromise });
+    const { docs } = await payload.find({
+      collection: "events",
+      depth: 1,
+      limit: 1,
+      where: {
+        slug: {
+          equals: slug
+        },
+        status: {
+          equals: "published"
+        }
+      }
+    });
+    const event = docs?.[0];
+    if (!event) {
+      return {};
+    }
+    return {
+      title: event.title,
+      description: event.summary,
+      alternates: {
+        canonical: `${siteUrl}/agenda/${event.slug}`
+      }
+    };
+  } catch {
+    return {};
+  }
+}
 
 export default async function AgendaDetailPage({ params }: PageProps) {
   const { slug } = await params;
@@ -40,9 +76,51 @@ export default async function AgendaDetailPage({ params }: PageProps) {
   const image = typeof event.image === "object" ? event.image : null;
   const startLabel = formatDateTime(event.startDate);
   const endLabel = event.endDate ? formatDateTime(event.endDate) : null;
+  const locationName = event.location || "Vendin-les-Bethune";
+  const eventSchema = {
+    "@type": "Event",
+    name: event.title,
+    startDate: event.startDate,
+    endDate: event.endDate ?? event.startDate,
+    description: event.summary,
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    location: {
+      "@type": "Place",
+      name: locationName,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: event.address ?? undefined,
+        addressLocality: "Vendin-lez-Bethune",
+        postalCode: "62232",
+        addressCountry: "FR"
+      }
+    },
+    image: image?.url ? [image.url] : undefined,
+    organizer: {
+      "@type": "Organization",
+      name: "monvendin.fr"
+    }
+  };
+  const breadcrumbSchema = {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: `${siteUrl}/` },
+      { "@type": "ListItem", position: 2, name: "Agenda", item: `${siteUrl}/agenda` },
+      { "@type": "ListItem", position: 3, name: event.title, item: `${siteUrl}/agenda/${event.slug}` }
+    ]
+  };
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [eventSchema, breadcrumbSchema]
+  };
 
   return (
     <div className="space-y-8 section-stack">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)] lg:items-start">
         <div className="space-y-6">
           <CenteredPageHeader

@@ -2,7 +2,8 @@ import { PageTitle } from "@/components/PageTitle";
 import { Card } from "@/components/Card";
 
 export const metadata = {
-  title: "Horaires des services"
+  title: "Horaires des services Vendin-les-Bethune",
+  description: "Horaires et coordonnees des services municipaux a Vendin-les-Bethune."
 };
 
 const services = [
@@ -25,8 +26,38 @@ const services = [
 ];
 
 export default function HorairesPage() {
+  const faqItems = [
+    {
+      question: "Ou consulter les horaires de la mairie ?",
+      answer: "Les horaires sont detaillees dans le tableau ci-dessus."
+    },
+    {
+      question: "Comment contacter la mairie ?",
+      answer: "Telephone, email et adresse sont indiques dans la fiche."
+    },
+    {
+      question: "Les horaires peuvent-ils changer ?",
+      answer: "En cas de modification, les horaires sont mis a jour ici."
+    }
+  ];
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer
+      }
+    }))
+  };
   return (
     <div className="space-y-8 section-stack">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <header className="space-y-3">
         <PageTitle title="Horaires des services" />
         <p className="text-slate max-w-2xl">
@@ -70,6 +101,18 @@ export default function HorairesPage() {
           </Card>
         ))}
       </div>
+      <Card className="p-5">
+        <details className="variantes-orthographe">
+          <summary>Questions frequentes</summary>
+          <div className="space-y-2 text-sm text-slate">
+            {faqItems.map((item) => (
+              <p key={item.question}>
+                <strong>{item.question}</strong> {item.answer}
+              </p>
+            ))}
+          </div>
+        </details>
+      </Card>
     </div>
   );
 }

@@ -2,7 +2,8 @@ import { PageTitle } from "@/components/PageTitle";
 import { EspaceProClient } from "./EspaceProClient";
 
 export const metadata = {
-  title: "Espace pro"
+  title: "Espace pro Vendin-les-Bethune",
+  description: "Espace de publication pour les informations professionnelles locales."
 };
 
 export default function EspaceProPage() {

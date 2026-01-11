@@ -560,7 +560,7 @@ export const AgendaList = ({ events: initialEvents, siteUrl }: AgendaListProps) 
                     {imageMeta.url ? (
                       <img
                         src={imageMeta.url}
-                        alt={event.title}
+                        alt={`Evenement: ${event.title}`}
                         className="h-full w-full object-cover"
                         loading="lazy"
                       />
