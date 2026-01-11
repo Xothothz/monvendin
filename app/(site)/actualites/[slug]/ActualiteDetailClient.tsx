@@ -11,6 +11,7 @@ import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 import { LightboxImage } from "@/components/LightboxImage";
 import { PdfLightboxButton } from "@/components/PdfLightboxButton";
 import { Card } from "@/components/Card";
+import { FacebookComments } from "@/components/FacebookComments";
 
 type ActualiteItem = {
   id: string | number;
@@ -182,7 +183,13 @@ const uploadAttachment = async (file: File) => {
   return data?.doc?.id ?? data?.id ?? null;
 };
 
-export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteItem }) => {
+export const ActualiteDetailClient = ({
+  initialItem,
+  commentsUrl
+}: {
+  initialItem: ActualiteItem;
+  commentsUrl?: string;
+}) => {
   const router = useRouter();
   const [item, setItem] = useState<ActualiteItem>(() => normalizeItem(initialItem));
   const [user, setUser] = useState<AdminUser | null>(null);
@@ -621,6 +628,13 @@ export const ActualiteDetailClient = ({ initialItem }: { initialItem: ActualiteI
             ))}
           </ul>
         </section>
+      ) : null}
+
+      {commentsUrl ? (
+        <Card className="p-6 space-y-4">
+          <h2 className="text-lg font-display">Commentaires</h2>
+          <FacebookComments href={commentsUrl} />
+        </Card>
       ) : null}
 
       {isModalOpen ? (

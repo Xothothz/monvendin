@@ -58,6 +58,9 @@ export const metadata: Metadata = {
       "Portail de services citoyens, non affilie a la mairie de Vendin-les-Bethune.",
     type: "website"
   },
+  other: {
+    "fb:app_id": "910258654673702"
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", type: "image/x-icon" },

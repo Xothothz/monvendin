@@ -113,6 +113,7 @@ export default async function ActuDetailPage({ params }: PageProps) {
     "@context": "https://schema.org",
     "@graph": [articleSchema, breadcrumbSchema]
   };
+  const commentUrl = `${siteUrl}/actualites/${item.slug}`;
 
   return (
     <>
@@ -120,7 +121,7 @@ export default async function ActuDetailPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <ActualiteDetailClient initialItem={item} />
+      <ActualiteDetailClient initialItem={item} commentsUrl={commentUrl} />
     </>
   );
 }
