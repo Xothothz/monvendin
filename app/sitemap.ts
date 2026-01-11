@@ -2,12 +2,13 @@ import type { MetadataRoute } from "next";
 import { getPayload } from "payload";
 import configPromise from "@payload-config";
 import { agenda, associations, demarches } from "@/lib/data";
+import { siteNav, siteUtilities } from "@/lib/site-nav";
 
 const baseUrl =
   (process.env.NEXT_PUBLIC_SITE_URL || "https://monvendin.fr").replace(/\/$/, "");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const staticRoutes = [
+  const baseStaticRoutes = [
     "",
     "/actualites",
     "/agenda",
@@ -21,7 +22,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/a-propos",
     "/vendin-les-bethune",
     "/structure-du-site"
-  ].map((route) => ({
+  ];
+  const navRoutes = siteNav.flatMap((item) => {
+    const sectionLinks = item.sections.flatMap((section) =>
+      section.links
+        .filter((link) => !link.external && !link.adminOnly)
+        .map((link) => link.href)
+    );
+    return [item.href, ...sectionLinks];
+  });
+  const utilityRoutes = siteUtilities.map((item) => item.href);
+  const extraRoutes = [
+    "/ma-ville/commissions",
+    "/ma-ville/ordres-du-jour",
+    "/ma-ville/ville-nature",
+    "/tourisme/infos-pratiques"
+  ];
+
+  const normalizeRoute = (route: string) => (route === "/" ? "" : route);
+  const staticRoutes = Array.from(
+    new Set(
+      [...baseStaticRoutes, ...navRoutes, ...utilityRoutes, ...extraRoutes].map(normalizeRoute)
+    )
+  ).map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date()
   }));
