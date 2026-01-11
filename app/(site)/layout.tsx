@@ -58,9 +58,6 @@ export const metadata: Metadata = {
       "Portail de services citoyens, non affilie a la mairie de Vendin-les-Bethune.",
     type: "website"
   },
-  other: {
-    "fb:app_id": "910258654673702"
-  },
   icons: {
     icon: [
       { url: "/favicon.ico", type: "image/x-icon" },
@@ -109,6 +106,9 @@ export default function RootLayout({
       lang="fr"
       className={`${bodyFont.variable} ${displayFont.variable} ${cormorantFont.variable} ${workSansFont.variable} ${bebasFont.variable} ${dmSansFont.variable}`}
     >
+      <head>
+        <meta property="fb:app_id" content="910258654673702" />
+      </head>
       <body>
         <script
           type="application/ld+json"
