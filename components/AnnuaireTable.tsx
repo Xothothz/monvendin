@@ -736,8 +736,9 @@ export const AnnuaireTable = ({
                               target="_blank"
                               rel="noreferrer"
                               className="text-rose-600 hover:text-rose-700"
+                              title={entry.siteInternet}
                             >
-                              {entry.siteInternet}
+                              Lien
                             </a>
                           ) : (
                             "—"
