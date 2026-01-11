@@ -86,20 +86,26 @@ export default async function EntreprisesPage() {
         Annuaire local des entreprises, artisans et services de Vendin-les-Bethune. Utilisez la
         recherche et les filtres pour trouver un commerce ou un service pres de chez vous.
       </p>
-      <div className="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-ink/70">
+      <nav
+        aria-label="Liens utiles"
+        className="flex flex-wrap items-center gap-2 text-xs text-slate/80"
+      >
         <Link href="/vendin-les-bethune" className="no-link-underline hover:text-ink">
           Vendin-les-Bethune
         </Link>
+        <span className="text-ink/20">|</span>
         <Link href="/ma-ville" className="no-link-underline hover:text-ink">
           Ma ville
         </Link>
+        <span className="text-ink/20">|</span>
         <Link href="/vie-pratique" className="no-link-underline hover:text-ink">
           Vie pratique
         </Link>
+        <span className="text-ink/20">|</span>
         <Link href="/nous-contacter" className="no-link-underline hover:text-ink">
           Contact
         </Link>
-      </div>
+      </nav>
       <div className="relative left-1/2 right-1/2 -mx-[50vw] w-screen px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-[1500px]">
           <AnnuaireTable
