@@ -15,6 +15,7 @@ type DocumentItem = {
   mimeType?: string | null;
   createdAt?: string | null;
   filesize?: number | null;
+  calameoId?: string | null;
 };
 
 type AdminUser = UserWithPermissions & {
@@ -29,6 +30,7 @@ type DocumentFormState = {
   year: string;
   file: File | null;
   existingFileName: string | null;
+  calameoLink: string;
 };
 
 const documentTypes = [
@@ -107,6 +109,23 @@ const buildFileName = (
   return candidate;
 };
 
+const extractCalameoId = (value: string) => {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  const bkMatch = trimmed.match(/bkcode=([a-z0-9]+)/i);
+  if (bkMatch) return bkMatch[1];
+  const bookMatch = trimmed.match(/calameo\.com\/books\/([a-z0-9]+)/i);
+  if (bookMatch) return bookMatch[1];
+  return trimmed;
+};
+
+const createPlaceholderFile = () => {
+  const base64 =
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9s10hCkAAAAASUVORK5CYII=";
+  const bytes = Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
+  return new File([bytes], "calameo.png", { type: "image/png" });
+};
+
 const isPdf = (doc: DocumentItem) => {
   if (doc.mimeType === "application/pdf") return true;
   if (doc.filename) {
@@ -180,7 +199,8 @@ const emptyFormState: DocumentFormState = {
   documentDate: "",
   year: "",
   file: null,
-  existingFileName: null
+  existingFileName: null,
+  calameoLink: ""
 };
 
 export const DocumentsAccordion = ({
@@ -216,6 +236,7 @@ export const DocumentsAccordion = ({
   const [adminYearFilter, setAdminYearFilter] = useState("Toutes");
   const [publicYearFilter, setPublicYearFilter] = useState("Toutes");
   const didInitOpenYears = useRef(false);
+  const showCalameoInput = (forcedDocumentType ?? formState.documentType) === "vendinfos";
 
   const requiredPermission =
     documentTypeFilter === "vendinfos" ? "manageVendinfos" : "manageDocuments";
@@ -372,7 +393,8 @@ const sortedDocuments = useMemo(() => {
       documentDate: toDateInputValue(doc.documentDate),
       year: String(doc.year ?? deriveYear(doc.documentDate) ?? ""),
       file: null,
-      existingFileName: doc.filename ?? null
+      existingFileName: doc.filename ?? null,
+      calameoLink: doc.calameoId ?? ""
     });
     setYearTouched(false);
     setFormError(null);
@@ -418,8 +440,11 @@ const sortedDocuments = useMemo(() => {
         setIsSaving(false);
         return;
       }
-      if (!editingId && !formState.file) {
-        setFormError("Le fichier est obligatoire.");
+      const calameoId = extractCalameoId(formState.calameoLink);
+      const hasCalameo = Boolean(calameoId);
+
+      if (!editingId && !formState.file && !hasCalameo) {
+        setFormError("Le fichier ou le lien Calameo est obligatoire.");
         setIsSaving(false);
         return;
       }
@@ -429,10 +454,14 @@ const sortedDocuments = useMemo(() => {
         title,
         documentType,
         documentDate,
-        year: formState.year ? Number(formState.year) : undefined
+        year: formState.year ? Number(formState.year) : undefined,
+        calameoId: hasCalameo ? calameoId : null
       };
 
-      if (formState.file) {
+      const fileToUpload =
+        formState.file ?? (!editingId && hasCalameo ? createPlaceholderFile() : null);
+
+      if (fileToUpload) {
         const existingNames = new Set(
           documents.map((doc) => doc.filename ?? "").filter(Boolean)
         );
@@ -440,11 +469,11 @@ const sortedDocuments = useMemo(() => {
           formState.title,
           documentType,
           formState.documentDate,
-          formState.file.name,
+          fileToUpload.name,
           existingNames
         );
-        const renamedFile = new File([formState.file], renamed, {
-          type: formState.file.type
+        const renamedFile = new File([fileToUpload], renamed, {
+          type: fileToUpload.type
         });
         const formData = new FormData();
         formData.append("file", renamedFile);
@@ -617,10 +646,12 @@ const sortedDocuments = useMemo(() => {
                       docs.map((doc) => {
                         const viewerHref = `${viewerBasePath}/${doc.id}`;
                         const isDocPdf = isPdf(doc);
+                        const hasCalameo = Boolean(doc.calameoId);
+                        const useViewer = isDocPdf || hasCalameo;
                         return (
                           <div key={String(doc.id)} className="py-4">
                             <div className="flex flex-wrap items-center justify-between gap-2">
-                              {isDocPdf ? (
+                              {useViewer ? (
                                 <a
                                   href={viewerHref}
                                   className="text-base font-semibold text-rose-600 hover:text-rose-700"
@@ -764,7 +795,7 @@ const sortedDocuments = useMemo(() => {
                     setFormState((prev) => ({ ...prev, file: event.target.files?.[0] ?? null }))
                   }
                   className="mt-2 w-full glass-input"
-                  required={!editingId}
+                  required={!editingId && !formState.calameoLink}
                 />
                 {formState.existingFileName ? (
                   <p className="mt-2 text-xs text-slate">
@@ -772,6 +803,24 @@ const sortedDocuments = useMemo(() => {
                   </p>
                 ) : null}
               </label>
+
+              {showCalameoInput ? (
+                <label className="block text-sm font-semibold text-ink/80">
+                  Lien Calameo (optionnel)
+                  <input
+                    type="text"
+                    value={formState.calameoLink}
+                    onChange={(event) =>
+                      setFormState((prev) => ({ ...prev, calameoLink: event.target.value }))
+                    }
+                    placeholder="https://www.calameo.com/books/..."
+                    className="mt-2 w-full glass-input"
+                  />
+                  <p className="mt-2 text-xs text-slate">
+                    Collez un lien Calameo ou un code bkcode.
+                  </p>
+                </label>
+              ) : null}
 
               {uploadProgress > 0 && isSaving ? (
                 <p className="text-xs text-slate">Upload: {uploadProgress}%</p>

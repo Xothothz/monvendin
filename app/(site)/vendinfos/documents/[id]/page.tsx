@@ -18,6 +18,7 @@ type DocumentItem = {
   url?: string | null;
   filename?: string | null;
   mimeType?: string | null;
+  calameoId?: string | null;
 };
 
 const formatDate = (value?: string | null) => {
@@ -49,8 +50,9 @@ export default async function VendinfosDocumentPage({ params }: PageProps) {
 
   if (!doc) return notFound();
   if (doc.documentType !== "vendinfos") return notFound();
-  if (!doc.url) return notFound();
-  if (!isPdf(doc)) {
+  const hasCalameo = Boolean(doc.calameoId);
+  if (!hasCalameo && !doc.url) return notFound();
+  if (!hasCalameo && !isPdf(doc)) {
     redirect(doc.url);
   }
 
@@ -64,21 +66,43 @@ export default async function VendinfosDocumentPage({ params }: PageProps) {
         </div>
       </header>
 
-      <div className="overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-card">
-        <iframe
-          title={doc.title}
-          src={`${doc.url}#view=FitH`}
-          className="h-[70vh] w-full"
-        />
-      </div>
-
-      <a
-        href={doc.url}
-        className="inline-flex items-center gap-2 text-sm font-semibold text-ink"
-        download
-      >
-        Telecharger le document
-      </a>
+      {hasCalameo ? (
+        <>
+          <div className="overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-card">
+            <iframe
+              title={doc.title}
+              src={`https://v.calameo.com/?bkcode=${doc.calameoId}`}
+              className="h-[70vh] w-full"
+              allowFullScreen
+            />
+          </div>
+          <a
+            href={`https://www.calameo.com/books/${doc.calameoId}`}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-ink"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Voir sur Calameo
+          </a>
+        </>
+      ) : (
+        <>
+          <div className="overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-card">
+            <iframe
+              title={doc.title}
+              src={`${doc.url}#view=FitH`}
+              className="h-[70vh] w-full"
+            />
+          </div>
+          <a
+            href={doc.url}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-ink"
+            download
+          >
+            Telecharger le document
+          </a>
+        </>
+      )}
     </div>
   );
 }

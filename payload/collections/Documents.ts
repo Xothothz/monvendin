@@ -80,6 +80,14 @@ export const Documents: CollectionConfig = {
       admin: {
         position: "sidebar"
       }
+    },
+    {
+      name: "calameoId",
+      type: "text",
+      label: "Calameo (bkcode ou lien)",
+      admin: {
+        description: "Optionnel. Utilisez pour integrer un document Calameo."
+      }
     }
   ]
 };
