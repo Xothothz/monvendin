@@ -56,6 +56,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const metaImage = item.images?.[0];
     const imageUrl =
       metaImage && typeof metaImage.image === "object" ? metaImage.image?.url ?? null : null;
+    const absoluteImageUrl = imageUrl
+      ? imageUrl.startsWith("http")
+        ? imageUrl
+        : `${siteUrl}${imageUrl}`
+      : null;
     return {
       title: item.title,
       description: item.summary,
@@ -67,7 +72,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         description: item.summary,
         url: `${siteUrl}/actualites/${item.slug}`,
         type: "article",
-        images: imageUrl ? [{ url: imageUrl }] : undefined
+        images: absoluteImageUrl ? [{ url: absoluteImageUrl }] : undefined
+      },
+      twitter: {
+        card: absoluteImageUrl ? "summary_large_image" : "summary",
+        title: item.title,
+        description: item.summary,
+        images: absoluteImageUrl ? [absoluteImageUrl] : undefined
       }
     };
   } catch {
