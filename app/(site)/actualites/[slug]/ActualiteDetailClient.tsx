@@ -632,8 +632,23 @@ export const ActualiteDetailClient = ({
 
       {commentsUrl ? (
         <Card className="p-6 space-y-4">
-          <h2 className="text-lg font-display">Commentaires</h2>
-          <FacebookComments href={commentsUrl} />
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate">
+                Commentaires
+              </p>
+              <h2 className="text-lg font-display text-ink">Espace Facebook</h2>
+              <p className="text-xs text-slate">
+                Connectez-vous a Facebook pour commenter.
+              </p>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#1877F2]/30 bg-[#1877F2]/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-[#1877F2]">
+              Facebook
+            </span>
+          </div>
+          <div className="rounded-2xl border border-ink/10 bg-white/70 p-4">
+            <FacebookComments href={commentsUrl} />
+          </div>
         </Card>
       ) : null}
 
