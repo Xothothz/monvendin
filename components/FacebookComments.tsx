@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const APP_ID = "910258654673702";
 const SDK_URL =
@@ -18,6 +18,31 @@ type FacebookCommentsProps = {
 };
 
 export const FacebookComments = ({ href, numPosts = 8 }: FacebookCommentsProps) => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [width, setWidth] = useState<number>(0);
+
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node) return;
+    const update = () => {
+      const nextWidth = Math.max(320, Math.min(1000, Math.floor(node.clientWidth)));
+      setWidth(nextWidth);
+    };
+    update();
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", update);
+      return () => {
+        window.removeEventListener("resize", update);
+      };
+    }
+
+    const observer = new ResizeObserver(update);
+    observer.observe(node);
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   useEffect(() => {
     const parse = () => {
       if (window.FB?.XFBML?.parse) {
@@ -38,17 +63,19 @@ export const FacebookComments = ({ href, numPosts = 8 }: FacebookCommentsProps) 
     script.crossOrigin = "anonymous";
     script.onload = parse;
     document.body.appendChild(script);
-  }, [href]);
+  }, [href, width]);
 
   return (
     <>
       <div id="fb-root" />
-      <div
-        className="fb-comments"
-        data-href={href}
-        data-width="100%"
-        data-numposts={numPosts}
-      />
+      <div ref={containerRef} className="w-full">
+        <div
+          className="fb-comments"
+          data-href={href}
+          data-width={width || 640}
+          data-numposts={numPosts}
+        />
+      </div>
     </>
   );
 };
