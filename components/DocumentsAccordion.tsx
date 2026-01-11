@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { createPortal } from "react-dom";
 import { SearchInput } from "@/components/SearchInput";
 import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
@@ -222,9 +223,11 @@ export const DocumentsAccordion = ({
   const [openYears, setOpenYears] = useState<Set<string>>(new Set());
   const [user, setUser] = useState<AdminUser | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [activeCalameo, setActiveCalameo] = useState<{ id: string; title: string } | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [formError, setFormError] = useState<string | null>(null);
   const [formState, setFormState] = useState<DocumentFormState>({
@@ -241,6 +244,10 @@ export const DocumentsAccordion = ({
   const requiredPermission =
     documentTypeFilter === "vendinfos" ? "manageVendinfos" : "manageDocuments";
   const canEdit = hasPermission(user, requiredPermission);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     let isActive = true;
@@ -406,6 +413,11 @@ const sortedDocuments = useMemo(() => {
     setIsModalOpen(false);
     setFormError(null);
     setUploadProgress(0);
+  };
+
+  const openCalameo = (doc: DocumentItem) => {
+    if (!doc.calameoId) return;
+    setActiveCalameo({ id: doc.calameoId, title: doc.title ?? "Vendinfos" });
   };
 
   const handleDocumentDateChange = (value: string) => {
@@ -652,12 +664,22 @@ const sortedDocuments = useMemo(() => {
                           <div key={String(doc.id)} className="py-4">
                             <div className="flex flex-wrap items-center justify-between gap-2">
                               {useViewer ? (
-                                <a
-                                  href={viewerHref}
-                                  className="text-base font-semibold text-rose-600 hover:text-rose-700"
-                                >
-                                  {doc.title}
-                                </a>
+                                hasCalameo ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => openCalameo(doc)}
+                                    className="text-base font-semibold text-rose-600 hover:text-rose-700"
+                                  >
+                                    {doc.title}
+                                  </button>
+                                ) : (
+                                  <a
+                                    href={viewerHref}
+                                    className="text-base font-semibold text-rose-600 hover:text-rose-700"
+                                  >
+                                    {doc.title}
+                                  </a>
+                                )
                               ) : (
                                 <a
                                   href={doc.url ?? "#"}
@@ -687,6 +709,53 @@ const sortedDocuments = useMemo(() => {
           })}
         </div>
       )}
+
+      {activeCalameo && isMounted
+        ? createPortal(
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label={activeCalameo.title}
+              className="fixed inset-0 z-[2147483647] bg-ink/70 backdrop-blur-sm"
+              onClick={() => setActiveCalameo(null)}
+            >
+              <div className="flex h-full w-full items-center justify-center p-3 sm:p-6">
+                <div
+                  className="relative flex items-center justify-center"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setActiveCalameo(null)}
+                    className="absolute right-3 top-3 z-[2147483648] rounded-full bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-ink shadow-card"
+                  >
+                    Fermer
+                  </button>
+                  <div className="flex h-[85vh] w-[90vw] max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-[0_30px_80px_-50px_rgba(15,23,42,0.6)]">
+                    <div className="flex items-center justify-between border-b border-ink/10 px-4 py-3">
+                      <p className="text-sm font-semibold text-ink">{activeCalameo.title}</p>
+                      <a
+                        href={`https://www.calameo.com/books/${activeCalameo.id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs font-semibold uppercase tracking-[0.2em] text-accent"
+                      >
+                        Voir sur Calameo
+                      </a>
+                    </div>
+                    <iframe
+                      title={activeCalameo.title}
+                      src={`https://v.calameo.com/?bkcode=${activeCalameo.id}`}
+                      className="h-full w-full border-0"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
 
       {isModalOpen ? (
         <div
