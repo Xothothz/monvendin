@@ -53,11 +53,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     if (!item) {
       return {};
     }
+    const metaImage = item.images?.[0];
+    const imageUrl =
+      metaImage && typeof metaImage.image === "object" ? metaImage.image?.url ?? null : null;
     return {
       title: item.title,
       description: item.summary,
       alternates: {
         canonical: `${siteUrl}/actualites/${item.slug}`
+      },
+      openGraph: {
+        title: item.title,
+        description: item.summary,
+        url: `${siteUrl}/actualites/${item.slug}`,
+        type: "article",
+        images: imageUrl ? [{ url: imageUrl }] : undefined
       }
     };
   } catch {
