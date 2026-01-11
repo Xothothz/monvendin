@@ -671,12 +671,12 @@ export const AnnuaireTable = ({
       {errorMessage ? <p className="text-sm text-red-600">{errorMessage}</p> : null}
       {isLoading ? <p className="text-sm text-slate">Chargement...</p> : null}
 
-      <div className="glass-panel">
-        <table className="w-full table-fixed text-left text-xs md:text-sm">
+      <div className="glass-panel overflow-x-auto">
+        <table className="w-full min-w-[1000px] text-left text-[11px] md:text-xs">
           <thead className="bg-fog text-[10px] uppercase tracking-[0.22em] text-slate">
             <tr>
               {activeColumns.map((column) => (
-                <th key={column.key} className="px-3 py-3 font-semibold break-words">
+                <th key={column.key} className="px-2 py-2 font-semibold whitespace-nowrap">
                   <button
                     type="button"
                     onClick={() => handleSort(column.key)}
@@ -687,7 +687,7 @@ export const AnnuaireTable = ({
                   </button>
                 </th>
               ))}
-              {canEdit ? <th className="px-3 py-3 text-right">Actions</th> : null}
+              {canEdit ? <th className="px-2 py-2 text-right">Actions</th> : null}
             </tr>
           </thead>
           <tbody className="divide-y divide-ink/10">
@@ -695,7 +695,7 @@ export const AnnuaireTable = ({
               <tr>
                 <td
                   colSpan={canEdit ? activeColumns.length + 1 : activeColumns.length}
-                  className="px-4 py-6 text-center text-slate"
+                  className="px-3 py-4 text-center text-slate"
                 >
                   Aucune entree.
                 </td>
@@ -706,18 +706,19 @@ export const AnnuaireTable = ({
                   {activeColumns.map((column) => {
                     if (column.key === "categorie") {
                       return (
-                        <td key={column.key} className="px-3 py-3 break-words">
+                        <td key={column.key} className="px-2 py-2 whitespace-nowrap">
                           {formatCategory(entry.categorie ?? null, activeCategories)}
                         </td>
                       );
                     }
                     if (column.key === "mail") {
                       return (
-                        <td key={column.key} className="px-3 py-3 break-all">
+                        <td key={column.key} className="px-2 py-2 whitespace-nowrap">
                           {entry.mail ? (
                             <a
                               href={`mailto:${entry.mail}`}
-                              className="text-rose-600 hover:text-rose-700"
+                              className="inline-flex max-w-[220px] truncate text-rose-600 hover:text-rose-700"
+                              title={entry.mail}
                             >
                               {entry.mail}
                             </a>
@@ -729,7 +730,7 @@ export const AnnuaireTable = ({
                     }
                     if (column.key === "siteInternet") {
                       return (
-                        <td key={column.key} className="px-3 py-3 break-all">
+                        <td key={column.key} className="px-2 py-2 whitespace-nowrap">
                           {entry.siteInternet ? (
                             <a
                               href={withProtocol(entry.siteInternet)}
@@ -747,13 +748,13 @@ export const AnnuaireTable = ({
                       );
                     }
                     return (
-                      <td key={column.key} className="px-3 py-3 break-words">
+                      <td key={column.key} className="px-2 py-2 whitespace-nowrap">
                         {formatValue(entry[column.key] as string | null)}
                       </td>
                     );
                   })}
                   {canEdit ? (
-                    <td className="px-3 py-3 text-right">
+                    <td className="px-2 py-2 text-right">
                       <div className="flex justify-end gap-2">
                         <button
                           type="button"
