@@ -646,7 +646,7 @@ export const ActualiteDetailClient = ({
               Facebook
             </span>
           </div>
-          <div className="rounded-2xl border border-ink/10 bg-white/70 p-4">
+          <div className="-mx-3 rounded-2xl border border-ink/10 bg-white/70 p-4 sm:-mx-4">
             <FacebookComments href={commentsUrl} />
           </div>
         </Card>
