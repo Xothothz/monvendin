@@ -82,9 +82,6 @@ export default async function EntreprisesPage() {
         title="Annuaire des entreprises"
         description="Consultez les entreprises et services locaux a Vendin-les-Bethune. Les mises a jour sont faites directement sur cette page par l'administration."
       />
-      <p className="text-sm text-slate max-w-3xl text-center mx-auto">
-        Recherchez une entreprise ou un service par nom, categorie ou sous-categorie.
-      </p>
       <nav
         aria-label="Liens utiles"
         className="flex flex-wrap items-center justify-center gap-2 text-xs text-slate/80"
