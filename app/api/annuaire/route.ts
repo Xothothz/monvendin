@@ -35,23 +35,27 @@ const buildSort = (value: string | null) => {
   return isDesc ? `-${field}` : field;
 };
 
-const buildWhere = (search: string | null, categorie: string | null) => {
+const buildWhere = (
+  search: string | null,
+  categorie: string | null,
+  sousCategorie: string | null
+) => {
   const filters: Record<string, unknown>[] = [];
   const query = search?.trim();
   if (query) {
     const fields = [
-    "categorie",
-    "sousCategorie",
-    "nom",
-    "prenom",
-    "denomination",
-    "adresse",
-    "codePostal",
-    "ville",
-    "telephone",
-    "portable",
-    "mail",
-    "siteInternet"
+      "categorie",
+      "sousCategorie",
+      "nom",
+      "prenom",
+      "denomination",
+      "adresse",
+      "codePostal",
+      "ville",
+      "telephone",
+      "portable",
+      "mail",
+      "siteInternet"
     ];
     filters.push({
       or: fields.map((field) => ({
@@ -71,6 +75,15 @@ const buildWhere = (search: string | null, categorie: string | null) => {
     });
   }
 
+  const subCategoryValue = sousCategorie?.trim();
+  if (subCategoryValue) {
+    filters.push({
+      sousCategorie: {
+        contains: subCategoryValue
+      }
+    });
+  }
+
   if (filters.length === 0) return undefined;
   if (filters.length === 1) return filters[0];
   return { and: filters };
@@ -86,7 +99,11 @@ export const GET = async (request: Request) => {
   const page = toNumber(searchParams.get("page"), 1);
   const limit = toNumber(searchParams.get("limit"), 10);
   const sort = buildSort(searchParams.get("sort"));
-  const where = buildWhere(searchParams.get("search"), searchParams.get("categorie"));
+  const where = buildWhere(
+    searchParams.get("search"),
+    searchParams.get("categorie"),
+    searchParams.get("sousCategorie")
+  );
 
   const result = await payload.find({
     collection: "annuaire",

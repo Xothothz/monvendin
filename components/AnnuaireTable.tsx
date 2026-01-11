@@ -192,6 +192,8 @@ export const AnnuaireTable = ({
   const [page, setPage] = useState(initialData.page ?? 1);
   const [limit, setLimit] = useState(initialData.limit ?? 10);
   const [query, setQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(resolvedDefaultCategory);
+  const [subCategoryFilter, setSubCategoryFilter] = useState("");
   const [sortKey, setSortKey] = useState<ColumnKey>(defaultSortKey ?? "denomination");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [isLoading, setIsLoading] = useState(false);
@@ -221,6 +223,16 @@ export const AnnuaireTable = ({
     return Array.from({ length: totalPages }, (_, index) => index + 1);
   }, [totalPages]);
 
+  const categoryOptions = useMemo(() => {
+    return [{ label: "Toutes", value: "" }, ...activeCategories];
+  }, [activeCategories]);
+
+  useEffect(() => {
+    if (categoryFilter) {
+      setSelectedCategory(resolvedDefaultCategory);
+    }
+  }, [categoryFilter, resolvedDefaultCategory]);
+
   const fetchEntries = async (nextPage = page) => {
     setIsLoading(true);
     setErrorMessage(null);
@@ -232,8 +244,12 @@ export const AnnuaireTable = ({
       if (query.trim()) {
         params.set("search", query.trim());
       }
-      if (categoryFilter) {
-        params.set("categorie", categoryFilter);
+      const categoryValue = categoryFilter ?? selectedCategory;
+      if (categoryValue) {
+        params.set("categorie", categoryValue);
+      }
+      if (subCategoryFilter.trim()) {
+        params.set("sousCategorie", subCategoryFilter.trim());
       }
 
       const response = await fetch(`/api/annuaire?${params.toString()}`, {
@@ -282,7 +298,7 @@ export const AnnuaireTable = ({
       setPage(1);
     }, 300);
     return () => window.clearTimeout(timer);
-  }, [query, limit, sortParam]);
+  }, [query, limit, sortParam, selectedCategory, subCategoryFilter, categoryFilter]);
 
   useEffect(() => {
     if (!toast) return;
@@ -412,8 +428,12 @@ export const AnnuaireTable = ({
       if (query.trim()) {
         params.set("search", query.trim());
       }
-      if (categoryFilter) {
-        params.set("categorie", categoryFilter);
+      const categoryValue = categoryFilter ?? selectedCategory;
+      if (categoryValue) {
+        params.set("categorie", categoryValue);
+      }
+      if (subCategoryFilter.trim()) {
+        params.set("sousCategorie", subCategoryFilter.trim());
       }
 
       const response = await fetch(`/api/annuaire?${params.toString()}`, {
@@ -620,6 +640,32 @@ export const AnnuaireTable = ({
             </select>
           </label>
           <SearchInput value={query} onChange={setQuery} placeholder="Rechercher" />
+          {!categoryFilter ? (
+            <label className="text-xs font-semibold uppercase tracking-[0.25em] text-slate">
+              Categorie
+              <select
+                className="ml-2 glass-select px-3 py-2 text-xs"
+                value={selectedCategory}
+                onChange={(event) => setSelectedCategory(event.target.value)}
+              >
+                {categoryOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          <label className="text-xs font-semibold uppercase tracking-[0.25em] text-slate">
+            Sous-categorie
+            <input
+              type="text"
+              value={subCategoryFilter}
+              onChange={(event) => setSubCategoryFilter(event.target.value)}
+              className="ml-2 glass-input px-3 py-2 text-xs"
+              placeholder="Toutes"
+            />
+          </label>
         </div>
         {canEdit ? (
           <div className="flex flex-wrap items-center gap-2">
