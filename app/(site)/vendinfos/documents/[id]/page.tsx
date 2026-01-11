@@ -51,9 +51,10 @@ export default async function VendinfosDocumentPage({ params }: PageProps) {
   if (!doc) return notFound();
   if (doc.documentType !== "vendinfos") return notFound();
   const hasCalameo = Boolean(doc.calameoId);
-  if (!hasCalameo && !doc.url) return notFound();
-  if (!hasCalameo && !isPdf(doc)) {
-    redirect(doc.url);
+  const docUrl = doc.url ?? undefined;
+  if (!hasCalameo && !docUrl) return notFound();
+  if (!hasCalameo && !isPdf(doc) && docUrl) {
+    redirect(docUrl);
   }
 
   return (
@@ -90,12 +91,12 @@ export default async function VendinfosDocumentPage({ params }: PageProps) {
           <div className="overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-card">
             <iframe
               title={doc.title}
-              src={`${doc.url}#view=FitH`}
+              src={`${docUrl}#view=FitH`}
               className="h-[70vh] w-full"
             />
           </div>
           <a
-            href={doc.url}
+            href={docUrl}
             className="inline-flex items-center gap-2 text-sm font-semibold text-ink"
             download
           >
