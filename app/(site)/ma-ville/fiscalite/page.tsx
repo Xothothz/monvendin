@@ -40,8 +40,8 @@ export default async function FiscalitePage() {
     heroId = null;
   }
 
-    let docs: unknown[] = [];
-      try {
+  let docs: unknown[] = [];
+  try {
     const payload = await getPayload({ config: configPromise });
     const response = await payload.find({
       collection: "documents",
@@ -49,7 +49,11 @@ export default async function FiscalitePage() {
       limit: 200,
       sort: "-documentDate"
     });
-    docs = response.docs ?? [];
+    docs = (response.docs ?? []).filter(
+      (doc) => doc && typeof doc === "object" && "documentType" in doc
+        ? (doc as { documentType?: string | null }).documentType !== "vendinfos"
+        : true
+    );
   } catch {
     docs = [];
   }
