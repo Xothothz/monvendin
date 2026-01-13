@@ -135,9 +135,19 @@ const isPdf = (doc: DocumentItem) => {
   return false;
 };
 
-const filterByType = (items: DocumentItem[], documentType?: string) => {
-  if (!documentType) return items;
-  return items.filter((doc) => doc.documentType === documentType);
+const filterDocuments = (
+  items: DocumentItem[],
+  options?: { documentType?: string; excludedDocumentTypes?: string[] }
+) => {
+  let next = items;
+  if (options?.documentType) {
+    next = next.filter((doc) => doc.documentType === options.documentType);
+  }
+  if (options?.excludedDocumentTypes?.length) {
+    const excluded = new Set(options.excludedDocumentTypes);
+    next = next.filter((doc) => !excluded.has(doc.documentType ?? ""));
+  }
+  return next;
 };
 
 const buildDocumentsUrl = (documentType?: string, limit = 200) => {
@@ -152,7 +162,11 @@ const buildDocumentsUrl = (documentType?: string, limit = 200) => {
   return `/api/documents?${params.toString()}`;
 };
 
-const fetchDocuments = async (options?: { documentType?: string; limit?: number }) => {
+const fetchDocuments = async (options?: {
+  documentType?: string;
+  limit?: number;
+  excludedDocumentTypes?: string[];
+}) => {
   const response = await fetch(buildDocumentsUrl(options?.documentType, options?.limit), {
     credentials: "include"
   });
@@ -160,7 +174,10 @@ const fetchDocuments = async (options?: { documentType?: string; limit?: number 
     throw new Error("Chargement impossible.");
   }
   const data = await response.json();
-  return filterByType((data?.docs ?? []) as DocumentItem[], options?.documentType);
+  return filterDocuments((data?.docs ?? []) as DocumentItem[], {
+    documentType: options?.documentType,
+    excludedDocumentTypes: options?.excludedDocumentTypes
+  });
 };
 
 const uploadWithProgress = (
@@ -209,16 +226,21 @@ export const DocumentsAccordion = ({
   viewerBasePath = "/ma-ville/fiscalite/documents",
   documentTypeFilter,
   forcedDocumentType,
+  excludedDocumentTypes,
   showPublicYearFilter = false
 }: {
   initialDocuments: DocumentItem[];
   viewerBasePath?: string;
   documentTypeFilter?: string;
   forcedDocumentType?: string;
+  excludedDocumentTypes?: string[];
   showPublicYearFilter?: boolean;
 }) => {
   const [documents, setDocuments] = useState<DocumentItem[]>(
-    filterByType(initialDocuments, documentTypeFilter)
+    filterDocuments(initialDocuments, {
+      documentType: documentTypeFilter,
+      excludedDocumentTypes
+    })
   );
   const [openYears, setOpenYears] = useState<Set<string>>(new Set());
   const [user, setUser] = useState<AdminUser | null>(null);
@@ -292,7 +314,11 @@ export const DocumentsAccordion = ({
     const refresh = async () => {
       setIsLoading(true);
       try {
-        const docs = await fetchDocuments({ documentType: documentTypeFilter, limit: 200 });
+        const docs = await fetchDocuments({
+          documentType: documentTypeFilter,
+          excludedDocumentTypes,
+          limit: 200
+        });
         if (isActive) setDocuments(docs);
       } catch {
         if (isActive) setDocuments((prev) => prev);
@@ -510,7 +536,11 @@ const sortedDocuments = useMemo(() => {
         }
       }
 
-      const docs = await fetchDocuments({ documentType: documentTypeFilter, limit: 200 });
+      const docs = await fetchDocuments({
+        documentType: documentTypeFilter,
+        excludedDocumentTypes,
+        limit: 200
+      });
       setDocuments(docs);
       closeModal();
     } catch (error) {
@@ -527,7 +557,11 @@ const sortedDocuments = useMemo(() => {
         method: "DELETE",
         credentials: "include"
       });
-      const docs = await fetchDocuments({ documentType: documentTypeFilter, limit: 200 });
+      const docs = await fetchDocuments({
+        documentType: documentTypeFilter,
+        excludedDocumentTypes,
+        limit: 200
+      });
       setDocuments(docs);
     } catch {
       setFormError("Suppression impossible.");

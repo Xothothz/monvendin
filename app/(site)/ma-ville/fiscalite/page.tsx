@@ -74,7 +74,10 @@ export default async function FiscalitePage() {
         title="Fiscalite et documents"
         description="Consultez les documents fiscaux et financiers par annee."
       />
-      <DocumentsAccordion initialDocuments={docs as any} />
+      <DocumentsAccordion
+        initialDocuments={docs as any}
+        excludedDocumentTypes={["vendinfos"]}
+      />
     </div>
   );
 }
