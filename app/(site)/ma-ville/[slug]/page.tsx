@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageTitle } from "@/components/PageTitle";
+import Image from "next/image";
 import { Card } from "@/components/Card";
 
 type PageProps = {
@@ -237,12 +238,13 @@ export default async function MaVilleDetailPage({ params }: PageProps) {
           </div>
 
           <Card className="p-6 space-y-4 self-start">
-            <div className="aspect-[4/3] overflow-hidden rounded-2xl border border-ink/10 bg-white">
-              <img
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-ink/10 bg-white">
+              <Image
                 src="/images/marche-vendin.jpg"
                 alt="Marché de Vendin-lès-Béthune"
-                className="h-full w-full object-cover"
-                loading="lazy"
+                fill
+                sizes="(min-width: 1024px) 320px, 100vw"
+                className="object-cover"
               />
             </div>
             <p className="text-xs text-slate">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import Image from "next/image";
 import { Card } from "@/components/Card";
 import { hasPermission, type UserWithPermissions } from "@/lib/permissions";
 
@@ -114,13 +115,13 @@ export const PoliceMunicipaleContactContent = ({
   return (
     <Card className="p-6">
       <div className="grid gap-6 md:grid-cols-[240px_1fr] md:items-start">
-        <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-sand/40">
-          <img
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-sand/40">
+          <Image
             src="/images/police-municipale-contact.png"
             alt="Police municipale intercommunale"
-            className="h-full w-full object-cover"
-            loading="lazy"
-            decoding="async"
+            fill
+            sizes="(min-width: 768px) 240px, 100vw"
+            className="object-cover"
           />
         </div>
         <div className="space-y-4">

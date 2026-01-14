@@ -11,7 +11,25 @@ export const Media: CollectionConfig = {
   },
   upload: {
     staticDir: "public/media",
-    mimeTypes: ["image/*"]
+    mimeTypes: ["image/*"],
+    imageSizes: [
+      {
+        name: "thumb",
+        width: 320
+      },
+      {
+        name: "small",
+        width: 640
+      },
+      {
+        name: "medium",
+        width: 1024
+      },
+      {
+        name: "large",
+        width: 1600
+      }
+    ]
   },
   fields: [
     {

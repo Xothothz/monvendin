@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { createPortal } from "react-dom";
 import clsx from "clsx";
 import { ArrowRight } from "@phosphor-icons/react";
@@ -332,11 +333,13 @@ export const UrbanismeResourcesTabs = () => {
       <div className="space-y-4 pt-4">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-3">
-            <img
+            <Image
               src="/images/territoires62-logo.png"
               alt="Territoires 62"
+              width={231}
+              height={219}
               className="h-12 w-auto sm:h-14"
-              loading="lazy"
+              sizes="(min-width: 640px) 56px, 48px"
             />
             <h2 className="text-2xl font-display text-ink">
               Projets d&apos;amenagement : terrains a batir (Chemin de l&apos;Abbaye)
@@ -363,13 +366,15 @@ export const UrbanismeResourcesTabs = () => {
                     preview: "image"
                   })
                 }
-                className="group relative overflow-hidden rounded-2xl border border-ink/10 bg-fog focus-ring"
+                className="group relative aspect-[16/9] overflow-hidden rounded-2xl border border-ink/10 bg-fog focus-ring"
                 aria-label="Agrandir l'illustration des terrains a batir"
               >
-                <img
+                <Image
                   src="/images/terrains-abbaye.jpg"
                   alt="Illustration des terrains a batir"
-                  className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                  fill
+                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  className="object-cover transition duration-300 group-hover:scale-[1.02]"
                 />
                 <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink shadow-card">
                   Zoom

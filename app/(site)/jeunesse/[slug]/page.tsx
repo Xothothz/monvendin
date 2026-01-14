@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { getPayload } from "payload";
 import configPromise from "@payload-config";
 import { CenteredPageHeader } from "@/components/CenteredPageHeader";
@@ -143,11 +144,13 @@ export default async function JeunesseDetailPage({ params }: PageProps) {
                 <p className="text-sm text-slate">Vendin-les-Bethune (62232)</p>
               </div>
               <div className="rounded-2xl border border-ink/10 bg-white px-5 py-4 shadow-sm">
-                <img
+                <Image
                   src="/images/logo-tete-de-linotte.jpg"
                   alt="Logo Tete de Linotte"
+                  width={800}
+                  height={533}
                   className="h-28 w-auto sm:h-32"
-                  loading="lazy"
+                  sizes="(min-width: 640px) 128px, 112px"
                 />
               </div>
             </div>
@@ -276,11 +279,13 @@ export default async function JeunesseDetailPage({ params }: PageProps) {
           <Card className="p-6 bg-fog">
             <div className="flex items-stretch gap-6">
               <div className="shrink-0">
-                <img
+                <Image
                   src="/images/logo-people-baby.png"
                   alt="Logo People & Baby"
+                  width={398}
+                  height={399}
                   className="h-20 w-20 rounded-full object-contain sm:h-24 sm:w-24"
-                  loading="lazy"
+                  sizes="(min-width: 640px) 96px, 80px"
                 />
               </div>
               <div className="min-w-0 space-y-2">
@@ -473,11 +478,12 @@ export default async function JeunesseDetailPage({ params }: PageProps) {
 
           <Card className="overflow-hidden p-0">
             <div className="relative h-56 sm:h-72 lg:h-80">
-              <img
+              <Image
                 src="/images/ecole-maternelle.jpg"
                 alt="Ecole maternelle Colette a Vendin-les-Bethune"
-                className="absolute inset-0 h-full w-full object-cover"
-                loading="lazy"
+                fill
+                sizes="(min-width: 1024px) 960px, 100vw"
+                className="object-cover"
               />
             </div>
             <div className="p-6 space-y-4">
@@ -625,11 +631,12 @@ export default async function JeunesseDetailPage({ params }: PageProps) {
 
           <Card className="overflow-hidden p-0">
             <div className="relative h-56 sm:h-72 lg:h-80">
-              <img
+              <Image
                 src="/images/ecole-primaire.jpg"
                 alt="Ecole primaire Irene Curie a Vendin-les-Bethune"
-                className="absolute inset-0 h-full w-full object-cover"
-                loading="lazy"
+                fill
+                sizes="(min-width: 1024px) 960px, 100vw"
+                className="object-cover"
               />
             </div>
             <div className="p-6 space-y-4">
@@ -934,11 +941,13 @@ export default async function JeunesseDetailPage({ params }: PageProps) {
           </Card>
 
           <Card className="flex items-center justify-center p-6">
-            <img
+            <Image
               src="/images/perischool-logo.png"
               alt="Logo My Peri'School"
+              width={800}
+              height={800}
               className="h-40 w-auto"
-              loading="lazy"
+              sizes="(min-width: 1024px) 240px, 160px"
             />
           </Card>
         </section>

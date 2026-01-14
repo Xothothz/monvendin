@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Card } from "@/components/Card";
 import {
@@ -562,12 +563,13 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
             <div className="grid gap-6 lg:grid-cols-2">
               <Card className="p-6 space-y-8">
                 <div className="grid gap-4 md:grid-cols-[0.22fr_minmax(0,1fr)]">
-                  <div className="overflow-hidden rounded-2xl border border-ink/10 bg-white">
-                    <img
+                  <div className="relative aspect-square overflow-hidden rounded-2xl border border-ink/10 bg-white">
+                    <Image
                       src="/images/restauration-domicile.png"
                       alt="Portage de repas a domicile"
-                      className="h-full w-full object-cover"
-                      loading="lazy"
+                      fill
+                      sizes="(min-width: 1024px) 220px, 100vw"
+                      className="object-cover"
                     />
                   </div>
                   <div className="space-y-3 min-w-0 pb-6">
@@ -615,12 +617,13 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
 
               <Card className="p-6 space-y-8">
                 <div className="grid gap-4 md:grid-cols-[0.22fr_minmax(0,1fr)]">
-                  <div className="overflow-hidden rounded-2xl border border-ink/10 bg-white">
-                    <img
+                  <div className="relative aspect-square overflow-hidden rounded-2xl border border-ink/10 bg-white">
+                    <Image
                       src="/images/spasad-soins.png"
                       alt="Soins infirmiers a domicile"
-                      className="h-full w-full object-cover"
-                      loading="lazy"
+                      fill
+                      sizes="(min-width: 1024px) 220px, 100vw"
+                      className="object-cover"
                     />
                   </div>
                   <div className="space-y-3 min-w-0 pb-6">
@@ -684,12 +687,13 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
             </div>
             <Card className="p-6 space-y-4">
               <div className="grid gap-4 md:grid-cols-[0.65fr_1.35fr]">
-                <div className="overflow-hidden rounded-2xl border border-ink/10 bg-fog">
-                  <img
+                <div className="relative aspect-[14/10] overflow-hidden rounded-2xl border border-ink/10 bg-fog">
+                  <Image
                     src="/images/maison-autonomie.jpg"
                     alt="Maison de l'Autonomie de l'Artois"
-                    className="h-full w-full object-cover"
-                    loading="lazy"
+                    fill
+                    sizes="(min-width: 1024px) 40vw, 100vw"
+                    className="object-cover"
                   />
                 </div>
                 <div className="space-y-3">
@@ -728,12 +732,13 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
             </div>
             <Card className="p-6 space-y-4">
               <div className="grid gap-4 md:grid-cols-[0.65fr_1.35fr]">
-                <div className="overflow-hidden rounded-2xl border border-ink/10 bg-white">
-                  <img
+                <div className="relative aspect-[7/6] overflow-hidden rounded-2xl border border-ink/10 bg-white">
+                  <Image
                     src="/images/clic-solidaire.png"
                     alt="Clic Solidaire"
-                    className="h-full w-full object-cover"
-                    loading="lazy"
+                    fill
+                    sizes="(min-width: 1024px) 40vw, 100vw"
+                    className="object-cover"
                   />
                 </div>
                 <div className="space-y-3">
@@ -823,11 +828,13 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
         <section className="space-y-4">
           <div className="grid gap-6 md:grid-cols-[0.9fr_1.1fr] md:items-center">
             <div className="flex items-center justify-center rounded-2xl border border-ink/10 bg-fog p-4">
-              <img
+              <Image
                 src="/images/aides-habitat.png"
                 alt="Illustration des aides a l'amelioration de l'habitat"
+                width={1024}
+                height={1024}
                 className="h-auto w-1/2 object-contain"
-                loading="lazy"
+                sizes="(min-width: 768px) 45vw, 90vw"
               />
             </div>
             <p className="text-sm text-slate">
@@ -842,13 +849,14 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {organismes.map((org) => (
               <Card key={org.name} className="p-6 space-y-4">
-                <div className="flex h-20 items-center justify-center rounded-xl border border-ink/10 bg-fog p-2">
+                <div className="relative flex h-20 items-center justify-center rounded-xl border border-ink/10 bg-fog p-2">
                   {org.logo ? (
-                    <img
+                    <Image
                       src={org.logo}
                       alt={`Logo ${org.name}`}
-                      className="h-full w-full object-contain"
-                      loading="lazy"
+                      fill
+                      sizes="80px"
+                      className="object-contain"
                     />
                   ) : (
                     <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate">
@@ -1141,13 +1149,14 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
               key={org.name}
               className="flex flex-col gap-4 rounded-2xl border border-ink/10 bg-white p-5 sm:flex-row sm:items-center"
             >
-              <div className="flex h-24 w-28 flex-shrink-0 items-center justify-center rounded-xl border border-ink/10 bg-fog p-2">
+              <div className="relative flex h-24 w-28 flex-shrink-0 items-center justify-center rounded-xl border border-ink/10 bg-fog p-2">
                 {org.logo ? (
-                  <img
+                  <Image
                     src={org.logo}
                     alt={`Logo ${org.name}`}
-                    className="h-full w-full object-contain"
-                    loading="lazy"
+                    fill
+                    sizes="112px"
+                    className="object-contain"
                   />
                 ) : (
                   <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate">
@@ -1205,11 +1214,13 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
             </div>
             <div className="flex justify-start lg:justify-end">
               <div className="rounded-3xl border border-ink/10 bg-white p-4 shadow-card">
-                <img
+                <Image
                   src="/images/secours-populaire-logo.png"
                   alt="Secours populaire"
+                  width={1200}
+                  height={1200}
                   className="h-28 w-28 object-contain sm:h-32 sm:w-32"
-                  loading="lazy"
+                  sizes="(min-width: 640px) 128px, 112px"
                 />
               </div>
             </div>
@@ -1443,12 +1454,13 @@ export default async function ViePratiqueDetailPage({ params }: PageProps) {
               >
                 <Card className="h-full p-4 sm:p-5">
                   <div className="space-y-3">
-                    <div className="aspect-[16/9] overflow-hidden rounded-2xl bg-sand/60">
-                      <img
+                    <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-sand/60">
+                      <Image
                         src={item.image}
                         alt={item.alt}
-                        className="h-full w-full object-cover"
-                        loading="lazy"
+                        fill
+                        sizes="(min-width: 1024px) 30vw, 100vw"
+                        className="object-cover"
                       />
                     </div>
                     <div className="space-y-2">

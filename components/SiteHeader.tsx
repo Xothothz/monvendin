@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -75,10 +76,14 @@ export const SiteHeader = () => {
   };
   const logo = (
     <Link href="/" className="flex items-center gap-4">
-      <img
+      <Image
         src="/blason-vendin.png"
         alt="Blason de Vendin-les-Bethune"
+        width={171}
+        height={256}
         className="h-16 w-auto sm:h-20"
+        sizes="(min-width: 640px) 80px, 64px"
+        priority
       />
       <div className="hidden sm:flex flex-col leading-tight">
         <span className="text-[10px] uppercase tracking-[0.35em] text-slate">
